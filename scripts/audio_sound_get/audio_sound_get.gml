@@ -66,7 +66,7 @@ function audio_sound_get_inst_bank_index(group, inst) {
 function audio_any_is_playing(index = all) {
 	MUX_CHECK_UNINITIALISED_EX_OR_FALSE
 	
-	if index == all then return ds_list_size(AUDIO_ALL) > 0;
+	if index == all then return ds_list_size(MUX_ALL) > 0;
 	
 	var _i = 0; 
 	var _found = false;
@@ -77,7 +77,7 @@ function audio_any_is_playing(index = all) {
 		if MUX_EX_ENABLE and not variable_struct_exists(global.audio_tags, index) then __audio_error($"Audio tag \"{index}\" doesn't exist");
 		
 		var _tags_array = global.audio_tags[$ index];
-		_group_bank = AUDIO_ALL;
+		_group_bank = MUX_ALL;
 		_list_size = ds_list_size(_group_bank);
 		
 		while(_i < _list_size and not _found) {
