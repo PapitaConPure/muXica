@@ -6,7 +6,9 @@ function mux_touch(user_event_n) {
 	if MUX_CHECK_UNINITIALISED {
 		var _ts = time_source_create(time_source_global, 2, time_source_units_frames, __mux_connect_touch, [ id, user_event_n ]);
 		time_source_start(_ts);
-	} else __mux_connect_touch(id, user_event_n);
+	} else {
+		__mux_connect_touch(id, user_event_n);
+	}
 }
 
 function __mux_connect_touch(id, n) {
