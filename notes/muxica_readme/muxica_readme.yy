@@ -1,0 +1,11 @@
+{
+  "$GMNotes":"",
+  "%Name":"muxica_readme",
+  "name":"muxica_readme",
+  "parent":{
+    "name":"Notes",
+    "path":"folders/Notes.yy",
+  },
+  "resourceType":"GMNotes",
+  "resourceVersion":"2.0",
+}
