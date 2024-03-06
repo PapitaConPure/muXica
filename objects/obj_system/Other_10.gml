@@ -1,2 +1,2 @@
 /// @description Insert description here
-show_message("Wao!");
+mux_sound_play(aud_bgm_test1, 9, true);

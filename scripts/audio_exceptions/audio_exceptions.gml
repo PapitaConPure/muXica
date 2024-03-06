@@ -2,7 +2,7 @@
  * @param {String} message
  * @param {String} long_message
  */
-function __audio_warn(message) {
+function __mux_warn(message) {
 	show_debug_message($"<*> muXica WARN: {message}");
 }
 

@@ -4,14 +4,16 @@ mux_sounds = {
 	"all": ds_list_create()
 };
 
+mux_arrangers = ds_list_create();
+
 mux_sounds_stop_pending = ds_list_create();
 mux_sounds_fadein_pending = ds_queue_create();
+
+mux_pending_instances = ds_queue_create();
 
 //Probably unnecessary, but I did what I had to do
 timer_crossfade = array_create(16, -1);
 timer_crossfade_n = 0;
-
-mux_pending_instances = ds_queue_create();
 
 audio_loaded = false;
 audio_group_load(BGM);

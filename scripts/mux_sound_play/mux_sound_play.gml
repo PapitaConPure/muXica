@@ -5,7 +5,7 @@
 /// @param {Bool} [loop] New sound loop mode
 /// @param {Real} [gain] New sound gain
 /// @returns {Id.Sound}
-function audio_sound_play(index, priority, loop = false, gain = 1) {
+function mux_sound_play(index, priority, loop = false, gain = 1) {
 	MUX_CHECK_UNINITIALISED_EX;
 	
 	var _group_key = audio_group_name(audio_sound_get_audio_group(index));
@@ -13,7 +13,7 @@ function audio_sound_play(index, priority, loop = false, gain = 1) {
 	
 	var _id = audio_play_sound(index, priority, loop);
 	audio_sound_gain(_id, gain, 0);
-	var _sound = new Sound(index, _id);
+	var _sound = new MuxSound(index, _id);
 	ds_list_add(_group_bank, _sound);
 	ds_list_add(MUX_ALL, _sound);
 	return _id;
@@ -29,7 +29,7 @@ function audio_sound_play(index, priority, loop = false, gain = 1) {
  * @param {Bool} [synced] New sound sync mode
  * @returns {Id.Sound}
  */
-function audio_sound_crossfade(time, from, to, priority, loop = false, synced = false) {
+function mux_sound_crossfade(time, from, to, priority, loop = false, synced = false) {
 	MUX_CHECK_UNINITIALISED_EX;
 	
 	var _group_key = audio_group_name(audio_sound_get_audio_group(to));
@@ -40,14 +40,14 @@ function audio_sound_crossfade(time, from, to, priority, loop = false, synced = 
 		__mux_sound_fade_out_group(time, _group_bank, _all_bank);
 		var _id = audio_play_sound(to, priority, loop);
 		__mux_sound_crossfade_delayed(undefined, _id, time);
-		var _sound = new Sound(to, _id);
+		var _sound = new MuxSound(to, _id);
 		ds_list_add(_group_bank, _sound);
 		ds_list_add(_all_bank,   _sound);
 		return _id;
 	}
 	
-	var _old_group_idx = audio_sound_get_inst_bank_index(_group_bank, from);
-	var _old_all_idx = audio_sound_get_inst_bank_index(_all_bank, from);
+	var _old_group_idx = mux_sound_get_inst_bank_index(_group_bank, from);
+	var _old_all_idx = mux_sound_get_inst_bank_index(_all_bank, from);
 	var _id = audio_play_sound(to, priority, loop);
 	__mux_sound_crossfade_delayed(from, _id, time);
 	
@@ -55,7 +55,7 @@ function audio_sound_crossfade(time, from, to, priority, loop = false, synced = 
 	var _relative_position = wrap(_source_position, 0, audio_sound_length(to), true);
 	if synced then audio_sound_set_track_position(_id, _relative_position);
 	
-	var _sound = new Sound(to, _id);
+	var _sound = new MuxSound(to, _id);
 	ds_list_replace(_group_bank, _old_group_idx, _sound);
 	ds_list_replace(_all_bank,   _old_all_idx,   _sound);
 	ds_list_add(MUX_P_STOP, from);
@@ -67,7 +67,7 @@ function audio_sound_crossfade(time, from, to, priority, loop = false, synced = 
  * @param {Asset.GMSound|Id.Sound|Constant.All} sound Origin existing sound id
  * @param {Real} time Time for transition (in milliseconds)
  */
-function audio_sound_stop(sound, time) {
+function mux_sound_stop(sound, time) {
 	MUX_CHECK_UNINITIALISED_EX;
 	
 	var _all_bank = MUX_ALL;

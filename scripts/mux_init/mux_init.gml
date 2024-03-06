@@ -1,5 +1,4 @@
 global.__mux_audio_worker_object = noone;
-
 #macro MUX_HANDLER global.__mux_audio_worker_object
 #macro MUX_HANDLER_DEPTH 16002
 
@@ -10,5 +9,5 @@ global.__mux_audio_worker_object = noone;
 #macro MUX_P_STOP    MUX_HANDLER.mux_sounds_stop_pending
 #macro MUX_P_FADE    MUX_HANDLER.mux_sounds_fadein_pending
 
-global.__audio_boot_up_time_source = time_source_create(time_source_global, 1, time_source_units_frames, mux_tick, [], -1);
-time_source_start(global.__audio_boot_up_time_source);
+global.__mux_boot_time_source = time_source_create(time_source_global, 1, time_source_units_frames, mux_tick, [], -1);
+time_source_start(global.__mux_boot_time_source);

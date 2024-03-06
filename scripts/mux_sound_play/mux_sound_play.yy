@@ -1,9 +1,9 @@
 {
   "$GMScript":"",
-  "%Name":"audio_sound_get",
+  "%Name":"mux_sound_play",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"audio_sound_get",
+  "name":"mux_sound_play",
   "parent":{
     "name":"3.c. Sound management",
     "path":"folders/muXica/3.c. Sound management.yy",

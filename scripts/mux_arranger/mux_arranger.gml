@@ -8,6 +8,7 @@ function MuxArranger(index) constructor {
 	self.markers = {};
 	self.bpm = 130;
 	self.cue_time = 0;
+	self.instances = ds_list_create();
 	
 	/**
 	 * @func jump(bars) 

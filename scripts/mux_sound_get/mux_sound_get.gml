@@ -1,6 +1,6 @@
 /// @param {Asset.GMAudioGroup|Constant.All} group_id
 /// @returns {Struct}
-function audio_sound_get_oldest(group_id) {
+function mux_sound_get_oldest(group_id) {
 	var _group_idx;
 	if group_id == all then _group_idx = "all";
 	else _group_idx = audio_group_name(group_id);
@@ -11,7 +11,7 @@ function audio_sound_get_oldest(group_id) {
 ///@desc Description
 ///@param {Asset.GMAudioGroup|Constant.All} group_id
 ///@returns {Struct}
-function audio_sound_get_latest(group_id = all) {
+function mux_sound_get_latest(group_id = all) {
 	var _group_idx;
 	if group_id == all then _group_idx = "all";
 	else _group_idx = parse_group_idx(group_id);
@@ -23,7 +23,7 @@ function audio_sound_get_latest(group_id = all) {
 /// @desc If no playing sound is found, returns undefined
 /// @param {Asset.GMSound} index
 /// @returns {Struct}
-function audio_sound_find(index) {
+function mux_sound_find(index) {
 	var _group_idx = audio_group_name(audio_sound_get_audio_group(index));
 	var _group_bank = MUX_GROUPS[$ _group_idx]
 	var _list_size = ds_list_size(_group_bank);
@@ -47,7 +47,7 @@ function audio_sound_find(index) {
 ///@param {Id.DsList} group_id
 ///@param {Id.Sound} inst
 ///@returns {Real}
-function audio_sound_get_inst_bank_index(group, inst) {
+function mux_sound_get_inst_bank_index(group, inst) {
 	var _list_size = ds_list_size(group);
 	var _ret = -1;
 	var _i = 0;
@@ -63,7 +63,7 @@ function audio_sound_get_inst_bank_index(group, inst) {
 ///@desc Checks if any sound under the audio index is currently playing and not stopping
 ///@param {Constant.All|Asset.GMSound|String} index
 ///@returns {Bool}
-function audio_any_is_playing(index = all) {
+function mux_sound_any_is_playing(index = all) {
 	MUX_CHECK_UNINITIALISED_EX_OR_FALSE
 	
 	if index == all then return ds_list_size(MUX_ALL) > 0;
@@ -74,9 +74,9 @@ function audio_any_is_playing(index = all) {
 	var _list_size;
 	
 	if is_string(index) {
-		if MUX_EX_ENABLE and not variable_struct_exists(global.audio_tags, index) then __audio_error($"Audio tag \"{index}\" doesn't exist");
+		if MUX_EX_ENABLE and not variable_struct_exists(global.mux_tags, index) then __mux_ex($"Audio tag \"{index}\" doesn't exist");
 		
-		var _tags_array = global.audio_tags[$ index];
+		var _tags_array = global.mux_tags[$ index];
 		_group_bank = MUX_ALL;
 		_list_size = ds_list_size(_group_bank);
 		
@@ -103,9 +103,9 @@ function audio_any_is_playing(index = all) {
 	return _found;
 }
 
-///@desc Checks if the audio is currently playing and not stopping
+///@desc Checks if the sound instance is currently playing and not stopping
 ///@param {Id.Sound} index
-function audio_sound_is_playing(index) {
+function mux_sound_is_playing(index) {
 	MUX_CHECK_INVALID_EX
 	
 	var _group_idx =  audio_group_name(audio_sound_get_audio_group(index));
