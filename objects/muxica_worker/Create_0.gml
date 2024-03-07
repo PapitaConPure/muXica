@@ -4,7 +4,7 @@ mux_sounds = {
 	"all": ds_list_create()
 };
 
-mux_arrangers = ds_list_create();
+mux_arrangers = {};
 
 mux_sounds_stop_pending = ds_list_create();
 mux_sounds_fadein_pending = ds_queue_create();

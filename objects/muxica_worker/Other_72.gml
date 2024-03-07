@@ -2,7 +2,11 @@
 var _bgm_ready = (not MUX_GROUP_ACTIVE_BGM) || audio_group_is_loaded(BGM);
 var _sfx_ready = (not MUX_GROUP_ACTIVE_SFX) || audio_group_is_loaded(SFX);
 
-if _bgm_ready and _sfx_ready {
+if _bgm_ready and _sfx_ready and !audio_loaded {
+	mux_config_tags();
+	mux_config_cues();
+	mux_config_arrangers(); 
+
 	audio_loaded = true;
 	audio_groups_update();
 	

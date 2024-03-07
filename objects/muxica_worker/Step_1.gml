@@ -19,6 +19,8 @@ PROCESS_SELECTED_GROUP
 _group = MUX_ALL;
 PROCESS_SELECTED_GROUP
 
+struct_foreach(mux_arrangers, function(_, arranger) { arranger.update(); });
+
 _group = MUX_P_STOP;
 _size = ds_list_size(_group);
 for(_i = _size - 1; _i >= 0; _i--) {

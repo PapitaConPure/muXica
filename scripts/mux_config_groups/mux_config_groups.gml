@@ -4,4 +4,4 @@
 
 //Set these to true if there's at least one sound in the respective audio group
 #macro MUX_GROUP_ACTIVE_BGM true
-#macro MUX_GROUP_ACTIVE_SFX false
+#macro MUX_GROUP_ACTIVE_SFX true
