@@ -1,7 +1,7 @@
 //feather ignore GM2017
 
 ///@desc Checks muXica's worker object availability every frame
-function mux_tick() {
+function mux_persist() {
 	if MUX_HANDLER == noone {
 		MUX_HANDLER = instance_create_depth(0, 0, MUX_HANDLER_DEPTH, muxica_worker);
 		with MUX_HANDLER event_user(1);

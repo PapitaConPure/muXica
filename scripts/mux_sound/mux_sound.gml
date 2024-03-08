@@ -14,6 +14,8 @@ function MuxSound(index, inst) constructor {
 	self.group = audio_sound_get_audio_group(index);
 	self.length = audio_sound_length(index);
 	
+	self.__trap_pos = true;
+	
 	//Automatically attach to handler's corresponding MuxArranger if it exists (for cue event handling magic)
 	var _key = audio_get_name(index);
 	if struct_exists(MUX_ARRANGERS, _key)
@@ -21,6 +23,10 @@ function MuxSound(index, inst) constructor {
 	
 	self.update = function() {
 		self.ppos = self.pos;
-		self.pos = audio_sound_get_track_position(self.inst);
+		
+		var _new_pos = audio_sound_get_track_position(self.inst);
+		if _new_pos == 0 and self.__trap_pos then return;
+		self.pos = _new_pos;
+		self.__trap_pos = false;
 	}
 }

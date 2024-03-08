@@ -1,2 +1,2 @@
-/// @description Insert description here
-mux_sound_play(aud_bgm_test1, 9, true);
+/// @description On muXica load...
+alarm[0] = 60 * 5;

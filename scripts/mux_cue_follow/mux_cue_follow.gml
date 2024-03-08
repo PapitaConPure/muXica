@@ -1,15 +1,13 @@
 /**
  * @description Sets the position of the audio track to its cue position denoted by the specified name
- * @param {Asset.GMSound} audio Audio index
+ * @param {Asset.GMSound|Id.Sound} audio Audio index
  * @param {String} name Cue name
- * @param {Id.Sound} [sound]=undefined Sound id
  */
-function mux_cue_follow(audio, name, sound = undefined) {
+function mux_cue_follow(sound, name) {
 	var __cues = struct_get(MUX_CUES, audio);
 	var __cue = __cues[$ name];
 		
-	if(is_undefined(sound))
-		audio_sound_set_track_position(audio, __cue);
-	else
-		audio_sound_set_track_position(sound, __cue);
+	if MUX_EX_ENABLE and ((sound < 0) or not audio_exists(sound)) then __mux_ex(MUX_EX_INVALID);
+	
+	audio_sound_set_track_position(sound, __cue);
 }

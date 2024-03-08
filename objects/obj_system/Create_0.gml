@@ -1,4 +1,2 @@
-/// @description Insert description here
-// You can write your code in this editor
-global.param = 1;
+/// @description Wait for muXica to load
 mux_touch(0);

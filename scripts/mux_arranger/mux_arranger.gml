@@ -1,25 +1,39 @@
 /**
  * @desc Represents a sound arranger
  * @param {Asset.GMSound} index Sound asset index
- * @param {Real} [start_delay] Delay between the track's start and the sound's first attack, in milliseconds
+ * @param {Real} start_delay Delay between the track's start and the sound's first attack, in milliseconds
+ * @param {Struct} start_params Starting parameters for the arranger to work with
  * @constructor
  */
-function MuxArranger(index, start_delay = 0) constructor {
+function MuxArranger(index, start_delay, start_params) constructor {
 	self.index = index;
 	self.markers = {};
-	self.frequency = -1;
-	self.bpm = 130;
+	self.params = start_params;
 	self.cue_time = start_delay * 0.001;
 	self.instances = ds_list_create();
 	self.instance_number = 0;
-	self.params = {};
+	
+	self.frequency = -1;
+	self.bpm = 130;
+	self.time_signature = [4, 4];
 	
 	/**
-	 * @desc Jumps forward the specified amount of bars, based on the current track bpm and position
+	 * @desc Jumps forward the specified amount of beats, based on the current track bpm and position
+	 * @param {Real} beats The number of beats to jump forward
+	 */
+	jump_beats = function(beats) {
+		self.cue_time += beats * time_bpm_to_seconds(self.bpm);
+		return self;
+	}
+	
+	/**
+	 * @desc Jumps forward the specified amount of bars, based on the current track bpm, time signature and position
 	 * @param {Real} bars The number of bars to jump forward
 	 */
-	jump = function(bars) {
-		self.cue_time += bars * time_bpm_to_seconds(self.bpm);
+	jump_bars = function(bars) {
+		var _beats_per_measure = self.time_signature[0];
+		var _beat_note_value   = self.time_signature[1];
+		self.cue_time += bars * __mux_time_bar_to_seconds(self.bpm, _beats_per_measure, _beat_note_value);
 		return self;
 	}
 	
@@ -35,19 +49,18 @@ function MuxArranger(index, start_delay = 0) constructor {
 	/**
 	 * @desc Sets a marker in the current track position for later access
 	 * @param {String} marker_name The marker's name
-	 * @param {Id.MuxMarker} marker The marker to set
-	 * @return {Struct.MuxArranger}
+	 * @param {Struct.MuxMarker|Id.MuxMarker} marker The marker to set
 	 */
 	set_marker = function(marker_name, marker) {
 		marker.link(self);
-		self.markers[$ marker_name] = marker;
+		var _key = __mux_string_to_struct_key(marker_name);
+		self.markers[$ _key] = marker;
 		return self;
 	}
 	
 	/**
 	 * @desc Sets the cursor bpm to the specified amount
 	 * @param {Real} bpm The current section's bpm
-	 * @return {Struct.MuxArranger}
 	 */
 	set_bpm = function(bpm) {
 		self.bpm = bpm;
@@ -58,20 +71,65 @@ function MuxArranger(index, start_delay = 0) constructor {
 	 * @desc Sets the cursor time signature to the notated value
 	 * @param {Real} [beat_count] The current section's beats per measure. By default: 4
 	 * @param {Real} [note_value] The current section's note value. 4 is a quarter and 8 is an eight. By default: 4
-	 * @return {Struct.MuxArranger}
 	 */
 	set_time_signature = function(beat_count = 4, note_value = 4) {
-		self.bpm = bpm;
+		if MUX_EX_ENABLE and note_value % 4 != 0
+			__mux_ex("Invalid note value", "Note value must be divisible by 4");
+		self.time_signature = [beat_count, note_value];
 		return self;
 	}
 	
 	/**
 	 * @desc Sets the frequency by which subsequent cue markers will trigger
 	 * @param {Real} frequency The subsequent marker frequency value (in events per bar). 0 means no frequency at all, which is the default
-	 * @return {Struct.MuxArranger}
 	 */
 	set_frequency = function(frequency = 0) {
 		self.frequency = frequency;
+		return self;
+	}
+	
+	self.__followed_cue_data = {};
+	/**
+	 * @desc Sets the sound instance's position to the specified track audio cue point
+	 * @param {Struct.MuxSound} sound The sound which will follow the cue point
+	 * @param {Struct.MuxMarker} source_marker The MuxMarker from which this follow event is occurring
+	 * @param {Real} cue_point The delay between the marker's cue point and the moment it triggered, in seconds
+	 */
+	follow_cue = function(sound, source_marker, offset) {
+		var _target_marker = self.markers[$ source_marker.target];
+		var _section_width = source_marker.cue_point - _target_marker.cue_point;
+		var _new_pos = _target_marker.cue_point + offset % _section_width;
+		
+		if _new_pos != 0 then sound.__trap_pos = true;
+		audio_sound_set_track_position(sound.inst, _new_pos);
+		
+		//Execute markers between the target marker's cue time and the offset here
+		self.__followed_cue_data = {
+			sound, offset,
+			target: source_marker.target,
+			source_cue: source_marker.cue_point,
+			cue_point: _target_marker.cue_point
+		};
+		
+		struct_foreach(self.markers, function(name, marker) {
+			var _data = self.__followed_cue_data;
+			
+			if name == _data.target or marker.cue_point == _data.source_cue then return;
+			
+			var _sound = _data.sound;
+			if marker.cue_point >= _sound.pos then return;
+			
+			show_debug_message(name);
+			
+			var _cue_point = _data.cue_point;
+			var _offset = _data.offset;
+			var _max_point = _cue_point + _offset;
+			
+			if _cue_point <= marker.cue_point and marker.cue_point < _max_point
+				marker.trigger_event(_sound, _offset, self.params);
+		});
+		_target_marker.trigger_event(sound, offset, self.params);
+		
 		return self;
 	}
 	
@@ -93,8 +151,13 @@ function MuxArranger(index, start_delay = 0) constructor {
 			repeat self.instance_number {
 				_snd = self.instances[| _i++];
 				
-				if _snd.ppos < marker.cue_point and _snd.pos >= marker.cue_point
-					marker.process(_snd.pos - _snd.ppos, self.params);
+				if _snd.ppos > _snd.pos then continue;
+				
+				if _snd.ppos >= marker.cue_point or _snd.pos < marker.cue_point then continue;
+				
+				show_debug_message($"{_snd.inst} {_snd.ppos} < [{marker.cue_point}] < {_snd.pos}");
+				
+				marker.trigger_event(_snd, _snd.pos - marker.cue_point, self.params);
 			}
 		});
 	}
@@ -105,91 +168,4 @@ function MuxArranger(index, start_delay = 0) constructor {
 	free = function() {
 		ds_list_destroy(self.instances);
 	}
-}
-
-/**
- * @desc Represents a position marker for a SoundArranger to use
- * @constructor
- */
-function MuxMarker() constructor {
-	self.handler = undefined;
-	self.cue_point = 0;
-	self.frequency = -1;
-	self.basic = true;
-	
-	self.process = function(offset, params) {}
-	
-	self.link = function(handler, cue_point) {
-		self.handler = handler;
-		self.cue_point = handler.cue_time;
-		self.frequency = handler.frequency;
-	}
-}
-
-/**
- * @desc Represents an event marker for a MuxArranger
- * @param {Function} consecuence (offset, params) The event triggered by surpassing this marker
- * @constructor
- */
-function MuxEventMarker(consecuence): MuxMarker() constructor {
-	self.consecuence = consecuence;
-	self.basic = false;
-	
-	self.process = function(offset, params) {
-		self.consecuence(offset, params);
-	}
-}
-
-/**
- * @desc Represents a event condition marker for a MuxArranger
- * @param {Function} condition (params) The condition to fulfill in order to trigger the consecuence
- * @param {Function} consecuence (offset, params) The consecuence to the to fulfillment of the condition
- * @constructor
- */
-function MuxConditionMarker(condition, consecuence): MuxMarker() constructor {
-	self.condition = condition;
-	self.consecuence = consecuence;
-	self.basic = false;
-	
-	self.process = function(offset, params) {
-		if self.condition(params) then self.consecuence(offset, params);
-	}
-}
-
-/**
- * @desc Represents a jump condition marker for a MuxArranger
- * @param {Function} condition The condition to fulfill in order to perform the marker jump
- * @param {Id.MuxMarker} target The MuxMarker to jump to if the condition is fulfilled
- * @constructor
- */
-function MuxJumpMarker(condition, target): MuxMarker() constructor {
-	self.target = target;
-	self.condition = condition;
-	self.basic = false;
-	
-	self.process = function(offset, params) {
-		if self.condition() then self.handler.cue_time = self.target.cue_point;
-	}
-}
-
-/**
- * @desc Represents a loop marker for a MuxArranger
- * @param {Id.MuxMarker} target The MuxMarker to jump to when this marker is reached
- * @constructor
- */
-function MuxLoopMarker(target): MuxMarker() constructor {
-	self.target = target;
-	self.basic = false;
-	
-	self.process = function(offset, params) {
-		self.handler.cue_time = self.target.cue_point;
-	}
-}
-
-/**
- * @desc Returns a sound arranger based on the provided sound asset index
- * @param {Asset.GMSound} index
- */
-function mux_arranger(index) {
-	return struct_get(MUX_ARRANGERS, audio_get_name(index));
 }

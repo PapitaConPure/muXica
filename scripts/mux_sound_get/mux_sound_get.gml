@@ -129,6 +129,6 @@ function parse_group_idx(group_id) {
 	case all: return "all";
 	case BGM: return "BGM";
 	case SFX: return "SFX";
-	default:  throw  "ID de grupo de audio desconocida";
+	default:  __mux_ex("ID de grupo de audio inválida", $"La ID \"{group_id}\" es desconocida o no es una ID válida");
 	}
 }
