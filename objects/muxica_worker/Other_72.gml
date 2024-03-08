@@ -8,7 +8,7 @@ if _bgm_ready and _sfx_ready and !audio_loaded {
 	mux_config_arrangers(); 
 
 	audio_loaded = true;
-	audio_groups_update();
+	mux_groups_update();
 	
 	var _request;
 	while not ds_queue_empty(mux_pending_instances) {

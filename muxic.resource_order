@@ -15,7 +15,7 @@
   "ResourceOrderSettings":[
     {"name":"muxica_worker","order":7,"path":"objects/muxica_worker/muxica_worker.yy",},
     {"name":"obj_system","order":2,"path":"objects/obj_system/obj_system.yy",},
-    {"name":"audio_system_is_ready","order":2,"path":"scripts/audio_system_is_ready/audio_system_is_ready.yy",},
+    {"name":"mux_is_ready","order":2,"path":"scripts/mux_is_ready/mux_is_ready.yy",},
     {"name":"mux_arranger_set","order":6,"path":"scripts/mux_arranger_set/mux_arranger_set.yy",},
     {"name":"mux_arranger","order":1,"path":"scripts/mux_arranger/mux_arranger.yy",},
     {"name":"mux_config_arrangers","order":4,"path":"scripts/mux_config_arrangers/mux_config_arrangers.yy",},
