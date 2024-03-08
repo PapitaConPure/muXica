@@ -8,6 +8,8 @@ function __mux_warn(message) {
 
 #macro MUX_WARN_IF if MUX_WARN_ENABLE and 
 
+#macro MUX_WARN_MARKER_DUPLICATED $"Marker \"{marker_name}\" already exists for arranger <{audio_get_name(self.index)}> in position: ${self.markers[$ _key].cue_point}s"
+
 /**
  * @param {String} message
  * @param {String} long_message

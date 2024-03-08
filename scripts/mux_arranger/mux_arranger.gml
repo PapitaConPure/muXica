@@ -1,3 +1,9 @@
+enum MUX_MARKER_UNIT {
+	BEATS,
+	BARS,
+	SECONDS,
+}
+
 /**
  * @desc Represents a sound arranger
  * @param {Asset.GMSound} index Sound asset index
@@ -52,9 +58,67 @@ function MuxArranger(index, start_delay, start_params) constructor {
 	 * @param {Struct.MuxMarker|Id.MuxMarker} marker The marker to set
 	 */
 	set_marker = function(marker_name, marker) {
-		marker.link(self);
 		var _key = __mux_string_to_struct_key(marker_name);
+		MUX_WARN_IF struct_exists(self.markers, _key)
+			__mux_warn(MUX_WARN_MARKER_DUPLICATED);
+		
+		marker.link(self);
 		self.markers[$ _key] = marker;
+		return self;
+	}
+	
+	/**
+	 * @desc Scatters a repeated marker across the described range of time for later access.
+	 *       The marker's name will have a repetition index attached after a space
+	 *       (from 1 to the repetition count, e.g. "my marker 1", "my marker 2", etc...)
+	 * @param {String} marker_name The marker's base name
+	 * @param {Real} frequency How frequently will the marker be repeated
+	 * @param {Enum.MUX_MARKER_UNIT} frequency_unit The time unit of the specified frequency
+	 * @param {Real} repeat_count How many times will the marker be repeated in this MuxArranger's marker registry
+	 * @param {Struct.MuxMarker} marker The marker to set
+	 */
+	set_marker_repeat = function(marker_name, frequency, frequency_unit, repeat_count, marker) {
+		MUX_EX_IF repeat_count < 1 then __mux_ex("Invalid repeat count for marker", "A repeated markers number of repeats must be 1 or higher");
+		
+		var _key = __mux_string_to_struct_key(marker_name);
+		MUX_WARN_IF struct_exists(self.markers, _key)
+			__mux_warn(MUX_WARN_MARKER_DUPLICATED);
+		
+		var _repeat_key = $"{_key}_1";
+		
+		marker.link(self);
+		self.markers[$ _repeat_key] = marker;
+		
+		//Determine frequency in seconds
+		var _time_seconds = frequency;
+		switch frequency_unit {
+		case MUX_MARKER_UNIT.BARS:
+			var _beats_per_measure = self.time_signature[0];
+			var _beat_note_value   = self.time_signature[1];
+			_time_seconds *= __mux_time_bar_to_seconds(self.bpm, _beats_per_measure, _beat_note_value);
+			break;
+		case MUX_MARKER_UNIT.BEATS:
+			_time_seconds *= time_bpm_to_seconds(self.bpm);
+			break;
+		case MUX_MARKER_UNIT.SECONDS:
+			break;
+		default:
+			if MUX_EX_ENABLE then __mux_ex("Invalid time unit", "The frequency unit must be a valid constant of MUX_MARKER_UNIT");
+		}
+		
+		var _cue_point = self.cue_time;
+		var _n = 2;
+		var _copy;
+		repeat repeat_count - 1 {
+			_cue_point += _time_seconds;
+			_repeat_key = $"{_key}_{_n++}";
+			
+			_copy = marker.copy();
+			_copy.link(self);
+			_copy.cue_point = _cue_point;
+			self.markers[$ _repeat_key] = _copy;
+		}
+		
 		return self;
 	}
 	
@@ -73,7 +137,7 @@ function MuxArranger(index, start_delay, start_params) constructor {
 	 * @param {Real} [note_value] The current section's note value. 4 is a quarter and 8 is an eight. By default: 4
 	 */
 	set_time_signature = function(beat_count = 4, note_value = 4) {
-		if MUX_EX_ENABLE and note_value % 4 != 0
+		MUX_EX_IF note_value % 4 != 0
 			__mux_ex("Invalid note value", "Note value must be divisible by 4");
 		self.time_signature = [beat_count, note_value];
 		return self;
@@ -108,7 +172,7 @@ function MuxArranger(index, start_delay, start_params) constructor {
 			sound, offset,
 			target: source_marker.target,
 			source_cue: source_marker.cue_point,
-			cue_point: _target_marker.cue_point
+			target_cue: _target_marker.cue_point
 		};
 		
 		struct_foreach(self.markers, function(name, marker) {
@@ -121,14 +185,15 @@ function MuxArranger(index, start_delay, start_params) constructor {
 			
 			show_debug_message(name);
 			
-			var _cue_point = _data.cue_point;
+			var _min_point = _data.target_cue;
 			var _offset = _data.offset;
-			var _max_point = _cue_point + _offset;
+			var _max_point = _min_point + _offset;
 			
-			if _cue_point <= marker.cue_point and marker.cue_point < _max_point
+			if _min_point <= marker.cue_point and marker.cue_point < _max_point
 				marker.trigger_event(_sound, _offset, self.params);
 		});
-		_target_marker.trigger_event(sound, offset, self.params);
+		if _target_marker.cue_point <= source_marker.cue_point
+			_target_marker.trigger_event(sound, offset, self.params);
 		
 		return self;
 	}
