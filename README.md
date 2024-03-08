@@ -5,7 +5,7 @@
 > Not really. This is a work in progress.
 
 > [!NOTE]
-> The stylized X symbolizes a crossfade effect, which is the very reason why I decided to start working on this as it seems like Yoyogames won't ever add easy native crossfade support
+> The stylized X symbolizes a crossfade effect, which is the very reason why I decided to start working on this
 
 <br><br><br>
 
