@@ -18,14 +18,12 @@ I'll eventually explain this better than in that one txt
 
 ## Features
 * Easier sound instance and audio group manipulation
-* Easier granular volume control over sound instances
 * Easy crossfading from instance to asset, group to asset, etc
-* Somewhat easier audio group manipulation
 * Sound tags to categorize your sounds
-* Audio cues and music time functions
+* Programmatical audio cues and music time functions
 * Synced or unsynced crossfades
 
 ## To Do
-* [ ] Audio cue events
-* [ ] Audio conditional jumps every X beats
+* [X] Audio cue events
+* [ ] Marker events every X beats
 * [ ] More audio group flexibility other than obligatory BGM+SFX
