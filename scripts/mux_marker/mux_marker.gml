@@ -5,7 +5,6 @@
 function MuxMarker() constructor {
 	self.handler = undefined;
 	self.cue_point = 0;
-	self.frequency = -1;
 	self.basic = true;
 	
 	///@desc Triggers this marker's event
@@ -15,19 +14,16 @@ function MuxMarker() constructor {
 	trigger_event = function(sound, offset, params) {}
 	
 	///@desc Links this marker to a parent MuxArranger and syncs the marker's time to it
-	///@param {Id.MuxArranger} handler The MuxArranger that will act as a handler for this marker
+	///@param {Struct.MuxArranger} handler The MuxArranger that will act as a handler for this marker
 	link = function(handler) {
 		self.handler = handler;
 		self.cue_point = handler.cue_time;
-		self.frequency = handler.frequency;
 	}
 	
-	///@desc Returns a shallow copy of this MuxMarker
+	///@desc Returns an unlinked copy of this MuxMarker
 	copy = function() {
 		var _copy = new MuxMarker();
-		_copy.handler = self.handler;
 		_copy.cue_point = self.cue_point;
-		_copy.frequency = self.frequency;
 		return _copy;
 	}
 }
@@ -49,12 +45,10 @@ function MuxEventMarker(consecuence): MuxMarker() constructor {
 		self.consecuence(sound, offset, params);
 	}
 	
-	///@desc Returns a shallow copy of this MuxMarker
+	///@desc Returns an unlinked copy of this MuxMarker
 	copy = function() {
 		var _copy = new MuxEventMarker(self.consecuence);
-		_copy.handler = self.handler;
 		_copy.cue_point = self.cue_point;
-		_copy.frequency = self.frequency;
 		return _copy;
 	}
 }
@@ -78,12 +72,10 @@ function MuxConditionMarker(condition, consecuence): MuxMarker() constructor {
 		if self.condition(params) then self.consecuence(sound, offset, params);
 	}
 	
-	///@desc Returns a shallow copy of this MuxMarker
+	///@desc Returns an unlinked copy of this MuxMarker
 	copy = function() {
 		var _copy = new MuxConditionMarker(self.condition, self.consecuence);
-		_copy.handler = self.handler;
 		_copy.cue_point = self.cue_point;
-		_copy.frequency = self.frequency;
 		return _copy;
 	}
 }
@@ -107,12 +99,10 @@ function MuxJumpMarker(condition, target): MuxMarker() constructor {
 		if self.condition(params) then self.handler.follow_cue(sound, self, offset);
 	}
 	
-	///@desc Returns a shallow copy of this MuxMarker
+	///@desc Returns an unlinked copy of this MuxMarker
 	copy = function() {
 		var _copy = new MuxJumpMarker(self.condition, self.target);
-		_copy.handler = self.handler;
 		_copy.cue_point = self.cue_point;
-		_copy.frequency = self.frequency;
 		return _copy;
 	}
 }
@@ -134,12 +124,10 @@ function MuxLoopMarker(target): MuxMarker() constructor {
 		self.handler.follow_cue(sound, self, offset);
 	}
 	
-	///@desc Returns a shallow copy of this MuxMarker
+	///@desc Returns an unlinked copy of this MuxMarker
 	copy = function() {
 		var _copy = new MuxLoopMarker(self.target);
-		_copy.handler = self.handler;
 		_copy.cue_point = self.cue_point;
-		_copy.frequency = self.frequency;
 		return _copy;
 	}
 }
