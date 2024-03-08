@@ -3,8 +3,10 @@
  * @param {String} long_message
  */
 function __mux_warn(message) {
-	show_debug_message($"<*> muXica WARN: {message}");
+	show_debug_message($"[!] muXica WARN: {message}");
 }
+
+#macro MUX_WARN_IF if MUX_WARN_ENABLE and 
 
 /**
  * @param {String} message
@@ -12,11 +14,13 @@ function __mux_warn(message) {
  */
 function __mux_ex(message, long_message = "No additional information was provided for this error") {
 	throw {
-		message: $"[!] muXica ERR: {message}",
+		message: $"[!!!] muXica ERR: {message}",
 		longMessage: long_message,
 		stacktrace: debug_get_callstack()
 	};
 }
+
+#macro MUX_EX_IF if MUX_EX_ENABLE and  
 
 #macro MUX_EX_UNINITIALISED "Audio system wasn't initialised yet", "muXica worker didn't boot up on time to respond to the resquest"
 #macro MUX_CHECK_UNINITIALISED ((MUX_HANDLER < 0) or not instance_exists(MUX_HANDLER))

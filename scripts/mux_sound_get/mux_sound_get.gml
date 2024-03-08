@@ -74,7 +74,7 @@ function mux_sound_any_is_playing(index = all) {
 	var _list_size;
 	
 	if is_string(index) {
-		if MUX_EX_ENABLE and not variable_struct_exists(global.mux_tags, index) then __mux_ex($"Audio tag \"{index}\" doesn't exist");
+		MUX_EX_IF not variable_struct_exists(global.mux_tags, index) then __mux_ex($"Audio tag \"{index}\" doesn't exist");
 		
 		var _tags_array = global.mux_tags[$ index];
 		_group_bank = MUX_ALL;
