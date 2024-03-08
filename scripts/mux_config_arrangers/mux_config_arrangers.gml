@@ -14,48 +14,39 @@ function mux_config_arrangers() {
 	//then go to mux_config_cues
 
 	mux_arranger_set_batch([
-		new MuxArranger(aud_bgm_test1, 160, { n: 1 })
+		new MuxArranger(aud_bgm_test1, 150, { n: 1 })
 			.set_bpm(143)
 			.set_time_signature(4, 4)
 			.jump_bars(1)
 			.set_marker("to start", new MuxJumpMarker(
 				function(params) { return true; },
-				"loop start"))
+				"loop start 1"))
 			.jump_bars(16)
-			.set_marker("loop start", new MuxConditionMarker(
-				function(params) { return params.n == 1; },
+			.set_marker_repeat("loop start", 1, MUX_MARKER_UNIT.BARS, 4, new MuxEventMarker(
 				function(sound, offset, params) {
-					show_debug_message("Task failed successfully");//audio_play_sound(aud_sfx_test1, 5, false);
+					audio_sound_set_track_position(audio_play_sound(aud_sfx_test1, 5, false), 0.01);
 				}))
-			.jump_bars(1)
-			.set_marker("bar 2", new MuxConditionMarker(
-				function(params) { return params.n == 2; },
-				function(sound, offset, params) {
-					audio_play_sound(aud_sfx_test1, 5, false);
-				}))
-			.jump_bars(1)
-			.set_marker("bar 3 to start", new MuxJumpMarker(
-				function(params) { return params.n == 1; },
-				"loop start"))
-			.set_marker("bar 3", new MuxConditionMarker(
-				function(params) { return params.n == 3; },
-				function(sound, offset, params) {
-					audio_play_sound(aud_sfx_test1, 5, false);
-				}))
-			.jump_bars(1)
-			.set_marker("bar 4", new MuxConditionMarker(
-				function(params) { return params.n == 4; },
-				function(sound, offset, params) {
-					audio_play_sound(aud_sfx_test1, 5, false);
-				}))
-			.jump_bars(1)
+			.jump_bars(4)
 			.set_marker("loop end", new MuxJumpMarker(
 				function(params) { return params.n != 4; },
-				"loop start"))
+				"loop start 1"))
 			.set_marker("loop break", new MuxJumpMarker(
 				function(params) { return params.n == 4; },
 				"cute"))
 			.jump_bars(30)
 			.set_marker("cute", new MuxMarker())
+			.set_marker_repeat("lol", 2, MUX_MARKER_UNIT.BEATS, 16, new MuxConditionMarker(
+				function(params) { return params.n == 2; },
+				function(sound, offset, params) {
+					show_debug_message("Task failed successfully");
+					audio_sound_set_track_position(audio_play_sound(aud_sfx_test1, 5, false), 0.01);
+				}))
+			.jump_beats(2 * 16)
+			.set_marker_repeat("lmao", 1, MUX_MARKER_UNIT.BEATS, 32, new MuxConditionMarker(
+				function(params) { return params.n == 2; },
+				function(sound, offset, params) {
+					show_debug_message("Task failed successfully");
+					audio_sound_set_track_position(audio_play_sound(aud_sfx_test1, 5, false), 0.01);
+				}))
 	]);
 }
