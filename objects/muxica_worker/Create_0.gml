@@ -4,12 +4,12 @@ mux_sounds = {
 	"all": ds_list_create()
 };
 
-mux_sounds_stop_pending = ds_list_create();
-mux_sounds_fadein_pending = ds_queue_create();
+//Pending tasks
+pending_sounds_stop = ds_list_create(); //Sounds need more than being on this list to be deleted
+pending_sounds_crossfade = ds_queue_create();
+pending_instances_notify = ds_queue_create();
 
-mux_pending_instances = ds_queue_create();
-
-//Probably unnecessary, but I did what I had to do
+//Crossfade pseudo-alarms that can run in parallel up to a user-defined amount
 timer_crossfade = array_create(MUX_CROSSFADE_PARALLEL_LIMIT, -1);
 timer_crossfade_n = 0;
 

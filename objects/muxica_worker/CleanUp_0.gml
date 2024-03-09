@@ -4,9 +4,9 @@ ds_list_destroy(mux_sounds[$ "all"]);
 
 struct_foreach(MUX_ARRANGERS, function(_, arranger) { arranger.free() });
 
-ds_list_destroy(mux_sounds_stop_pending);
-ds_queue_destroy(mux_sounds_fadein_pending);
-ds_queue_destroy(mux_pending_instances);
+ds_list_destroy(pending_sounds_stop);
+ds_queue_destroy(pending_sounds_crossfade);
+ds_queue_destroy(pending_instances_notify);
 audio_group_stop_all(BGM);
 audio_group_stop_all(SFX);
 audio_group_unload(BGM);

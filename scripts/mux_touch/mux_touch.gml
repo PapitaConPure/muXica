@@ -17,5 +17,5 @@ function __mux_connect_touch(id, n) {
 		return;
 	}
 	
-	ds_queue_enqueue(MUX_HANDLER.mux_pending_instances, { id, n });
+	ds_queue_enqueue(MUX_HANDLER.pending_instances_notify, { id, n });
 }

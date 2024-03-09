@@ -8,8 +8,8 @@ if _bgm_ready and _sfx_ready and !audio_loaded {
 	audio_loaded = true;
 	
 	var _request;
-	while not ds_queue_empty(mux_pending_instances) {
-		_request = ds_queue_dequeue(mux_pending_instances);
+	while not ds_queue_empty(pending_instances_notify) {
+		_request = ds_queue_dequeue(pending_instances_notify);
 		with _request.id event_user(_request.n);
 	}
 }

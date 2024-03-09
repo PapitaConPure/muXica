@@ -5,8 +5,8 @@
 #macro MUX_BGM       MUX_HANDLER.mux_sounds.BGM
 #macro MUX_SFX       MUX_HANDLER.mux_sounds.SFX
 #macro MUX_ALL       MUX_HANDLER.mux_sounds[$ "all"]
-#macro MUX_P_STOP    MUX_HANDLER.mux_sounds_stop_pending
-#macro MUX_P_FADE    MUX_HANDLER.mux_sounds_fadein_pending
+#macro MUX_P_STOP    MUX_HANDLER.pending_sounds_stop
+#macro MUX_P_FADE    MUX_HANDLER.pending_sounds_crossfade
 
 #macro MUX_ARRANGERS mux_scope_get().arrangers
 #macro MUX_CUES mux_scope_get().cues
