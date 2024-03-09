@@ -7,10 +7,8 @@ function mux_persist() {
 		with MUX_HANDLER event_user(1);
 	} else if not instance_exists(muxica_worker) {
 		instance_activate_object(muxica_worker);
-		if not instance_exists(muxica_worker)
-			MUX_HANDLER = instance_create_depth(0, 0, MUX_HANDLER_DEPTH, muxica_worker);
-		else
-			MUX_HANDLER = instance_find(muxica_worker, 0);
+		MUX_CHECK_WORKER_KILLED_EX;
+		MUX_HANDLER = instance_find(muxica_worker, 0);
 	}
 	
     MUX_HANDLER.persistent = true;    
