@@ -117,7 +117,7 @@ function MuxLoopMarker(target): MuxMarker() constructor {
 	self.basic = false;
 	
 	///@desc Triggers this marker's event
-	///@param {Id.MuxSound} sound The sound that triggered this marker
+	///@param {Struct.MuxSound} sound The sound that triggered this marker
 	///@param {Real} offset The offset between the marker's position and the sound instance's track position, in seconds
 	///@param {Struct} params The parameters to consider in this cue event
 	trigger_event = function(sound, offset, params) {

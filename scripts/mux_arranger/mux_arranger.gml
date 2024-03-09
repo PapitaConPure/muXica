@@ -234,3 +234,11 @@ function MuxArranger(index, start_delay, start_params) constructor {
 		ds_list_destroy(self.instances);
 	}
 }
+
+/**
+ * @param {String} name
+ * @param {Struct.MuxArranger} arranger
+ */
+function mux_arranger_update_all(name, arranger) {
+	arranger.update();
+}

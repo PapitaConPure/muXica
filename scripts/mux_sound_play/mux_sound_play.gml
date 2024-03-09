@@ -100,9 +100,8 @@ function mux_sound_stop(sound, time) {
  * @param {Id.Sound|Undefined} _out
  * @param {Id.Sound} _in
  * @param {Real} _time
- * @param {Real} [_delay]=1 delay (in frames) to wait before concluding the transition
  */
-function __mux_sound_crossfade_delayed(_out, _in, _time, _delay = 1) {
+function __mux_sound_crossfade_delayed(_out, _in, _time) {
 	if MUX_SHOW_LOG_INFO {
 		if is_undefined(_out)
 			show_debug_message($"\{ _in: {_in} ({audio_get_name(_in)}), _out: any, _time: {_time}ms \}");
@@ -110,8 +109,12 @@ function __mux_sound_crossfade_delayed(_out, _in, _time, _delay = 1) {
 			show_debug_message($"\{ _in: {_in} ({audio_get_name(_in)}), _out: {_out} ({audio_get_name(_out)}), _time: {_time}ms \}");
 	}
 	
-	audio_sound_gain(_in, 0.5, 0);
-	MUX_HANDLER.timer_crossfade[MUX_HANDLER.timer_crossfade_n++] = _delay;
+	//At first, the inbound sound must remain silent
+	audio_sound_gain(_in, 0, 0);
+	
+	//Set up next crossfade event
+	var _handler = MUX_HANDLER;
+	_handler.timer_crossfade[_handler.timer_crossfade_n++] = MUX_CROSSFADE_DELAY;
 	ds_queue_enqueue(MUX_P_FADE, { in: _in, out: _out, time: _time });
 }
 

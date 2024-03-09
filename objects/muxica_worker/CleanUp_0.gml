@@ -2,7 +2,7 @@ ds_list_destroy(mux_sounds.BGM);
 ds_list_destroy(mux_sounds.SFX);
 ds_list_destroy(mux_sounds[$ "all"]);
 
-struct_foreach(mux_arrangers, function(_, arranger) { arranger.free() });
+struct_foreach(MUX_ARRANGERS, function(_, arranger) { arranger.free() });
 
 ds_list_destroy(mux_sounds_stop_pending);
 ds_queue_destroy(mux_sounds_fadein_pending);

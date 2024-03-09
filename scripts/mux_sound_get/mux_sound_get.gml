@@ -60,9 +60,9 @@ function mux_sound_get_inst_bank_index(group, inst) {
 	return _ret;
 }
 
-///@desc Checks if any sound under the audio index is currently playing and not stopping
-///@param {Constant.All|Asset.GMSound|String} index
-///@returns {Bool}
+///@desc Checks if any sound of a certain sound asset or tag space is currently playing and not stopping.
+///      If the index is the constant "all", every muXica sound will be checked against. This is the default
+///@param {Constant.All|Asset.GMSound|String} index The umbrella of sounds to check for
 function mux_sound_any_is_playing(index = all) {
 	MUX_CHECK_UNINITIALISED_EX_OR_FALSE
 	
@@ -74,9 +74,9 @@ function mux_sound_any_is_playing(index = all) {
 	var _list_size;
 	
 	if is_string(index) {
-		MUX_EX_IF not variable_struct_exists(global.mux_tags, index) then __mux_ex($"Audio tag \"{index}\" doesn't exist");
+		MUX_EX_IF not variable_struct_exists(MUX_TAGS, index) then __mux_ex($"Audio tag \"{index}\" doesn't exist");
 		
-		var _tags_array = global.mux_tags[$ index];
+		var _tags_array = MUX_TAGS[$ index];
 		_group_bank = MUX_ALL;
 		_list_size = ds_list_size(_group_bank);
 		
@@ -103,19 +103,20 @@ function mux_sound_any_is_playing(index = all) {
 	return _found;
 }
 
-///@desc Checks if the sound instance is currently playing and not stopping
-///@param {Id.Sound} index
-function mux_sound_is_playing(index) {
+///@desc Checks if the specified sound instance is currently playing and not stopping
+///      To check for all sound instances, an entire sound index or a tag, use mux_sound_any_is_playing
+///@param {Id.Sound} inst The sound instance to check for
+function mux_sound_is_playing(inst) {
 	MUX_CHECK_INVALID_EX
 	
-	var _group_idx =  audio_group_name(audio_sound_get_audio_group(index));
+	var _group_idx =  audio_group_name(audio_sound_get_audio_group(inst));
 	var _group_bank = MUX_GROUPS[$ _group_idx];
 	var _list_size = ds_list_size(_group_bank);
 	var _i = 0; 
 	var _found = false;
 	
 	while(_i < _list_size and not _found) {
-		if _group_bank[| _i].inst == index then _found = true;
+		if _group_bank[| _i].inst == inst then _found = true;
 		_i++;
 	}
 	
