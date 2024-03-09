@@ -3,13 +3,12 @@
  * @param {String} tag The new tag's name
  */
 function mux_tag_create(tag) {
-	MUX_EX_IF(not is_string(tag) or not string_length(tag))
-		__mux_ex("Invalid tag name", "Tag name must be a valid string");
+	MUX_CHECK_STRING_INVALID_EX;
 		
 	var _key = __mux_string_to_struct_key(tag);
 	
 	MUX_WARN_IF(variable_struct_exists(MUX_TAGS, _key))
-		__mux_warn($"The tag \"{tag}\" already exists");
+		__mux_warn($"The tag \"{tag}\" already exists")
 		
 	MUX_TAGS[$ _key] = [];
 }
@@ -20,8 +19,7 @@ function mux_tag_create(tag) {
  * @param {Asset.GMSound} sound The sound asset to add to this tag space
  */
 function mux_tag_add(tag, sound) {
-	MUX_EX_IF(not is_string(tag) or not string_length(tag))
-		__mux_ex("Invalid tag name", "Tag name must be a valid string");
+	MUX_CHECK_STRING_INVALID_EX;
 	
 	var _key = __mux_string_to_struct_key(tag);
 	

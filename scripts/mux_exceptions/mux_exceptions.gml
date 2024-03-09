@@ -28,9 +28,12 @@ function __mux_ex(message, long_message = "No additional information was provide
 
 #macro MUX_EX_UNINITIALISED "Audio system wasn't initialised yet", "muXica worker didn't boot up on time to respond to the resquest"
 #macro MUX_CHECK_UNINITIALISED ((MUX_HANDLER < 0) or not instance_exists(MUX_HANDLER))
-#macro MUX_CHECK_UNINITIALISED_EX if MUX_CHECK_UNINITIALISED then __mux_ex(MUX_EX_UNINITIALISED)
+#macro MUX_CHECK_UNINITIALISED_EX MUX_EX_IF MUX_CHECK_UNINITIALISED then __mux_ex(MUX_EX_UNINITIALISED)
 #macro MUX_CHECK_UNINITIALISED_EX_OR_FALSE if MUX_CHECK_UNINITIALISED { if MUX_EX_ENABLE then __mux_ex(MUX_EX_UNINITIALISED) else return false; }
 
 #macro MUX_EX_INVALID "Submitted audio was invalid", "Identifier is less than zero or isn't a valid audio asset or instance"
 #macro MUX_CHECK_INVALID (MUX_EX_ENABLE and (index < 0) or not audio_exists(index))
 #macro MUX_CHECK_INVALID_EX if MUX_CHECK_INVALID then __mux_ex(MUX_EX_INVALID)
+
+#macro MUX_CHECK_STRING_INVALID_EX MUX_EX_IF(not is_string(tag) or not string_length(tag))\
+	__mux_ex("Invalid tag name", "Tag name must be a valid string")
