@@ -8,7 +8,7 @@
 /// @param {Real} [pitch] New sound pitch (1 by default)
 /// @param {Real} [listener_mask] New sound listener bit-mask. Unused on the HTML5 target
 /// @returns {Id.Sound}
-function mux_sound_play(index, priority, loop = false, gain = 1, offset = 0, pitch = 1, listener_mask = 0) {
+function mux_sound_play(index, priority, loop = false, gain = 1, offset = 0, pitch = 1, listener_mask = undefined) {
 	MUX_CHECK_UNINITIALISED_EX;
 	
 	var _audio_group = audio_sound_get_audio_group(index);
@@ -38,7 +38,7 @@ function mux_sound_play(index, priority, loop = false, gain = 1, offset = 0, pit
  * @param {Real} [listener_mask] New sound listener bit-mask. Unused on the HTML5 target
  * @returns {Id.Sound}
  */
-function mux_sound_crossfade(time, from, to, priority, loop = false, synced = false, gain = 1, offset = 0, pitch = 1, listener_mask = 0) {
+function mux_sound_crossfade(time, from, to, priority, loop = false, synced = false, gain = 1, offset = 0, pitch = 1, listener_mask = undefined) {
 	MUX_CHECK_UNINITIALISED_EX;
 	
 	var _group_key = audio_group_name(audio_sound_get_audio_group(to));
