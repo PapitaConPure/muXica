@@ -32,6 +32,8 @@ I'll eventually explain this better than in that one txt
 * Support for GM audio emitters and effects
 * Runtime effect knobs
 * Maybe a Composition abstraction for when a certain music or sound effect is imported as multiple sound assets
+* Audio cue generation, bpm getter, time sig. change tracker, and offset solver standalone tools
+* A different configuration interface for making MuxArrangers so that there isn't so much indentation and confusing function chaining going on
 
 <br><hr>
 
