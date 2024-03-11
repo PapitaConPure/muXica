@@ -1,19 +1,23 @@
 <h1 align="center" style="font-size: 64px"> muXica </h1>
-<p align="center"> Flexible and granular sound manager for GameMaker: Studio 2 by <a href="https://github.com/PapitaConPure">Papita con Puré</a></p>
-
-> [!WARNING]
-> Not really. This is a work in progress.
+<p align="center"> Crossfades and dynamic audio for GMS2, by <a href="https://github.com/PapitaConPure">Papita con Puré</a></p>
 
 > [!NOTE]
-> The stylized X symbolizes a crossfade effect, which is the very reason why I decided to start working on this
+> This is a work in progress and will not be in active develop at all times. I'm basically making this just for my game and making this repo public because that sounds fun
 
-<br><br><br>
+<br><hr>
 
+## Index
+* [Installation](#installation)
+* [Getting Started](#getting-started)
+* [Features](#features)
+* [To Do](#to-do)
+  
+<hr><br>
 
 ## Installation
 I'll eventually share a .yymps here, I think
 
-## Setup
+## Getting Started
 I'll eventually explain this better than in that one txt
 
 ## Features
@@ -28,3 +32,7 @@ I'll eventually explain this better than in that one txt
 * Support for GM audio emitters and effects
 * Runtime effect knobs
 * Maybe a Composition abstraction for when a certain music or sound effect is imported as multiple sound assets
+
+<br><hr>
+
+> The stylized X symbolizes a crossfade effect, which is the very reason why I decided to start working on this</p>
