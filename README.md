@@ -1,5 +1,5 @@
 <h1 align="center" style="font-size: 64px"> muXica </h1>
-<p align="center"> Flexible and granular sound manager for GameMaker: Studio 2 by <a href="https://github.com/PapitaConPure">Papita con Puré</a></p>
+<p align="center"> Crossfades and dynamic audio for GMS2, by <a href="https://github.com/PapitaConPure">Papita con Puré</a></p>
 
 > [!WARNING]
 > Not really. This is a work in progress.
