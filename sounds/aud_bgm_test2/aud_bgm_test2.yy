@@ -1,0 +1,25 @@
+{
+  "$GMSound":"",
+  "%Name":"aud_bgm_test2",
+  "audioGroupId":{
+    "name":"BGM",
+    "path":"audiogroups/BGM",
+  },
+  "bitDepth":1,
+  "bitRate":256,
+  "compression":0,
+  "conversionMode":0,
+  "duration":521.3028,
+  "name":"aud_bgm_test2",
+  "parent":{
+    "name":"Sounds",
+    "path":"folders/Sounds.yy",
+  },
+  "preload":false,
+  "resourceType":"GMSound",
+  "resourceVersion":"2.0",
+  "sampleRate":44100,
+  "soundFile":"aud_bgm_test2.mp3",
+  "type":1,
+  "volume":1.0,
+}

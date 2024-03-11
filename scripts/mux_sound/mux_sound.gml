@@ -14,7 +14,8 @@ function MuxSound(index, inst) constructor {
 	self.group = audio_sound_get_audio_group(index);
 	self.length = audio_sound_length(index);
 	
-	self.__trap_pos = true;
+	self.__trap_pos = false;
+	self.__reset_ppos = -1;
 	
 	//Automatically attach to handler's corresponding MuxArranger if it exists (for cue event handling magic)
 	var _key = audio_get_name(index);
@@ -22,11 +23,31 @@ function MuxSound(index, inst) constructor {
 		ds_list_add(MUX_ARRANGERS[$ _key].instances, self);
 	
 	self.update = function() {
-		self.ppos = self.pos;
+		if self.__reset_ppos < 0 {
+			self.ppos = self.pos;
+		} else {
+			self.ppos = self.__reset_ppos;
+			self.__reset_ppos = -1;
+		}
 		
 		var _new_pos = audio_sound_get_track_position(self.inst);
-		if _new_pos == 0 and self.__trap_pos then return;
+		if _new_pos == 0 and self.__trap_pos {
+			//Some weird error has occurred. Approximate as best as possible
+			var _leeway = 1.8;
+			var _half_range = delta_time * 0.000001 * _leeway;
+			var _diff = self.pos - self.ppos;
+			_diff = clamp(_diff, -_half_range, _half_range);
+			self.pos += _diff;
+			self.__trap_pos = false;
+			return;
+		}
 		self.pos = _new_pos;
-		self.__trap_pos = false;
+	}
+	
+	///@param {Real} position The new track position for this sound instance, in seconds
+	self.set_track_position = function(position) {
+		audio_sound_set_track_position(self.inst, position)
+		self.ppos = self.pos;
+		self.pos = position;
 	}
 }

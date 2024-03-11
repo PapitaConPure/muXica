@@ -21,6 +21,7 @@
     {"name":"mux_config_arrangers","order":4,"path":"scripts/mux_config_arrangers/mux_config_arrangers.yy",},
     {"name":"mux_config_debug","order":1,"path":"scripts/mux_config_debug/mux_config_debug.yy",},
     {"name":"mux_config_groups","order":3,"path":"scripts/mux_config_groups/mux_config_groups.yy",},
+    {"name":"mux_config_misc","order":5,"path":"scripts/mux_config_misc/mux_config_misc.yy",},
     {"name":"mux_config_tags","order":2,"path":"scripts/mux_config_tags/mux_config_tags.yy",},
     {"name":"mux_cue_get","order":1,"path":"scripts/mux_cue_get/mux_cue_get.yy",},
     {"name":"mux_cue_set","order":3,"path":"scripts/mux_cue_set/mux_cue_set.yy",},
@@ -34,7 +35,7 @@
     {"name":"mux_sound_set","order":2,"path":"scripts/mux_sound_set/mux_sound_set.yy",},
     {"name":"mux_touch","order":5,"path":"scripts/mux_touch/mux_touch.yy",},
     {"name":"mux_utils","order":3,"path":"scripts/mux_utils/mux_utils.yy",},
-    {"name":"mux_config_misc","order":5,"path":"scripts/mux_config_misc/mux_config_misc.yy",},
     {"name":"aud_sfx_test1","order":1,"path":"sounds/aud_sfx_test1/aud_sfx_test1.yy",},
+    {"name":"aud_bgm_test2","order":2,"path":"sounds/aud_bgm_test2/aud_bgm_test2.yy",},
   ],
 }

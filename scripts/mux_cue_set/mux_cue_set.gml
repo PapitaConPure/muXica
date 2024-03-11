@@ -34,7 +34,6 @@ function MuxCueCollection() constructor {
 	///@param {String} cue_name The unique identifier of the cue
 	///@param {Real} cue_position The position of the cue
 	///@param {Bool} relative Whether the specified position is absolute (false) or relative to the previous cue (true)
-	///@returns {Struct.MuxCueCollection}
 	add = function(cue_name, cue_position, relative = false) {
 		var _key = __mux_string_to_struct_key(cue_name);
 		self.cues[$ _key] = real(relative) * self.cursor + cue_position;

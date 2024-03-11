@@ -13,4 +13,4 @@ audio_group_unload(BGM);
 audio_group_unload(SFX);
 audio_loaded = false;
 
-if MUX_SHOW_LOG_INFO then show_debug_message("- - Se liberaron los recursos del sistema de audio - -");
+MUX_LOG_INFO("- - muXica worker has been terminated. All associated resources were freed up - -");

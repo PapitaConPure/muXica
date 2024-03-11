@@ -4,8 +4,10 @@
 _size = ds_list_size(_group);\
 for(_i = _size - 1; _i >= 0; _i--) {\
 	_snd = _group[| _i].inst;\
-	if MUX_SOUND_IS_NO_LONGER_VALID\
+	if MUX_SOUND_IS_NO_LONGER_VALID {\
+		MUX_LOG_STEP($"MuxSound instance [{audio_get_name(_group[| _i].index)}/{_i}] was discarded from a bank because the associated sound is no longer valid");\
 		ds_list_delete(_group, _i);\
+	}\
 }
 
 var _i, _group, _size, _snd;
@@ -25,16 +27,14 @@ _group = MUX_P_STOP;
 _size = ds_list_size(_group);
 for(_i = _size - 1; _i >= 0; _i--) {
 	if not audio_exists(_group[| _i]) {
-		if MUX_SHOW_LOG_STEP
-			show_debug_message($"Se descartó el índice de eliminación {_i} porque el sonido registrado no existe");
+		MUX_LOG_STEP($"Sound stop index {_i} was discarded because the associated sound no longer exists");
 		ds_list_delete(_group, _i);
 		continue;
 	}
 	
 	_snd = _group[| _i];
 	if audio_sound_get_gain(_snd) == 0 {
-		if MUX_SHOW_LOG_STEP
-			show_debug_message($"Se cumplió la petición de eliminación de índice {_i}: {_snd} ({audio_get_name(_snd)})");
+		MUX_LOG_STEP($"Sound stop request {_i} addressed: sound instance {_snd} ({audio_get_name(_snd)}) will be stopped now");
 		audio_stop_sound(_snd);
 		ds_list_delete(_group, _i);
 	}

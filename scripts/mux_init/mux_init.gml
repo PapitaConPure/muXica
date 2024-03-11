@@ -13,3 +13,6 @@
 #macro MUX_TAGS mux_scope_get().tags
 
 time_source_start(mux_scope_get().ts_boot);
+
+#macro MUX_LOG_INFO if MUX_SHOW_LOG_INFO then show_debug_message
+#macro MUX_LOG_STEP if MUX_SHOW_LOG_STEP then show_debug_message

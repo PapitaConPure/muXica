@@ -8,7 +8,10 @@
 function mux_sound_play(index, priority, loop = false, gain = 1) {
 	MUX_CHECK_UNINITIALISED_EX;
 	
-	var _group_key = audio_group_name(audio_sound_get_audio_group(index));
+	var _audio_group = audio_sound_get_audio_group(index);
+	if MUX_EX_ENABLE and _audio_group == audiogroup_default
+		__mux_ex("Tried to play a sound from an unregistered audio group", "The requested sound to play wasn't from an audio group that muXica registered beforehand");
+	var _group_key = audio_group_name(_audio_group);
 	var _group_bank = MUX_GROUPS[$ _group_key];
 	
 	var _id = audio_play_sound(index, priority, loop);

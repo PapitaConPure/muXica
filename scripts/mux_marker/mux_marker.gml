@@ -14,7 +14,7 @@ function MuxMarker() constructor {
 	trigger_event = function(sound, offset, params) {}
 	
 	///@desc Links this marker to a parent MuxArranger and syncs the marker's time to it
-	///@param {Struct.MuxArranger} handler The MuxArranger that will act as a handler for this marker
+	///@param {Struct.MuxArranger|Id.Instance} handler The MuxArranger that will act as a handler for this marker
 	link = function(handler) {
 		self.handler = handler;
 		self.cue_point = handler.cue_time;
@@ -25,6 +25,10 @@ function MuxMarker() constructor {
 		var _copy = new MuxMarker();
 		_copy.cue_point = self.cue_point;
 		return _copy;
+	}
+	
+	follow_cue = function(sound, cue_name, offset, perform_between) {
+		self.handler.follow_cue(sound, self, offset, perform_between, __mux_string_to_struct_key(cue_name));
 	}
 }
 
@@ -42,7 +46,7 @@ function MuxEventMarker(consecuence): MuxMarker() constructor {
 	///@param {Real} offset The offset between the marker's position and the sound instance's track position, in seconds
 	///@param {Struct} params The parameters to consider in this cue event
 	trigger_event = function(sound, offset, params) {
-		self.consecuence(sound, offset, params);
+		self.consecuence(self, sound, offset, params);
 	}
 	
 	///@desc Returns an unlinked copy of this MuxMarker
@@ -56,7 +60,7 @@ function MuxEventMarker(consecuence): MuxMarker() constructor {
 /**
  * @desc Represents a event condition marker for a MuxArranger
  * @param {Function} condition (params) The condition to fulfill in order to trigger the consecuence
- * @param {Function} consecuence (sound, offset, params) The consecuence to the to fulfillment of the condition
+ * @param {Function} consecuence (marker, sound, offset, params) The consecuence to the to fulfillment of the condition
  * @constructor
  */
 function MuxConditionMarker(condition, consecuence): MuxMarker() constructor {
@@ -69,7 +73,7 @@ function MuxConditionMarker(condition, consecuence): MuxMarker() constructor {
 	///@param {Real} offset The offset between the marker's position and the sound instance's track position, in seconds
 	///@param {Struct} params The parameters to consider in this cue event
 	trigger_event = function(sound, offset, params) {
-		if self.condition(params) then self.consecuence(sound, offset, params);
+		if self.condition(params) then self.consecuence(self, sound, offset, params);
 	}
 	
 	///@desc Returns an unlinked copy of this MuxMarker
@@ -86,17 +90,18 @@ function MuxConditionMarker(condition, consecuence): MuxMarker() constructor {
  * @param {String} target The MuxMarker to jump to if the condition is fulfilled
  * @constructor
  */
-function MuxJumpMarker(condition, target): MuxMarker() constructor {
+function MuxJumpMarker(condition, target, perform_between = false): MuxMarker() constructor {
 	self.target = __mux_string_to_struct_key(target);
 	self.condition = condition;
 	self.basic = false;
+	self.perform_between = false;
 	
 	///@desc Triggers this marker's event
 	///@param {Struct.MuxSound} sound The sound that triggered this marker
 	///@param {Real} offset The offset between the marker's position and the sound instance's track position, in seconds
 	///@param {Struct} params The parameters to consider in this cue event
 	trigger_event = function(sound, offset, params) {
-		if self.condition(params) then self.handler.follow_cue(sound, self, offset);
+		if self.condition(params) then self.handler.follow_cue(sound, self, offset, self.perform_between);
 	}
 	
 	///@desc Returns an unlinked copy of this MuxMarker
@@ -121,7 +126,7 @@ function MuxLoopMarker(target): MuxMarker() constructor {
 	///@param {Real} offset The offset between the marker's position and the sound instance's track position, in seconds
 	///@param {Struct} params The parameters to consider in this cue event
 	trigger_event = function(sound, offset, params) {
-		self.handler.follow_cue(sound, self, offset);
+		self.handler.follow_cue(sound, self, offset, false);
 	}
 	
 	///@desc Returns an unlinked copy of this MuxMarker
