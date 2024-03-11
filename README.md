@@ -2,7 +2,7 @@
 <p align="center"> Crossfades and dynamic audio for GMS2, by <a href="https://github.com/PapitaConPure">Papita con Puré</a></p>
 
 > [!NOTE]
-> This is a work in progress and will not be in active develop at all times. I'm basically making this just for my game and making this repo public because that sounds fun
+> This is a work in progress and will not always be in active development. I'm basically making this just for my game and making this repo public because that sounds fun
 
 <br><hr>
 
@@ -35,4 +35,6 @@ I'll eventually explain this better than in that one txt
 
 <br><hr>
 
-> The stylized X symbolizes a crossfade effect, which is the very reason why I decided to start working on this</p>
+> The stylized X symbolizes a crossfade effect, which is the very reason why I decided to start working on this.
+
+> All the music and sound effects in the test project are made by me (Papita con Puré). If you'd like to, you can check my [YouTube Channel](https://www.youtube.com/@PapitaPure?sub_confirmation=1)
