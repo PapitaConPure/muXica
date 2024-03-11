@@ -2,10 +2,13 @@
 
 /// @param {Asset.GMSound} sound_index New sound index
 /// @param {Real} priority New sound priority
-/// @param {Bool} [loop] New sound loop mode
-/// @param {Real} [gain] New sound gain
+/// @param {Bool} [loop] New sound loop mode (false by default)
+/// @param {Real} [gain] New sound gain (1 by default)
+/// @param {Real} [offset] New sound offset (in seconds, defaults to 0)
+/// @param {Real} [pitch] New sound pitch (1 by default)
+/// @param {Real} [listener_mask] New sound listener bit-mask. Unused on the HTML5 target
 /// @returns {Id.Sound}
-function mux_sound_play(index, priority, loop = false, gain = 1) {
+function mux_sound_play(index, priority, loop = false, gain = 1, offset = 0, pitch = 1, listener_mask = 0) {
 	MUX_CHECK_UNINITIALISED_EX;
 	
 	var _audio_group = audio_sound_get_audio_group(index);
@@ -14,8 +17,7 @@ function mux_sound_play(index, priority, loop = false, gain = 1) {
 	var _group_key = audio_group_name(_audio_group);
 	var _group_bank = MUX_GROUPS[$ _group_key];
 	
-	var _id = audio_play_sound(index, priority, loop);
-	audio_sound_gain(_id, gain, 0);
+	var _id = audio_play_sound(index, priority, loop, gain, offset, pitch, listener_mask);
 	var _sound = new MuxSound(index, _id);
 	ds_list_add(_group_bank, _sound);
 	ds_list_add(MUX_ALL, _sound);
@@ -28,11 +30,15 @@ function mux_sound_play(index, priority, loop = false, gain = 1) {
  * @param {Id.Sound|Constant.All} from Origin existing sound id
  * @param {Asset.GMSound} to Destination sound index
  * @param {Real} priority New sound priority
- * @param {Bool} [loop] New sound loop mode
- * @param {Bool} [synced] New sound sync mode
+ * @param {Bool} [loop] New sound loop mode (false by default)
+ * @param {Bool} [synced] New sound sync mode (false by default)
+ * @param {Real} [gain] New sound gain (1 by default)
+ * @param {Real} [offset] New sound offset (in seconds, defaults to 0)
+ * @param {Real} [pitch] New sound pitch (1 by default)
+ * @param {Real} [listener_mask] New sound listener bit-mask. Unused on the HTML5 target
  * @returns {Id.Sound}
  */
-function mux_sound_crossfade(time, from, to, priority, loop = false, synced = false) {
+function mux_sound_crossfade(time, from, to, priority, loop = false, synced = false, gain = 1, offset = 0, pitch = 1, listener_mask = 0) {
 	MUX_CHECK_UNINITIALISED_EX;
 	
 	var _group_key = audio_group_name(audio_sound_get_audio_group(to));
@@ -41,8 +47,8 @@ function mux_sound_crossfade(time, from, to, priority, loop = false, synced = fa
 	
 	if from == all {
 		__mux_sound_fade_out_group(time, _group_bank, _all_bank);
-		var _id = audio_play_sound(to, priority, loop);
-		__mux_sound_crossfade_delayed(undefined, _id, time);
+		var _id = audio_play_sound(to, priority, loop, 0, offset, pitch, listener_mask);
+		__mux_sound_crossfade_delayed(undefined, _id, gain, time);
 		var _sound = new MuxSound(to, _id);
 		ds_list_add(_group_bank, _sound);
 		ds_list_add(_all_bank,   _sound);
@@ -51,11 +57,11 @@ function mux_sound_crossfade(time, from, to, priority, loop = false, synced = fa
 	
 	var _old_group_idx = mux_sound_get_inst_bank_index(_group_bank, from);
 	var _old_all_idx = mux_sound_get_inst_bank_index(_all_bank, from);
-	var _id = audio_play_sound(to, priority, loop);
-	__mux_sound_crossfade_delayed(from, _id, time);
+	var _id = audio_play_sound(to, priority, loop, 0, offset, pitch, listener_mask);
+	__mux_sound_crossfade_delayed(from, _id, gain, time);
 	
 	var _source_position = audio_sound_get_track_position(from);
-	var _relative_position = wrap(_source_position, 0, audio_sound_length(to), true);
+	var _relative_position = __mux_wrap(_source_position, 0, audio_sound_length(to), true);
 	if synced then audio_sound_set_track_position(_id, _relative_position);
 	
 	var _sound = new MuxSound(to, _id);
@@ -104,21 +110,13 @@ function mux_sound_stop(sound, time) {
  * @param {Id.Sound} _in
  * @param {Real} _time
  */
-function __mux_sound_crossfade_delayed(_out, _in, _time) {
-	if MUX_SHOW_LOG_INFO {
-		if is_undefined(_out)
-			show_debug_message($"\{ _in: {_in} ({audio_get_name(_in)}), _out: any, _time: {_time}ms \}");
-		else 
-			show_debug_message($"\{ _in: {_in} ({audio_get_name(_in)}), _out: {_out} ({audio_get_name(_out)}), _time: {_time}ms \}");
-	}
-	
-	//At first, the inbound sound must remain silent
-	audio_sound_gain(_in, 0, 0);
+function __mux_sound_crossfade_delayed(_out, _in, _gain, _time) {
+	MUX_LOG_INFO($"Crossfade [{is_undefined(_out) ? "ANY" : $"{audio_get_name(_in)}/{_in}"}]->[{audio_get_name(_in)}/{_in}] has been requested and commence in {_time} frames");
 	
 	//Set up next crossfade event
 	var _handler = MUX_HANDLER;
 	_handler.timer_crossfade[_handler.timer_crossfade_n++] = MUX_CROSSFADE_DELAY;
-	ds_queue_enqueue(MUX_P_FADE, { in: _in, out: _out, time: _time });
+	ds_queue_enqueue(MUX_P_FADE, { in: _in, out: _out, gain: _gain, time: _time });
 }
 
 /**
