@@ -2,8 +2,8 @@
 <p align="center"> Crossfades and dynamic audio for GMS2, by <a href="https://github.com/PapitaConPure">Papita con Puré</a></p>
 
 > [!NOTE]
-> This is a work in progress.
-> 
+> This is a work in progress and will not be in active develop at all times. I'm basically making this just for my game and making this repo public because that sounds fun
+
 <br><hr>
 
 ## Index
