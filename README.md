@@ -28,6 +28,7 @@ I'll eventually explain this better than in that one txt
 * Synced or unsynced crossfades
 
 ## To Do
+* Make the performance decent
 * More audio group flexibility other than obligatory BGM+SFX
 * Support for GM audio emitters and effects
 * Runtime effect knobs

@@ -1,6 +1,9 @@
 {
   "FolderOrderSettings":[
     {"name":"DEMO","order":7,"path":"folders/DEMO.yy",},
+    {"name":"Rooms","order":1,"path":"folders/DEMO/Rooms.yy",},
+    {"name":"Sounds","order":3,"path":"folders/DEMO/Sounds.yy",},
+    {"name":"Sprites","order":7,"path":"folders/DEMO/Sprites.yy",},
     {"name":"muXica","order":6,"path":"folders/muXica.yy",},
     {"name":"0. Config","order":3,"path":"folders/muXica/0. Config.yy",},
     {"name":"1. System","order":4,"path":"folders/muXica/1. System.yy",},
@@ -9,9 +12,6 @@
     {"name":"3.a. Groups management","order":6,"path":"folders/muXica/3.a. Groups management.yy",},
     {"name":"3.b. Cues and position","order":7,"path":"folders/muXica/3.b. Cues and position.yy",},
     {"name":"3.c. Sound management","order":8,"path":"folders/muXica/3.c. Sound management.yy",},
-    {"name":"Rooms","order":1,"path":"folders/DEMO/Rooms.yy",},
-    {"name":"Sounds","order":3,"path":"folders/DEMO/Sounds.yy",},
-    {"name":"Sprites","order":7,"path":"folders/DEMO/Sprites.yy",},
   ],
   "ResourceOrderSettings":[
     {"name":"muxica_readme","order":6,"path":"notes/muxica_readme/muxica_readme.yy",},

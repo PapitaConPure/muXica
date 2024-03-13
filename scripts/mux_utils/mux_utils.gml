@@ -30,15 +30,3 @@ function __mux_wrap(value, vmin, vmax, max_exclusive = false) {
 	if value > vmax or (max_exclusive and value == vmax) then return vmin + value % (vmax - vmin);
 	return value;
 }
-
-/**
- * @desc Returns a value that waves between "a" and "b" over the specified duration in seconds
- * @param {Real} a First extreme
- * @param {Real} b Second extreme
- * @param {Real} [duration]=1 Oscillation duration
- * @param {Real} [offset]=0 Wave offset, in a full-cycle percentage from 0.0 to 1.0 (can extrapolate)
- */
-function wave(a, b, duration = 1, offset = 0) {
-	var _half = (b - a) * 0.5;
-	return a + _half + sin((current_time * 0.001 / duration + offset) * pi * 2) * _half;
-}

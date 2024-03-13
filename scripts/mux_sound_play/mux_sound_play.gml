@@ -93,17 +93,18 @@ function mux_sound_stop(sound, time) {
 	
 	var _group_key = audio_group_name(audio_sound_get_audio_group(sound));
 	var _group_bank = MUX_GROUPS[$ _group_key];
-	
-	var _group_idx = ds_list_find_index(_group_bank, sound);
 	var _all_idx = ds_list_find_index(_all_bank, sound);
 	
 	if typeof(sound) == "ref" {
 		__mux_sound_fade_out_index(AUDIO_STARTUP_TIME, sound, _group_bank, _all_bank);
 	} else {
+		var _group_idx = ds_list_find_index(_group_bank, sound);
+		var _deleted = _all_bank[| _all_idx];
+		
 		audio_sound_gain(sound, 0, time);
 		ds_list_delete(_group_bank, _group_idx);
 		ds_list_delete(_all_bank,   _all_idx);
-		ds_list_add(MUX_P_STOP, sound);
+		ds_list_add(MUX_P_STOP, _deleted);
 	}
 }
 
@@ -134,7 +135,7 @@ function __mux_sound_fade_out_all(time, all_bank) {
 		_found = all_bank[| _i];
 		audio_sound_gain(_found.inst, 0, time);
 		ds_list_delete(all_bank, _i);
-		ds_list_add(MUX_P_STOP, _found.inst);
+		ds_list_add(MUX_P_STOP, _found);
 	}
 	
 	ds_list_clear(MUX_GROUPS.BGM);
@@ -157,7 +158,7 @@ function __mux_sound_fade_out_group(time, group_bank, all_bank) {
 		audio_sound_gain(_found.inst, 0, time);
 		ds_list_delete(group_bank, _found_idx);
 		ds_list_delete(all_bank, _i);
-		ds_list_add(MUX_P_STOP, _found.inst);
+		ds_list_add(MUX_P_STOP, _found);
 	}
 }
 
@@ -179,6 +180,6 @@ function __mux_sound_fade_out_index(time, index, group_bank, all_bank) {
 		audio_sound_gain(_found.inst, 0, time);
 		ds_list_delete(group_bank, _found_idx);
 		ds_list_delete(all_bank, _i);
-		ds_list_add(MUX_P_STOP, _found.inst);
+		ds_list_add(MUX_P_STOP, _found);
 	}
 }

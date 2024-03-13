@@ -8,4 +8,6 @@ mux_tag_create("punch sounds");
 mux_tag_create("funny sounds");
 
 mux_tag_add("normal music", aud_bgm_test1);
+mux_tag_add("normal music", aud_bgm_test2);
+
 mux_tag_add("punch sounds", aud_sfx_test1);

@@ -20,6 +20,64 @@ function mux_sound_get_latest(group_id = all) {
 	return _group_bank[| _idx];
 }
 
+///@param {Asset.GMSound|Id.Sound|Constant.All} sound The sound to search for
+///@returns {Array<Struct.MuxSound>}
+function mux_sound_get_array(sound) {
+	if typeof(sound) == "ref" then return mux_sound_get_array_from_index(sound);
+	
+	if sound == all then return mux_sound_get_array_from_all();
+	
+	return [ mux_sound_get_from_inst(sound) ];
+}
+
+///@param {Asset.GMSound} index
+///@returns {Array<Struct.MuxSound>}
+function mux_sound_get_array_from_index(index) {
+	var _group_idx = audio_group_name(audio_sound_get_audio_group(index));
+	var _group_bank = MUX_GROUPS[$ _group_idx]
+	var _list_size = ds_list_size(_group_bank);
+	
+	//feather disable once GM1045
+	if _list_size == 0 then return [];
+	
+	var _i = 0;
+	var _arr = array_create(_list_size);
+	
+	repeat _list_size {
+		_arr[_i] = _group_bank[| _i];
+		_i++;
+	}
+	
+	//feather disable once GM1045
+	return _arr;
+}
+
+///@returns {Array<Struct.MuxSound>}
+function mux_sound_get_array_from_all() {
+	var _all_group = MUX_ALL;
+	var _list_size = ds_list_size(_all_group);
+	
+	//feather disable once GM1045
+	if _list_size == 0 then return [];
+	
+	var _arr = array_create(_list_size);
+	var _i = 0;
+	
+	repeat _list_size {
+		_arr[_i] = _all_group[| _i];
+		_i++;
+	}
+	
+	//feather disable once GM1045
+	return _arr;
+}
+
+///@param {Id.Sound} inst
+///@returns {Struct.MuxSound}
+function mux_sound_get_from_inst(inst) {
+	
+}
+
 /// @desc If no playing sound is found, returns undefined
 /// @param {Asset.GMSound} index
 /// @returns {Struct}

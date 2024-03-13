@@ -11,14 +11,14 @@ function MuxSound(index, inst) constructor {
 	
 	self.ppos = 0;
 	self.pos = 0;
+	self.playing = true;
 	self.updated = false;
 	self.group = audio_sound_get_audio_group(index);
 	self.length = audio_sound_length(index);
-	self.playing = true;
+	self.pitch = audio_sound_get_pitch(inst);
 	
-	self.__trap_pos = false;
 	self.__reset_ppos = -1;
-	self.__next_pos = -1; //Why is GameMaker like this
+	self.__next_pos = -1;
 	
 	//Automatically attach to handler's corresponding MuxArranger if it exists (for cue event handling magic)
 	var _key = audio_get_name(index);
@@ -27,10 +27,10 @@ function MuxSound(index, inst) constructor {
 	
 	self.update = function() {
 		self.updated = false;
+		if not self.playing then return;
 		
 		//Actually, fuck GameMaker's audio support. I'll sync it my-fucking-self
-		var _new_pos = self.pos + delta_time * 0.000001;//audio_sound_get_track_position(self.inst);
-		if _new_pos == self.pos then return;
+		var _new_pos = self.pos + delta_time * 0.000001 * self.pitch; //audio_sound_get_track_position(self.inst);
 		
 		if self.__reset_ppos < 0 {
 			self.ppos = self.pos;
@@ -38,19 +38,6 @@ function MuxSound(index, inst) constructor {
 			self.ppos = self.__reset_ppos;
 			self.__reset_ppos = -1;
 		}
-		
-		/*if self.__trap_pos and self.pos < _new_pos
-			self.__trap_pos = false;
-		
-		if _new_pos == 0 and self.__trap_pos {
-			//Some weird error has occurred. Approximate as best as possible
-			//var _leeway = 1.8;
-			//var _half_range = delta_time * 0.000001 * _leeway;
-			//var _diff = self.pos - self.ppos;
-			//_diff = clamp(_diff, -_half_range, _half_range);
-			//self.pos += _diff;
-			return;
-		}*/
 		
 		self.pos = _new_pos;
 		self.updated = true;
@@ -67,10 +54,14 @@ function MuxSound(index, inst) constructor {
 	self.set_track_position = function(position, reset_ppos = -1) {
 		audio_sound_set_track_position(self.inst, position)
 		
-		if position != 0 then self.__trap_pos = true;
 		audio_sound_set_track_position(self.inst, position);
 		self.__reset_ppos = reset_ppos;
 		self.__next_pos = position;
+	}
+	
+	///@param {Real} Pitch of the sound, where 1 is normal pitch
+	self.set_pitch = function(pitch) {
+		self.pitch = pitch;
 	}
 	
 	self.pause = function() {
