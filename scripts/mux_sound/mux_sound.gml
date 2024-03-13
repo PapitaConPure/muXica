@@ -19,6 +19,8 @@ function MuxSound(index, inst) constructor {
 	self.group = audio_sound_get_audio_group(index);
 	self.length = audio_sound_length(index);
 	
+	self.group_index = {};
+	
 	self.__reset_ppos = -1;
 	self.__next_pos = -1;
 	
@@ -87,5 +89,11 @@ function MuxSound(index, inst) constructor {
 		self.__reset_ppos = 0;
 		self.__next_pos = 0;
 		self.playing = false;
+	}
+	
+	///@param {String} group_name The name of the group this sound will be linked to
+	///@param {Real} group_index The internal index this sound will occupy within the group
+	link = function(group_name, group_index) {
+		self.group_index[group_name] = group_index;
 	}
 }
