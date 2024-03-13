@@ -27,7 +27,7 @@ function MuxSound(index, inst) constructor {
 	if struct_exists(MUX_ARRANGERS, _key)
 		ds_list_add(MUX_ARRANGERS[$ _key].instances, self);
 	
-	self.update = function() {
+	update = function() {
 		self.updated = false;
 		if not self.playing then return;
 		
@@ -45,7 +45,7 @@ function MuxSound(index, inst) constructor {
 		self.updated = true;
 	}
 	
-	self.post_update = function() {
+	post_update = function() {
 		if self.__next_pos < 0 then return;
 		self.pos = self.__next_pos;
 		self.__next_pos = -1;
@@ -53,7 +53,7 @@ function MuxSound(index, inst) constructor {
 	
 	///@param {Real} position The new track position for this sound instance, in seconds
 	///@param {Real} [reset_ppos] Whether to reset the previous track position to a certain time (in seconds, 0 or higher) or leave it as it was (-1)
-	self.set_track_position = function(position, reset_ppos = -1) {
+	set_track_position = function(position, reset_ppos = -1) {
 		audio_sound_set_track_position(self.inst, position)
 		
 		audio_sound_set_track_position(self.inst, position);
@@ -62,22 +62,22 @@ function MuxSound(index, inst) constructor {
 	}
 	
 	///@param {Real} pitch Pitch of the sound, where 1 is normal pitch
-	self.set_pitch = function(pitch) {
+	set_pitch = function(pitch) {
 		self.pitch = pitch;
 	}
 	
-	self.pause = function() {
+	pause = function() {
 		audio_pause_sound(self.inst);
 		self.playing = false;
 	}
 	
-	self.resume = function() {
+	resume = function() {
 		audio_resume_sound(self.inst);
 		self.playing = true;
 	}
 	
 	///@param {Bool} keep_alive Whether the sound instance should remain alive (true) or be entirely destroyed (false, default)
-	self.stop = function(keep_alive = false) {
+	stop = function(keep_alive = false) {
 		if keep_alive {
 			audio_pause_sound(self.inst);
 			audio_sound_set_track_position(self.inst, 0);

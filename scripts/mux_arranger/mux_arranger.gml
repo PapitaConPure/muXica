@@ -21,7 +21,7 @@ function MuxArranger(index, start_delay, start_params) constructor {
 	self.reset_sound_delta = false;
 	
 	self.bpm = 130;
-	self.time_signature = [4, 4];
+	self.time_signature = [ 4, 4 ];
 	
 	/**
 	 * @desc Description
@@ -32,19 +32,15 @@ function MuxArranger(index, start_delay, start_params) constructor {
 		return self.instances[| index];
 	}
 	
-	/**
-	 * @desc Jumps forward the specified amount of beats, based on the current track bpm and position
-	 * @param {Real} beats The number of beats to jump forward
-	 */
+	///@desc Jumps forward the specified amount of beats, based on the current track bpm and position
+	///@param {Real} beats The number of beats to jump forward
 	jump_beats = function(beats) {
 		self.cue_time += beats * time_bpm_to_seconds(self.bpm);
 		return self;
 	}
 	
-	/**
-	 * @desc Jumps forward the specified amount of bars, based on the current track bpm, time signature and position
-	 * @param {Real} bars The number of bars to jump forward
-	 */
+	///@desc Jumps forward the specified amount of bars, based on the current track bpm, time signature and position
+	///@param {Real} bars The number of bars to jump forward
 	jump_bars = function(bars) {
 		var _beats_per_measure = self.time_signature[0];
 		var _beat_note_value   = self.time_signature[1];
@@ -52,10 +48,8 @@ function MuxArranger(index, start_delay, start_params) constructor {
 		return self;
 	}
 	
-	/**
-	 * @desc Offsets the time by the specified amount of milliseconds (based only on current position, not bpm!). To account for the bpm, use jump()
-	 * @param {Real} bars The number of bars to jump forward
-	 */
+	///@desc Offsets the time by the specified amount of milliseconds (based only on current position, not bpm!). To account for the bpm, use jump()
+	///@param {Real} bars The number of bars to jump forward
 	offset = function(ms) {
 		self.cue_time += ms * 0.001;
 		return self;
@@ -131,10 +125,8 @@ function MuxArranger(index, start_delay, start_params) constructor {
 		return self;
 	}
 	
-	/**
-	 * @desc Sets the cursor bpm to the specified amount
-	 * @param {Real} bpm The current section's bpm
-	 */
+	///@desc Sets the cursor bpm to the specified amount
+	///@param {Real} bpm The current section's bpm
 	set_bpm = function(bpm) {
 		self.bpm = bpm;
 		return self;
@@ -157,7 +149,7 @@ function MuxArranger(index, start_delay, start_params) constructor {
 	 * @desc Sets the sound instance's position to the specified track audio cue point
 	 * @param {Struct.MuxSound} sound The sound which will follow the cue point
 	 * @param {Struct.MuxMarker} source_marker The MuxMarker from which this follow event is occurring
-	 * @param {Real} cue_point The delay between the marker's cue point and the moment it triggered, in seconds
+	 * @param {Real} offset The delay between the marker's cue point and the moment it triggered, in seconds
 	 * @param {Bool} perform_between Determines if the events between the source and the target's positions should be performed
 	 * @param {String} target_name The name of the target MuxMarker as defined in the arranger. If undefined, the source marker's target will be followed instead
 	 */
@@ -167,7 +159,7 @@ function MuxArranger(index, start_delay, start_params) constructor {
 		var _section_width = source_marker.cue_point - _target_marker.cue_point;
 		var _new_pos = _target_marker.cue_point + ((_section_width != 0) ? (offset % _section_width) : offset);
 		
-		sound.set_track_position(_new_pos, -1);
+		sound.set_track_position(_new_pos, perform_between ? sound.pos : -1);
 		
 		//Execute markers between the target marker's cue time and the offset here
 		self.__followed_cue_data = {
@@ -202,9 +194,7 @@ function MuxArranger(index, start_delay, start_params) constructor {
 		return self;
 	}
 	
-	/**
-	 * @desc Updates each linked sound's position and responds to track cue marker surpass events
-	 */
+	///@desc Updates each linked sound's position and responds to track cue marker surpass events
 	update = function() {
 		self.instance_number = ds_list_size(self.instances);
 		
@@ -235,9 +225,7 @@ function MuxArranger(index, start_delay, start_params) constructor {
 			self.get_instance(_i++).post_update();
 	}
 	
-	/**
-	 * @desc Call this to free all sound instance memory from the MuxArranger when it's no longer used
-	 */
+	///@desc Call this to free all sound instance memory from the MuxArranger when it's no longer used
 	free = function() {
 		ds_list_destroy(self.instances);
 	}
