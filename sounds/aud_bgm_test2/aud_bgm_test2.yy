@@ -13,7 +13,7 @@
   "name":"aud_bgm_test2",
   "parent":{
     "name":"Sounds",
-    "path":"folders/Sounds.yy",
+    "path":"folders/DEMO/Sounds.yy",
   },
   "preload":false,
   "resourceType":"GMSound",

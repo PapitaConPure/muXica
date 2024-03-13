@@ -21,6 +21,7 @@ PROCESS_SELECTED_GROUP
 _group = MUX_ALL;
 PROCESS_SELECTED_GROUP
 
+MUX_LOG_STEP("Next Arranger Step");
 struct_foreach(MUX_ARRANGERS, mux_arranger_update_all);
 
 _group = MUX_P_STOP;

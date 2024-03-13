@@ -21,9 +21,9 @@ mux_arranger_set_batch([
 		function(params) { return true; },
 		"loop start 1"))
 	.jump_bars(16)
-	.set_marker_repeat("loop start", 1, MUX_MARKER_UNIT.BARS, 4, new MuxEventMarker(
+	.set_marker_repeat("loop start", 1, MUX_MARKER_UNIT.BARS, 1, new MuxEventMarker(
 		function(marker, sound, offset, params) {
-			mux_sound_play(aud_sfx_test1, 5, false, 1, 0.012);
+			if params.n == 2 then mux_sound_play(aud_sfx_test1, 5, false, 1, 0.011);
 		}))
 	.jump_bars(4)
 	.set_marker("loop end", new MuxJumpMarker(
@@ -36,12 +36,12 @@ mux_arranger_set_batch([
 	.set_marker("cute", new MuxMarker())
 	.set_marker_repeat("lol", 2, MUX_MARKER_UNIT.BEATS, 16, new MuxEventMarker(
 		function(marker, sound, offset, params) {
-			if params.n == 2 then mux_sound_play(aud_sfx_test1, 5, false, 1, 0.012);
+			if params.n == 2 then mux_sound_play(aud_sfx_test1, 5, false, 1, 0.011);
 		}))
 	.jump_beats(2 * 16)
 	.set_marker_repeat("lmao", 1, MUX_MARKER_UNIT.BEATS, 32, new MuxEventMarker(
 		function(marker, sound, offset, params) {
-			if params.n == 2 then mux_sound_play(aud_sfx_test1, 5, false, 1, 0.012);
+			if params.n == 2 then mux_sound_play(aud_sfx_test1, 5, false, 1, 0.011);
 	})),
 	
 	new MuxArranger(aud_bgm_test2, 80, { tension: 25, last_pos: 0 })

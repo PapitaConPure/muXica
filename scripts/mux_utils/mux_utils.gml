@@ -40,5 +40,5 @@ function __mux_wrap(value, vmin, vmax, max_exclusive = false) {
  */
 function wave(a, b, duration = 1, offset = 0) {
 	var _half = (b - a) * 0.5;
-	return a + _half + sin((current_time * 0.001 / duration + offset) * TAU) * _half;
+	return a + _half + sin((current_time * 0.001 / duration + offset) * pi * 2) * _half;
 }

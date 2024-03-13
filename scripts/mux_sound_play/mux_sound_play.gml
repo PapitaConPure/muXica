@@ -17,7 +17,8 @@ function mux_sound_play(index, priority, loop = false, gain = 1, offset = 0, pit
 	var _group_key = audio_group_name(_audio_group);
 	var _group_bank = MUX_GROUPS[$ _group_key];
 	
-	var _id = audio_play_sound(index, priority, loop, gain, offset, pitch, listener_mask);
+	var _gain = mux_group_gain(_audio_group, gain);
+	var _id = audio_play_sound(index, priority, loop, _gain, offset, pitch, listener_mask);
 	var _sound = new MuxSound(index, _id);
 	ds_list_add(_group_bank, _sound);
 	ds_list_add(MUX_ALL, _sound);
@@ -41,14 +42,16 @@ function mux_sound_play(index, priority, loop = false, gain = 1, offset = 0, pit
 function mux_sound_crossfade(time, from, to, priority, loop = false, synced = false, gain = 1, offset = 0, pitch = 1, listener_mask = undefined) {
 	MUX_CHECK_UNINITIALISED_EX;
 	
-	var _group_key = audio_group_name(audio_sound_get_audio_group(to));
+	var _audio_group = audio_sound_get_audio_group(to);
+	var _gain = mux_group_gain(_audio_group, gain);
+	var _group_key = audio_group_name(_audio_group);
 	var _group_bank = MUX_GROUPS[$ _group_key];
 	var _all_bank   = MUX_ALL;
 	
 	if from == all {
 		__mux_sound_fade_out_group(time, _group_bank, _all_bank);
 		var _id = audio_play_sound(to, priority, loop, 0, offset, pitch, listener_mask);
-		__mux_sound_crossfade_delayed(undefined, _id, gain, time);
+		__mux_sound_crossfade_delayed(undefined, _id, _gain, time);
 		var _sound = new MuxSound(to, _id);
 		ds_list_add(_group_bank, _sound);
 		ds_list_add(_all_bank,   _sound);
@@ -58,7 +61,7 @@ function mux_sound_crossfade(time, from, to, priority, loop = false, synced = fa
 	var _old_group_idx = mux_sound_get_inst_bank_index(_group_bank, from);
 	var _old_all_idx = mux_sound_get_inst_bank_index(_all_bank, from);
 	var _id = audio_play_sound(to, priority, loop, 0, offset, pitch, listener_mask);
-	__mux_sound_crossfade_delayed(from, _id, gain, time);
+	__mux_sound_crossfade_delayed(from, _id, _gain, time);
 	
 	var _source_position = audio_sound_get_track_position(from);
 	var _relative_position = __mux_wrap(_source_position, 0, audio_sound_length(to), true);

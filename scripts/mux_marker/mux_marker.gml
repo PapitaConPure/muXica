@@ -6,12 +6,19 @@ function MuxMarker() constructor {
 	self.handler = undefined;
 	self.cue_point = 0;
 	self.basic = true;
+	self.addressed = false;
+	
+	self.prepare = function() {
+		self.addressed = false;
+	}
 	
 	///@desc Triggers this marker's event
 	///@param {Id.MuxSound} sound The sound that triggered this marker
 	///@param {Real} offset The offset between the marker's position and the sound instance's track position, in seconds
 	///@param {Struct} params The parameters to consider in this cue event
-	trigger_event = function(sound, offset, params) {}
+	trigger_event = function(sound, offset, params) {
+		self.addressed = true;
+	}
 	
 	///@desc Links this marker to a parent MuxArranger and syncs the marker's time to it
 	///@param {Struct.MuxArranger|Id.Instance} handler The MuxArranger that will act as a handler for this marker

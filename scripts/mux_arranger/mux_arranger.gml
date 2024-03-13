@@ -24,6 +24,15 @@ function MuxArranger(index, start_delay, start_params) constructor {
 	self.time_signature = [4, 4];
 	
 	/**
+	 * @desc Description
+	 * @param {Real} index
+	 * @returns {Struct.MuxSound}
+	 */
+	get_instance = function(index) {
+		return self.instances[| index];
+	}
+	
+	/**
 	 * @desc Jumps forward the specified amount of beats, based on the current track bpm and position
 	 * @param {Real} beats The number of beats to jump forward
 	 */
@@ -158,9 +167,7 @@ function MuxArranger(index, start_delay, start_params) constructor {
 		var _section_width = source_marker.cue_point - _target_marker.cue_point;
 		var _new_pos = _target_marker.cue_point + ((_section_width != 0) ? (offset % _section_width) : offset);
 		
-		if _new_pos != 0 then sound.__trap_pos = true;
-		audio_sound_set_track_position(sound.inst, _new_pos);
-		if not perform_between then sound.__reset_ppos = _target_marker.cue_point;
+		sound.set_track_position(_new_pos, -1);
 		
 		//Execute markers between the target marker's cue time and the offset here
 		self.__followed_cue_data = {
@@ -202,16 +209,17 @@ function MuxArranger(index, start_delay, start_params) constructor {
 		self.instance_number = ds_list_size(self.instances);
 		
 		var _i = 0;
-		repeat self.instance_number {
-			self.instances[| _i++].update();
-		}
+		repeat self.instance_number
+			self.get_instance(_i++).update();
 		
 		struct_foreach(self.markers, function(marker_name, marker) {
 			if marker.basic then return;
 			
 			var _snd, _i = 0;
 			repeat self.instance_number {
-				_snd = self.instances[| _i++];
+				_snd = self.get_instance(_i++);
+				
+				if not _snd.updated then continue;
 				
 				if _snd.ppos > _snd.pos then continue;
 				
@@ -221,6 +229,10 @@ function MuxArranger(index, start_delay, start_params) constructor {
 				marker.trigger_event(_snd, _snd.pos - marker.cue_point, self.params);
 			}
 		});
+		
+		_i = 0;
+		repeat self.instance_number
+			self.get_instance(_i++).post_update();
 	}
 	
 	/**
