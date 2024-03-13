@@ -67,10 +67,11 @@ function mux_sound_crossfade(time, from, to, priority, loop = false, synced = fa
 	var _relative_position = __mux_wrap(_source_position, 0, audio_sound_length(to), true);
 	if synced then audio_sound_set_track_position(_id, _relative_position);
 	
+	var _old_sound = _all_bank[| _old_all_idx];
 	var _sound = new MuxSound(to, _id);
 	ds_list_replace(_group_bank, _old_group_idx, _sound);
 	ds_list_replace(_all_bank,   _old_all_idx,   _sound);
-	ds_list_add(MUX_P_STOP, from);
+	ds_list_add(MUX_P_STOP, _old_sound);
 	return _id;
 }
 
@@ -99,12 +100,12 @@ function mux_sound_stop(sound, time) {
 		__mux_sound_fade_out_index(AUDIO_STARTUP_TIME, sound, _group_bank, _all_bank);
 	} else {
 		var _group_idx = ds_list_find_index(_group_bank, sound);
-		var _deleted = _all_bank[| _all_idx];
+		var _stopped_sound = _all_bank[| _all_idx];
 		
 		audio_sound_gain(sound, 0, time);
 		ds_list_delete(_group_bank, _group_idx);
 		ds_list_delete(_all_bank,   _all_idx);
-		ds_list_add(MUX_P_STOP, _deleted);
+		ds_list_add(MUX_P_STOP, _stopped_sound);
 	}
 }
 

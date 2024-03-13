@@ -13,9 +13,11 @@ function MuxSound(index, inst) constructor {
 	self.pos = 0;
 	self.playing = true;
 	self.updated = false;
+	self.pitch = audio_sound_get_pitch(inst);
+	
+	self.name = audio_get_name(index);
 	self.group = audio_sound_get_audio_group(index);
 	self.length = audio_sound_length(index);
-	self.pitch = audio_sound_get_pitch(inst);
 	
 	self.__reset_ppos = -1;
 	self.__next_pos = -1;
@@ -59,7 +61,7 @@ function MuxSound(index, inst) constructor {
 		self.__next_pos = position;
 	}
 	
-	///@param {Real} Pitch of the sound, where 1 is normal pitch
+	///@param {Real} pitch Pitch of the sound, where 1 is normal pitch
 	self.set_pitch = function(pitch) {
 		self.pitch = pitch;
 	}
@@ -72,5 +74,18 @@ function MuxSound(index, inst) constructor {
 	self.resume = function() {
 		audio_resume_sound(self.inst);
 		self.playing = true;
+	}
+	
+	///@param {Bool} keep_alive Whether the sound instance should remain alive (true) or be entirely destroyed (false, default)
+	self.stop = function(keep_alive = false) {
+		if keep_alive {
+			audio_pause_sound(self.inst);
+			audio_sound_set_track_position(self.inst, 0);
+		} else
+			audio_stop_sound(self.inst);
+		
+		self.__reset_ppos = 0;
+		self.__next_pos = 0;
+		self.playing = false;
 	}
 }
