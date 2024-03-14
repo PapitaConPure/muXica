@@ -1,13 +1,13 @@
 MUX_LOG_INFO("- -  - -");
 
 mux_sounds = {
-	BGM: ds_list_create(),
-	SFX: ds_list_create(),
-	"all": ds_list_create()
+	BGM: new MuxGroup("BGM"),
+	SFX: new MuxGroup("SFX"),
+	"all": new MuxGroup("all")
 };
 
 //Pending tasks
-pending_sounds_stop = ds_list_create(); //Sounds need more than being on this list to be deleted
+pending_sounds_stop = new MuxGroup("stop"); //Sounds need more than being on this list to be deleted
 pending_sounds_crossfade = ds_queue_create();
 pending_instances_notify = ds_queue_create();
 

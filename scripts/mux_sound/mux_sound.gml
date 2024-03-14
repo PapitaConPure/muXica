@@ -1,5 +1,5 @@
 /**
- * @desc Represends an audio block
+ * @desc Represents an audio block
  * @param {Asset.GMSound} index Sound asset index
  * @param {Id.Sound} inst Sound instance id
  * @param {Bool} keep_alive=false Whether to keep the sound alive after it reaches 0 gain (true) or not (false)
@@ -94,6 +94,11 @@ function MuxSound(index, inst) constructor {
 	///@param {String} group_name The name of the group this sound will be linked to
 	///@param {Real} group_index The internal index this sound will occupy within the group
 	link = function(group_name, group_index) {
-		self.group_index[group_name] = group_index;
+		self.group_index[$ group_name] = group_index;
+	}
+	
+	///@param {String} group_name The name of the group this sound will be unlinked from
+	unlink = function(group_name) {
+		self.group_index[$ group_name] = undefined;
 	}
 }

@@ -4,8 +4,8 @@ function mux_sound_get_oldest(group_id) {
 	var _group_idx;
 	if group_id == all then _group_idx = "all";
 	else _group_idx = audio_group_name(group_id);
-	var _group_bank = MUX_GROUPS[$ _group_idx];
-	return _group_bank[| 0];
+	var _group_bank = mux_handler_get_group(_group_idx);
+	return _group_bank.get_sound(0);
 }
 
 ///@desc Description
@@ -15,9 +15,9 @@ function mux_sound_get_latest(group_id = all) {
 	var _group_idx;
 	if group_id == all then _group_idx = "all";
 	else _group_idx = parse_group_idx(group_id);
-	var _group_bank = MUX_GROUPS[$ _group_idx];
-	var _idx = ds_list_size(_group_bank) - 1;
-	return _group_bank[| _idx];
+	var _group_bank = mux_handler_get_group(_group_idx);
+	var _idx = _group_bank.size - 1;
+	return _group_bank.get_sound(_idx);
 }
 
 ///@param {Asset.GMSound|Id.Sound|Constant.All} sound The sound to search for
@@ -34,8 +34,8 @@ function mux_sound_get_array(sound) {
 ///@returns {Array<Struct.MuxSound>}
 function mux_sound_get_array_from_index(index) {
 	var _group_idx = audio_group_name(audio_sound_get_audio_group(index));
-	var _group_bank = MUX_GROUPS[$ _group_idx]
-	var _list_size = ds_list_size(_group_bank);
+	var _group_bank = mux_handler_get_group(_group_idx)
+	var _list_size = _group_bank.size;
 	
 	//feather disable once GM1045
 	if _list_size == 0 then return [];
@@ -44,7 +44,7 @@ function mux_sound_get_array_from_index(index) {
 	var _arr = array_create(_list_size);
 	
 	repeat _list_size {
-		_arr[_i] = _group_bank[| _i];
+		_arr[_i] = _group_bank.get_sound(_i);
 		_i++;
 	}
 	
@@ -55,7 +55,7 @@ function mux_sound_get_array_from_index(index) {
 ///@returns {Array<Struct.MuxSound>}
 function mux_sound_get_array_from_all() {
 	var _all_group = MUX_ALL;
-	var _list_size = ds_list_size(_all_group);
+	var _list_size = _all_group.size;
 	
 	//feather disable once GM1045
 	if _list_size == 0 then return [];
@@ -64,7 +64,7 @@ function mux_sound_get_array_from_all() {
 	var _i = 0;
 	
 	repeat _list_size {
-		_arr[_i] = _all_group[| _i];
+		_arr[_i] = _all_group.get_sound(_i);
 		_i++;
 	}
 	
@@ -83,15 +83,15 @@ function mux_sound_get_from_inst(inst) {
 /// @returns {Struct}
 function mux_sound_find(index) {
 	var _group_idx = audio_group_name(audio_sound_get_audio_group(index));
-	var _group_bank = MUX_GROUPS[$ _group_idx]
-	var _list_size = ds_list_size(_group_bank);
+	var _group_bank = mux_handler_get_group(_group_idx)
+	var _list_size = _group_bank.size;
 	var _i = 0; 
 	var _found = false;
 	var _ret = undefined;
 	
 	while(_i < _list_size and not _found) {
-		if _group_bank[| _i].inst == index {
-			_ret = _group_bank[| _i];
+		if _group_bank.get_sound(_i).inst == index {
+			_ret = _group_bank.get_sound(_i);
 			_found = true;
 		}
 		
@@ -101,17 +101,17 @@ function mux_sound_find(index) {
 	return _ret;
 }
 
-/// @desc Finds the designed bank index for the specified sound instance id, or -1 if the sound is not registered
-///@param {Id.DsList} group_id
+/// @desc Finds the designed group index for the specified sound instance id, or -1 if the sound is not registered
+///@param {Struct.MuxGroup} group
 ///@param {Id.Sound} inst
 ///@returns {Real}
-function mux_sound_get_inst_bank_index(group, inst) {
-	var _list_size = ds_list_size(group);
+function mux_sound_get_inst_group_index(group, inst) {
+	var _list_size = group.size;
 	var _ret = -1;
 	var _i = 0;
 	
 	while(_ret < 0 && _i < _list_size) {
-		if group[| _i].inst == inst then _ret = _i;
+		if group.get_sound(_i).inst == inst then _ret = _i;
 		else _i++;
 	}
 	
@@ -124,7 +124,7 @@ function mux_sound_get_inst_bank_index(group, inst) {
 function mux_sound_any_is_playing(index = all) {
 	MUX_CHECK_UNINITIALISED_EX_OR_FALSE
 	
-	if index == all then return ds_list_size(MUX_ALL) > 0;
+	if index == all then return MUX_ALL.size > 0;
 	
 	var _i = 0; 
 	var _found = false;
@@ -136,10 +136,10 @@ function mux_sound_any_is_playing(index = all) {
 		
 		var _tags_array = MUX_TAGS[$ index];
 		_group_bank = MUX_ALL;
-		_list_size = ds_list_size(_group_bank);
+		_list_size = _group_bank.size;
 		
 		while(_i < _list_size and not _found) {
-			if array_get_index(_tags_array, _group_bank[| _i].index) >= 0 then _found = true;
+			if array_get_index(_tags_array, _group_bank.get_sound(_i).index) >= 0 then _found = true;
 			
 			_i++;
 		}
@@ -150,11 +150,11 @@ function mux_sound_any_is_playing(index = all) {
 	MUX_CHECK_INVALID_EX
 	
 	var _group_idx = audio_group_name(audio_sound_get_audio_group(index));
-	_group_bank = MUX_GROUPS[$ _group_idx];
-	_list_size = ds_list_size(_group_bank);
+	_group_bank = mux_handler_get_group(_group_idx);
+	_list_size = _group_bank.size;
 	
 	while(_i < _list_size and not _found) {
-		if _group_bank[| _i].index == index then _found = true;
+		if _group_bank.get_sound(_i).index == index then _found = true;
 		_i++;
 	}
 	
@@ -168,13 +168,13 @@ function mux_sound_is_playing(inst) {
 	MUX_CHECK_INVALID_EX
 	
 	var _group_idx =  audio_group_name(audio_sound_get_audio_group(inst));
-	var _group_bank = MUX_GROUPS[$ _group_idx];
-	var _list_size = ds_list_size(_group_bank);
+	var _group_bank = mux_handler_get_group(_group_idx);
+	var _list_size = _group_bank.size;
 	var _i = 0; 
 	var _found = false;
 	
 	while(_i < _list_size and not _found) {
-		if _group_bank[| _i].inst == inst then _found = true;
+		if _group_bank.get_sound(_i).inst == inst then _found = true;
 		_i++;
 	}
 	
