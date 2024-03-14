@@ -96,7 +96,7 @@ function mux_sound_stop(sound, time) {
 	var _group_bank = mux_handler_get_group(_group_key);
 	
 	if typeof(sound) == "ref" {
-		__mux_sound_fade_out_index(AUDIO_STARTUP_TIME, sound, _group_bank, _all_bank);
+		__mux_sound_fade_out_index(time, sound, _group_bank, _all_bank);
 	} else {
 		var _group_idx = _group_bank.find_index_of(sound);
 		var _all_idx = _all_bank.find_index_of(sound);

@@ -49,7 +49,7 @@ function MuxGroup(name) constructor {
 	static remove_sound = function(sound) {
 		var _idx = self.get_index_of(sound);
 		
-		if not _found then return;
+		if _idx < 0 then return;
 		
 		sound.unlink(self.name);
 		self.sounds[_idx] = undefined;
