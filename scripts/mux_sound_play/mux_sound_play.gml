@@ -116,7 +116,7 @@ function mux_sound_stop(sound, time) {
  * @param {Real} _time
  */
 function __mux_sound_crossfade_delayed(_out, _in, _gain, _time) {
-	MUX_LOG_INFO($"Crossfade [{is_undefined(_out) ? "ANY" : $"{audio_get_name(_in)}/{_in}"}]->[{audio_get_name(_in)}/{_in}] has been requested and commence in {_time} frames");
+	MUX_LOG_INFO($"Crossfade [{is_undefined(_out) ? "ANY" : $"{audio_get_name(_in)}/{_in}"}]->[{audio_get_name(_in)}/{_in}] has been requested and will commence in {_time} frames");
 	
 	//Set up next crossfade event
 	var _handler = MUX_HANDLER;
