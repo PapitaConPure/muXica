@@ -22,7 +22,7 @@ function MuxGroup(name) constructor {
 			if is_undefined(self.sounds[_new_idx]) {
 				_found_available = true;
 			} else {
-				if _new_idx < self.capacity then _new_idx++;
+				if(_new_idx < (self.capacity - 1)) then _new_idx++;
 				else _new_idx = 0;
 			}
 		} until(_found_available or _new_idx == _starting_point);
@@ -32,6 +32,10 @@ function MuxGroup(name) constructor {
 			_new_idx = self.capacity;
 			self.capacity *= 2;
 			array_resize(self.sounds, self.capacity);
+			
+			for(var _i = _new_idx + 1; _i < self.capacity; _i++) {
+				self.sounds[_i] = undefined;
+			}
 		}
 		
 		self.head = _new_idx;

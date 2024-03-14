@@ -9,8 +9,8 @@ function MuxSound(index, inst) constructor {
 	self.index = index;
 	self.inst = inst;
 	
-	self.ppos = 0;
-	self.pos = 0;
+	self.pos = audio_sound_get_track_position(inst);
+	self.ppos = self.pos;
 	self.playing = true;
 	self.updated = false;
 	self.pitch = audio_sound_get_pitch(inst);

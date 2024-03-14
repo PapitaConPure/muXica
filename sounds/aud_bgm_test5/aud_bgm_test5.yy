@@ -9,7 +9,7 @@
   "bitRate":320,
   "compression":1,
   "conversionMode":0,
-  "duration":409.0253,
+  "duration":143.67665,
   "name":"aud_bgm_test5",
   "parent":{
     "name":"Sounds",

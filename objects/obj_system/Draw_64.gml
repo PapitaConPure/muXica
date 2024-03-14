@@ -23,12 +23,12 @@ _name = "BGM";
 _group = MUX_BGM;
 DRAW_THE_THINGY
 
-_base = 160;
+_base = 192;
 _name = "SFX";
 _group = MUX_SFX;
 DRAW_THE_THINGY
 
-_base = 256;
+_base = 320;
 _name = "all";
 _group = MUX_ALL;
 DRAW_THE_THINGY
