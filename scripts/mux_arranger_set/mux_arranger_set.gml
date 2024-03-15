@@ -17,10 +17,14 @@ function mux_arranger_add(arranger) {
 function mux_arrangers_submit() {
 	var _array = mux_arrangers_init.config_arrangers;
 	var _length = array_length(_array);
-	mux_scope_global._struct.arrangers = ds_grid_create(_length, 2);
+	var _name, _arranger;
 	
+	mux_scope_global._struct.arrangers = ds_grid_create(_length, 2);
 	for(var _row = 0; _row < _length; _row++) {
-		ds_grid_add(MUX_ARRANGERS, _row, MUX_ARR_F.NAME, _array[_row][MUX_ARR_F.NAME]);
-		ds_grid_add(MUX_ARRANGERS, _row, MUX_ARR_F.STRUCT, _array[_row][MUX_ARR_F.STRUCT]);
+		_name = _array[_row][MUX_ARR_F.NAME];
+		_arranger = _array[_row][MUX_ARR_F.STRUCT];
+		ds_grid_add(MUX_ARRANGERS, _row, MUX_ARR_F.NAME, _name);
+		ds_grid_add(MUX_ARRANGERS, _row, MUX_ARR_F.STRUCT, _arranger);
+		_arranger.finalize_markers();
 	}
 }

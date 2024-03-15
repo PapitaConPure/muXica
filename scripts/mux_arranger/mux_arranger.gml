@@ -16,6 +16,7 @@ function MuxArranger(index, start_delay, start_params) constructor {
 	self.params = start_params;
 	self.cue_time = start_delay * 0.001;
 	self.markers = {};
+	self.marker_names = [];
 	self.instances = ds_list_create();
 	self.instance_number = 0;
 	self.reset_sound_delta = false;
@@ -198,7 +199,7 @@ function MuxArranger(index, start_delay, start_params) constructor {
 	static update = function() {
 		self.instance_number = ds_list_size(self.instances);
 		
-		var _names = struct_get_names(self.markers);
+		var _names = self.marker_names;
 		var _size = array_length(_names);
 		var _name, _marker;
 		var _snd, _j;
@@ -216,8 +217,6 @@ function MuxArranger(index, start_delay, start_params) constructor {
 			repeat _size {
 				_name = _names[_j++];
 				_marker = self.markers[$ _name];
-			
-				if _marker.basic then continue;
 				
 				if _snd.ppos >= _marker.cue_point or _snd.pos < _marker.cue_point then continue;
 				
@@ -227,6 +226,13 @@ function MuxArranger(index, start_delay, start_params) constructor {
 			
 			_snd.post_update();
 		}
+	}
+	
+	static finalize_markers = function() {
+		if array_length(self.marker_names) > 0 then return;
+		self.marker_names = array_filter(struct_get_names(self.markers), function(name) {
+			return not self.markers[$ name].basic;
+		});
 	}
 	
 	///@desc Call this to free all sound instance memory from the MuxArranger when it's no longer used
