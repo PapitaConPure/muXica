@@ -1,7 +1,6 @@
 ///@desc Initializes a MuxArranger batch for later submission
 function mux_arrangers_init() {
 	static config_arrangers = [];
-	config_arrangers = [];
 }
 
 /**
@@ -27,4 +26,6 @@ function mux_arrangers_submit() {
 		ds_grid_add(MUX_ARRANGERS, _row, MUX_ARR_F.STRUCT, _arranger);
 		_arranger.finalize_markers();
 	}
+	
+	mux_arrangers_init.config_arrangers = [];
 }
