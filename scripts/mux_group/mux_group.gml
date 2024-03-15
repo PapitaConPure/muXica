@@ -145,7 +145,7 @@ function MuxGroup(name) constructor {
 		return _found ? _idx : -1;
 	}
 	
-	///@desc Defragments and updates all the sounds' positions within the group and reduces the capacity to the current amount of sounds
+	///@desc Defragments and updates all the sounds' positions within the group and reduces the capacity to the current amount of sounds (minimum capacity: 4)
 	static shrink_capacity = function() {
 		var _sounds = ds_list_create();
 		
@@ -157,11 +157,14 @@ function MuxGroup(name) constructor {
 		}
 		
 		var _new_capacity = ds_list_size(_sounds);
-		self.sounds = array_create(_new_capacity, undefined);
+		var _actual_capacity = max(4, _new_capacity);
+		self.sounds = array_create(_actual_capacity, undefined);
+		self.size = _new_capacity;
+		self.capacity = _actual_capacity;
 		
 		_i = 0;
 		repeat _new_capacity {
-			_snd = _sounds.get_sound(_i);
+			_snd = _sounds[| _i];
 			_snd.link(self.name, _i);
 			self.sounds[_i++] = _snd;
 		}
@@ -174,9 +177,10 @@ function MuxGroup(name) constructor {
 		var _i = 0;
 		var _snd;
 		repeat self.capacity {
-			self.sounds[_i].unlink(self.name);
-			self.sounds[_i] = undefined;
-			_i++;
+			_snd = self.sounds[_i];
+			if is_undefined(_snd) then continue;
+			_snd.unlink(self.name);
+			self.sounds[_i++] = undefined;
 		}
 	}
 	

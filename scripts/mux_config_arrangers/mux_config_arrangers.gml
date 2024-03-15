@@ -12,59 +12,67 @@
 //If you want to use standalone cues instead and follow them manually with your own systems,
 //then go to mux_config_cues
 
-mux_arranger_set_batch([
-	new MuxArranger(aud_bgm_test1, 140, { n: 1 })
-	.set_bpm(143)
-	.set_time_signature(4, 4)
-	.jump_bars(1)
-	.set_marker("to start", new MuxJumpMarker(
-		function(params) { return true; },
-		"loop start 1"))
-	.jump_bars(16)
-	.set_marker_repeat("loop start", 1, MUX_MARKER_UNIT.BARS, 1, new MuxEventMarker(
-		function(marker, sound, offset, params) {
-			if params.n == 2 then mux_sound_play(aud_sfx_test1, 5, false, 1, 0.011);
-		}))
-	.jump_bars(4)
-	.set_marker("loop end", new MuxJumpMarker(
-		function(params) { return params.n != 4; },
-		"loop start 1"))
-	.set_marker("loop break", new MuxJumpMarker(
-		function(params) { return params.n == 4; },
-		"cute"))
-	.jump_bars(30)
-	.set_marker("cute", new MuxMarker())
-	.set_marker_repeat("lol", 2, MUX_MARKER_UNIT.BEATS, 16, new MuxEventMarker(
-		function(marker, sound, offset, params) {
-			if params.n == 2 then mux_sound_play(aud_sfx_test1, 5, false, 1, 0.011);
-		}))
-	.jump_beats(2 * 16)
-	.set_marker_repeat("lmao", 1, MUX_MARKER_UNIT.BEATS, 32, new MuxEventMarker(
-		function(marker, sound, offset, params) {
-			if params.n == 2 then mux_sound_play(aud_sfx_test1, 5, false, 1, 0.011);
-	})),
+function mux_config_arrangers() {
+	mux_arrangers_init();
 	
-	new MuxArranger(aud_bgm_test2, 80, { tension: 25, last_pos: 0 })
-	.set_bpm(128)
-	.set_time_signature(4, 4)
-	.set_marker_repeat("switch to heavy", 2, MUX_MARKER_UNIT.BARS, 68, new MuxConditionMarker(
-		function(params) { return params.tension >= 50; },
-		function(marker, sound, offset, params) {
-			params.last_pos = marker.cue_point;
-			marker.follow_cue(sound, "heavy intro", offset, false);
-		}))
-	.jump_bars(1)
-	.set_marker("to normal loop start", new MuxLoopMarker("normal loop start"))
-	.jump_bars(67)
-	.set_marker("normal loop start", new MuxMarker())
-	.jump_bars(68)
-	.set_marker("normal loop", new MuxJumpMarker(
-		function(params) {
-			return params.tension < 50;
-		},
-		"normal loop start"))
-	.jump_bars(3)
-	.set_marker("heavy intro", new MuxMarker())
-	.jump_bars(1)
-	.set_marker("heavy start", new MuxMarker())
-]);
+	mux_arranger_add(
+		new MuxArranger(aud_bgm_test1, 140, { n: 1 })
+		.set_bpm(143)
+		.set_time_signature(4, 4)
+		.jump_bars(1)
+		.set_marker("to start", new MuxJumpMarker(
+			function(params) { return true; },
+			"loop start 1"))
+		.jump_bars(16)
+		.set_marker_repeat("loop start", 1, MUX_MARKER_UNIT.BARS, 1, new MuxEventMarker(
+			function(marker, sound, offset, params) {
+				if params.n == 2 then mux_sound_play(aud_sfx_test1, 5, false, 1, 0.011);
+			}))
+		.jump_bars(4)
+		.set_marker("loop end", new MuxJumpMarker(
+			function(params) { return params.n != 4; },
+			"loop start 1"))
+		.set_marker("loop break", new MuxJumpMarker(
+			function(params) { return params.n == 4; },
+			"cute"))
+		.jump_bars(30)
+		.set_marker("cute", new MuxMarker())
+		.set_marker_repeat("lol", 2, MUX_MARKER_UNIT.BEATS, 16, new MuxEventMarker(
+			function(marker, sound, offset, params) {
+				if params.n == 2 then mux_sound_play(aud_sfx_test1, 5, false, 1, 0.011);
+			}))
+		.jump_beats(2 * 16)
+		.set_marker_repeat("lmao", 1, MUX_MARKER_UNIT.BEATS, 32, new MuxEventMarker(
+			function(marker, sound, offset, params) {
+				if params.n == 2 then mux_sound_play(aud_sfx_test1, 5, false, 1, 0.011);
+			}))
+	);
+	
+	mux_arranger_add(
+		new MuxArranger(aud_bgm_test2, 80, { tension: 25, last_pos: 0 })
+		.set_bpm(128)
+		.set_time_signature(4, 4)
+		.set_marker_repeat("switch to heavy", 2, MUX_MARKER_UNIT.BARS, 68, new MuxConditionMarker(
+			function(params) { return params.tension >= 50; },
+			function(marker, sound, offset, params) {
+				params.last_pos = marker.cue_point;
+				marker.follow_cue(sound, "heavy intro", offset, false);
+			}))
+		.jump_bars(1)
+		.set_marker("to normal loop start", new MuxLoopMarker("normal loop start"))
+		.jump_bars(67)
+		.set_marker("normal loop start", new MuxMarker())
+		.jump_bars(68)
+		.set_marker("normal loop", new MuxJumpMarker(
+			function(params) {
+				return params.tension < 50;
+			},
+			"normal loop start"))
+		.jump_bars(3)
+		.set_marker("heavy intro", new MuxMarker())
+		.jump_bars(1)
+		.set_marker("heavy start", new MuxMarker())
+	);
+	
+	mux_arrangers_submit();
+}

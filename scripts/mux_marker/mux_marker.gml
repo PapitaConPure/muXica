@@ -18,19 +18,19 @@ function MuxMarker() constructor {
 	 * @param {Real} offset The offset between the marker's position and the sound instance's track position, in seconds
 	 * @param {Struct} params The parameters to consider in this cue event
 	 */
-	trigger_event = function(sound, offset, params) {
+	static trigger_event = function(sound, offset, params) {
 		self.addressed = true;
 	}
 	
 	///@desc Links this marker to a parent MuxArranger and syncs the marker's time to it
 	///@param {Struct.MuxArranger|Id.Instance} handler The MuxArranger that will act as a handler for this marker
-	link = function(handler) {
+	static link = function(handler) {
 		self.handler = handler;
 		self.cue_point = handler.cue_time;
 	}
 	
 	///@desc Returns an unlinked copy of this MuxMarker
-	copy = function() {
+	static copy = function() {
 		var _copy = new MuxMarker();
 		_copy.cue_point = self.cue_point;
 		return _copy;
@@ -43,7 +43,7 @@ function MuxMarker() constructor {
 	 * @param {Real} cue_point The delay between the marker's cue point and the moment it triggered, in seconds
 	 * @param {Bool} [perform_between] Determines if the events between this marker and the target marker's positions should be performed
 	 */
-	follow_cue = function(sound, cue_name, offset, perform_between = false) {
+	static follow_cue = function(sound, cue_name, offset, perform_between = false) {
 		self.handler.follow_cue(sound, self, offset, perform_between, __mux_string_to_struct_key(cue_name));
 	}
 }
@@ -63,12 +63,12 @@ function MuxEventMarker(consecuence): MuxMarker() constructor {
 	 * @param {Real} offset The offset between the marker's position and the sound instance's track position, in seconds
 	 * @param {Struct} params The parameters to consider in this cue event
 	 */
-	trigger_event = function(sound, offset, params) {
+	static trigger_event = function(sound, offset, params) {
 		self.consecuence(self, sound, offset, params);
 	}
 	
 	///@desc Returns an unlinked copy of this MuxMarker
-	copy = function() {
+	static copy = function() {
 		var _copy = new MuxEventMarker(self.consecuence);
 		_copy.cue_point = self.cue_point;
 		return _copy;
@@ -92,12 +92,12 @@ function MuxConditionMarker(condition, consecuence): MuxMarker() constructor {
 	 * @param {Real} offset The offset between the marker's position and the sound instance's track position, in seconds
 	 * @param {Struct} params The parameters to consider in this cue event
 	 */
-	trigger_event = function(sound, offset, params) {
+	static trigger_event = function(sound, offset, params) {
 		if self.condition(params) then self.consecuence(self, sound, offset, params);
 	}
 	
 	///@desc Returns an unlinked copy of this MuxMarker
-	copy = function() {
+	static copy = function() {
 		var _copy = new MuxConditionMarker(self.condition, self.consecuence);
 		_copy.cue_point = self.cue_point;
 		return _copy;
@@ -122,12 +122,12 @@ function MuxJumpMarker(condition, target, perform_between = false): MuxMarker() 
 	 * @param {Real} offset The offset between the marker's position and the sound instance's track position, in seconds
 	 * @param {Struct} params The parameters to consider in this cue event
 	 */
-	trigger_event = function(sound, offset, params) {
+	static trigger_event = function(sound, offset, params) {
 		if self.condition(params) then self.handler.follow_cue(sound, self, offset, self.perform_between);
 	}
 	
 	///@desc Returns an unlinked copy of this MuxMarker
-	copy = function() {
+	static copy = function() {
 		var _copy = new MuxJumpMarker(self.condition, self.target);
 		_copy.cue_point = self.cue_point;
 		return _copy;
@@ -149,22 +149,14 @@ function MuxLoopMarker(target): MuxMarker() constructor {
 	 * @param {Real} offset The offset between the marker's position and the sound instance's track position, in seconds
 	 * @param {Struct} params The parameters to consider in this cue event
 	 */
-	trigger_event = function(sound, offset, params) {
+	static trigger_event = function(sound, offset, params) {
 		self.handler.follow_cue(sound, self, offset, false);
 	}
 	
 	///@desc Returns an unlinked copy of this MuxMarker
-	copy = function() {
+	static copy = function() {
 		var _copy = new MuxLoopMarker(self.target);
 		_copy.cue_point = self.cue_point;
 		return _copy;
 	}
-}
-
-/**
- * @desc Returns a sound arranger based on the provided sound asset index
- * @param {Asset.GMSound} index
- */
-function mux_arranger(index) {
-	return struct_get(MUX_ARRANGERS, audio_get_name(index));
 }

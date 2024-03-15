@@ -1,4 +1,12 @@
-struct_foreach(MUX_ARRANGERS, function(_, arranger) { arranger.free() });
+var _arrangers = MUX_ARRANGERS;
+var _ww = ds_grid_width(_arrangers);
+var _hh = ds_grid_height(_arrangers);
+var _xx, _yy;
+for(_xx = 0; _xx < _ww; _xx++) {
+	for(_yy = 0; _yy < _hh; _yy++) {
+		ds_grid_get(_arrangers, _xx, _yy).free();
+	}
+}
 
 ds_queue_destroy(pending_sounds_crossfade);
 ds_queue_destroy(pending_instances_notify);

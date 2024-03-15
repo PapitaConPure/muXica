@@ -27,7 +27,29 @@ function mux_sound_get_array(sound) {
 	
 	if sound == all then return mux_sound_get_array_from_all();
 	
+	if is_string(sound) then return mux_sound_get_array_from_tag(sound);
+	
 	return [ mux_sound_get_from_inst(sound) ];
+}
+
+///@returns {Array<Struct.MuxSound>}
+function mux_sound_get_array_from_all() {
+	var _all_group = MUX_ALL;
+	var _list_size = _all_group.size;
+	
+	//feather disable once GM1045
+	if _list_size == 0 then return [];
+	
+	var _arr = array_create(_list_size);
+	var _i = 0;
+	
+	repeat _list_size {
+		_arr[_i] = _all_group.get_sound(_i);
+		_i++;
+	}
+	
+	//feather disable once GM1045
+	return _arr;
 }
 
 ///@param {Asset.GMSound} index
@@ -52,19 +74,24 @@ function mux_sound_get_array_from_index(index) {
 	return _arr;
 }
 
+///@param {String} index
 ///@returns {Array<Struct.MuxSound>}
-function mux_sound_get_array_from_all() {
+function mux_sound_get_array_from_tag(tag) {
+	var _tags = MUX_TAGS;
 	var _all_group = MUX_ALL;
 	var _list_size = _all_group.size;
 	
 	//feather disable once GM1045
 	if _list_size == 0 then return [];
 	
-	var _arr = array_create(_list_size);
 	var _i = 0;
+	var _arr = array_create(_list_size);
+	var _snd;
 	
 	repeat _list_size {
-		_arr[_i] = _all_group.get_sound(_i);
+		_snd = _group_bank.get_sound(_i);
+		if _snd
+		_arr[_i] = _snd;
 		_i++;
 	}
 	
@@ -179,6 +206,12 @@ function mux_sound_is_playing(inst) {
 	}
 	
 	return _found;
+}
+
+///@desc Checks if any sound of a certain sound asset or tag space is currently paused
+///@param {Asset.GMSound|Id.Sound|Constant.All} sound The umbrella of sounds to check for. By default, all will be checked
+function mux_sound_any_is_paused(sound = all) {
+	return array_any(mux_sound_get_array(sound), function(sound) { return not sound.playing; });
 }
 
 /// @param {Asset.GMAudioGroup|Constant.All} group_id

@@ -80,7 +80,7 @@ function mux_sound_crossfade(time, from, to, priority, loop = false, synced = fa
  * @param {Asset.GMSound|Id.Sound|Constant.All} sound Origin existing sound id
  * @param {Real} time Time for transition (in milliseconds)
  */
-function mux_sound_stop(sound, time) {
+function mux_sound_stop(sound, time = 0) {
 	MUX_CHECK_UNINITIALISED_EX;
 	
 	var _all_bank = MUX_ALL;
@@ -99,8 +99,8 @@ function mux_sound_stop(sound, time) {
 		__mux_sound_fade_out_index(time, sound, _group_bank, _all_bank);
 	} else {
 		var _group_idx = _group_bank.find_index_of(sound);
-		var _all_idx = _all_bank.find_index_of(sound);
-		var _stopped_sound = _all_bank.get_sound(_all_idx);
+		var _stopped_sound = _group_bank.get_sound(_group_idx);
+		var _all_idx = _stopped_sound.get_index_in("all");
 		
 		audio_sound_gain(sound, 0, time);
 		_group_bank.remove_sound_at(_group_idx);
@@ -133,6 +133,8 @@ function __mux_sound_fade_out_all(time, all_bank) {
 	var _found, _found_idx, _i;
 	
 	for(_i = _start; _i >= 0; _i--) {
+		if not all_bank.has_sound(_i) then continue;
+		
 		_found = all_bank.get_sound(_i);
 		audio_sound_gain(_found.inst, 0, time);
 		all_bank.remove_sound_at(_i);
@@ -154,6 +156,8 @@ function __mux_sound_fade_out_group(time, group_bank, all_bank) {
 	var _found, _found_idx, _i;
 	
 	for(_i = _start; _i >= 0; _i--) {
+		if not all_bank.has_sound(_i) then continue;
+		
 		_found = all_bank.get_sound(_i);
 		audio_sound_gain(_found.inst, 0, time);
 		group_bank.remove_sound(_found);
@@ -174,6 +178,8 @@ function __mux_sound_fade_out_index(time, index, group_bank, all_bank) {
 	var _found, _found_idx, _i;
 	
 	for(_i = _start; _i >= 0; _i--) {
+		if not all_bank.has_sound(_i) then continue;
+		
 		_found = all_bank.get_sound(_i);
 		if _found.index != index then continue;
 		
