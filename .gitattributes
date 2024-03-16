@@ -1,1 +1,5 @@
 *.yy linguist-language=GML
+*.gml text eol=lf
+*.yy text eol=lf
+*.yyp text eol=lf
+*.json text eol=lf
