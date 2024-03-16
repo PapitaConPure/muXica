@@ -92,6 +92,23 @@ function MuxGroup(name) constructor {
 	}
 	
 	/**
+	 * @desc Checks whether this group contains a sound in the specified index (true) or not (false).
+	 *       This function will never throw an exception, and will return false if the supplied index is out of range
+	 * @param {Real} idx The sound index to check for within the group
+	 */
+	static has_sound = function(idx) {
+		if idx < 0 or idx > self.capacity then return false;
+		
+		return not is_undefined(self.sounds[idx]);
+	}
+	
+	///@desc Returns true if the group doesn't contain any sounds and false otherwise
+	///@returns {Bool}
+	static is_empty = function() {
+		return self.size == 0;
+	}
+	
+	/**
 	 * @desc Gets a sound from this group
 	 * @param {Real} idx
 	 * @returns {Struct.MuxSound}
@@ -201,22 +218,5 @@ function MuxGroup(name) constructor {
 			_snd.unlink(self.name);
 			self.sounds[_i++] = undefined;
 		}
-	}
-	
-	/**
-	 * @desc Checks whether this group contains a sound in the specified index (true) or not (false).
-	 *       This function will never throw an exception, and will return false if the supplied index is out of range
-	 * @param {Real} idx The sound index to check for within the group
-	 */
-	static has_sound = function(idx) {
-		if idx < 0 or idx > self.capacity then return false;
-		
-		return not is_undefined(self.sounds[idx]);
-	}
-	
-	///@desc Returns true if the group doesn't contain any sounds and false otherwise
-	///@returns {Bool}
-	static is_empty = function() {
-		return self.size == 0;
 	}
 }

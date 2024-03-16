@@ -6,9 +6,10 @@
  * @param {Id.Sound} inst Sound instance id
  * @constructor
  */
-function MuxSound(index, inst) constructor {
+function MuxSound(index, inst, arranged = true) constructor {
 	self.index = index;
 	self.inst = inst;
+	self.arranged = arranged;
 	
 	self.pos = audio_sound_get_track_position(inst);
 	self.ppos = self.pos;
@@ -27,10 +28,12 @@ function MuxSound(index, inst) constructor {
 	self.__next_pos = -1;
 	
 	//Automatically attach to handler's corresponding MuxArranger if it exists (for cue event handling magic)
-	var _arrangers = MUX_ARRANGERS;
-	var _key = ds_grid_value_x(_arrangers, 0, MUX_ARR_F.NAME, ds_grid_width(_arrangers) - 1, MUX_ARR_F.NAME, self.name);
-	if _key >= 0 {
-		ds_list_add(_arrangers[# _key, MUX_ARR_F.STRUCT].instances, self);
+	if self.arranged {
+		var _arrangers = MUX_ARRANGERS;
+		var _key = ds_grid_value_x(_arrangers, 0, MUX_ARR_F.NAME, ds_grid_width(_arrangers) - 1, MUX_ARR_F.NAME, self.name);
+		var _arranger = _arrangers[# _key, MUX_ARR_F.STRUCT];
+		if _key >= 0 then ds_list_add(_arranger.instances, self);
+		else self.arranged = false;
 	}
 	
 	static update = function() {
@@ -111,6 +114,8 @@ function MuxSound(index, inst) constructor {
 	}
 	
 	static free = function() {
+		if not self.arranged then return;
+		
 		var _arrangers = MUX_ARRANGERS;
 		var _key = ds_grid_value_x(_arrangers, 0, MUX_ARR_F.NAME, ds_grid_width(_arrangers) - 1, MUX_ARR_F.NAME, self.name);
 		if _key < 0 then return;
