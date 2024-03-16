@@ -49,29 +49,51 @@ function mux_config_arrangers() {
 	);
 	
 	mux_arranger_add(
-		new MuxArranger(aud_bgm_test2, 80, { tension: 25, last_pos: 0 })
+		new MuxArranger(aud_bgm_test2, 80, { tension: 25, last_pos: -1 })
 		.set_bpm(128)
 		.set_time_signature(4, 4)
 		.set_marker_repeat("switch to heavy", 2, MUX_MARKER_UNIT.BARS, 68, new MuxConditionMarker(
-			function(params) { return params.tension >= 50; },
+			function(params) { return params.tension > 50; },
 			function(marker, sound, offset, params) {
-				params.last_pos = marker.cue_point;
+				params.last_pos = marker.cue_point - offset;
 				marker.follow_cue(sound, "heavy intro", offset, false);
 			}))
 		.jump_bars(1)
 		.set_marker("to normal loop start", new MuxLoopMarker("normal loop start"))
 		.jump_bars(67)
-		.set_marker("normal loop start", new MuxMarker())
+		.set_marker("normal loop start", new MuxEventMarker(
+			function(marker, sound, offset, params) {
+				if params.last_pos >= 0 {
+					sound.set_track_position(marker.cue_point + params.last_pos - offset);
+					params.last_pos = -1;
+				}
+			}))
 		.jump_bars(68)
 		.set_marker("normal loop", new MuxJumpMarker(
 			function(params) {
 				return params.tension < 50;
 			},
 			"normal loop start"))
-		.jump_bars(3)
+		.jump_bars(2)
+		.set_marker("offset normal", new MuxMarker())
+		.jump_bars(1)
 		.set_marker("heavy intro", new MuxMarker())
 		.jump_bars(1)
-		.set_marker("heavy start", new MuxMarker())
+		.set_marker("heavy start", new MuxEventMarker(
+			function(marker, sound, offset, params) {
+				if params.last_pos >= 0 {
+					sound.set_track_position(marker.cue_point + params.last_pos - offset);
+					params.last_pos = -1;
+				}
+			}))
+		.set_marker_repeat("switch to normal", 2, MUX_MARKER_UNIT.BARS, 68, new MuxConditionMarker(
+			function(params) { return params.tension <= 50; },
+			function(marker, sound, offset, params) {
+				params.last_pos = marker.cue_point - marker.handler.markers.offset_normal.cue_point - offset;
+				marker.follow_cue(sound, "normal loop start", offset, false);
+			}))
+		.jump_bars(68 * 2)
+		.set_marker("heavy loop", new MuxLoopMarker("heavy start"))
 	);
 	
 	mux_arrangers_submit();
