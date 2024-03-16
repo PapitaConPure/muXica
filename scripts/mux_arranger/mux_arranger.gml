@@ -70,6 +70,25 @@ function MuxArranger(index, start_delay, start_params) constructor {
 		return self;
 	}
 	
+	///@desc Sets the cursor bpm to the specified amount
+	///@param {Real} bpm The current section's bpm
+	static set_bpm = function(bpm) {
+		self.bpm = bpm;
+		return self;
+	}
+	
+	/**
+	 * @desc Sets the cursor time signature to the notated value
+	 * @param {Real} [beat_count] The current section's beats per measure. By default: 4
+	 * @param {Real} [note_value] The current section's note value. 4 is a quarter and 8 is an eight. By default: 4
+	 */
+	static set_time_signature = function(beat_count = 4, note_value = 4) {
+		MUX_EX_IF note_value % 4 != 0
+			__mux_ex("Invalid note value", "Note value must be divisible by 4");
+		self.time_signature = [beat_count, note_value];
+		return self;
+	}
+	
 	/**
 	 * @desc Sets a marker in the current track position for later access
 	 * @param {String} marker_name The marker's name
@@ -137,25 +156,6 @@ function MuxArranger(index, start_delay, start_params) constructor {
 			self.markers[$ _repeat_key] = _copy;
 		}
 		
-		return self;
-	}
-	
-	///@desc Sets the cursor bpm to the specified amount
-	///@param {Real} bpm The current section's bpm
-	static set_bpm = function(bpm) {
-		self.bpm = bpm;
-		return self;
-	}
-	
-	/**
-	 * @desc Sets the cursor time signature to the notated value
-	 * @param {Real} [beat_count] The current section's beats per measure. By default: 4
-	 * @param {Real} [note_value] The current section's note value. 4 is a quarter and 8 is an eight. By default: 4
-	 */
-	static set_time_signature = function(beat_count = 4, note_value = 4) {
-		MUX_EX_IF note_value % 4 != 0
-			__mux_ex("Invalid note value", "Note value must be divisible by 4");
-		self.time_signature = [beat_count, note_value];
 		return self;
 	}
 	
@@ -283,12 +283,4 @@ function mux_arranger(index) {
 	var _index = ds_grid_value_x(_arrangers, 0, MUX_ARR_F.NAME, ds_grid_width(_arrangers) - 1, MUX_ARR_F.NAME, _name);
 	
 	return ds_grid_get(_arrangers, _index, MUX_ARR_F.STRUCT);
-}
-
-/**
- * @param {String} name
- * @param {Struct.MuxArranger} arranger
- */
-function mux_arranger_update_all(name, arranger) {
-	arranger.update();
 }
