@@ -4,6 +4,11 @@ enum MUX_MARKER_UNIT {
 	SECONDS,
 }
 
+enum MUX_ORD_MK {
+	NAME,
+	STRUCT,
+}
+
 /**
  * @desc Represents a sound arranger
  * @param {Asset.GMSound} index Sound asset index
@@ -17,6 +22,7 @@ function MuxArranger(index, start_delay, start_params) constructor {
 	self.cue_time = start_delay * 0.001;
 	self.markers = {};
 	self.marker_names = [];
+	self.ordered_markers = undefined;
 	self.instances = ds_list_create();
 	self.instance_number = 0;
 	self.reset_sound_delta = false;
@@ -145,7 +151,6 @@ function MuxArranger(index, start_delay, start_params) constructor {
 		return self;
 	}
 	
-	self.__followed_cue_data = {};
 	/**
 	 * @desc Sets the sound instance's position to the specified track audio cue point
 	 * @param {Struct.MuxSound} sound The sound which will follow the cue point
@@ -163,30 +168,26 @@ function MuxArranger(index, start_delay, start_params) constructor {
 		sound.set_track_position(_new_pos, perform_between ? sound.pos : -1);
 		
 		//Execute markers between the target marker's cue time and the offset here
-		self.__followed_cue_data = {
-			sound, offset,
-			new_pos: _new_pos,
-			target: target_name,
-			source_cue: source_marker.cue_point,
-			target_cue: _target_marker.cue_point
-		};
-		
-		struct_foreach(self.markers, function(name, marker) {
-			var _data = self.__followed_cue_data;
+		var _ordered_markers = self.ordered_markers;
+		var _i = 0;
+		var _size = ds_grid_width(_ordered_markers);
+		repeat _size {
+			var _name = ds_grid_get(_ordered_markers, _i, MUX_ORD_MK.NAME);
+			var _marker = ds_grid_get(_ordered_markers, _i++, MUX_ORD_MK.STRUCT);
 			
-			if marker.cue_point == _data.source_cue or name == _data.target then return;
+			if _marker.cue_point == source_marker.cue_point or _name == target_name then continue;
 			
-			if marker.cue_point >= _data.new_pos then return;
+			if _marker.cue_point >= _new_pos then break; //Assume following markers won't be reached, as they're ordered by cue_point
 			
-			var _min_point = _data.target_cue;
-			var _offset = _data.offset;
-			var _max_point = _min_point + _offset;
+			var _min_point = _target_marker.cue_point;
+			var _max_point = _min_point + offset;
 			
-			if _min_point <= marker.cue_point and marker.cue_point < _max_point {
-				MUX_LOG_INFO($"Triggering event for residual marker \"{name}\" in second {marker.cue_point} ({_min_point}s <= {marker.cue_point}s < {_max_point}s). The source marker's cue point is {_data.source_cue}s in, and the target marker's cue point is the min valid point");
-				marker.trigger_event(_data.sound, _offset, self.params);
+			if _min_point <= _marker.cue_point/* and _marker.cue_point < _max_point*/ {
+				MUX_LOG_INFO($"Triggering event for residual marker \"{_name}\" in second {_marker.cue_point} ({_min_point}s <= {_marker.cue_point}s < {_max_point}s). The source marker's cue point is {source_marker.cue_point}s in, and the target marker's cue point is the min valid point");
+				_marker.trigger_event(sound, offset, self.params);
 			}
-		});
+		}
+		
 		if _target_marker.cue_point <= source_marker.cue_point {
 			MUX_LOG_INFO($"Triggering event for MAIN MARKER of anonymous name in second {_target_marker.cue_point}. The source marker's cue point is {source_marker.cue_point}s in");
 			_target_marker.trigger_event(sound, offset, self.params);
@@ -198,9 +199,10 @@ function MuxArranger(index, start_delay, start_params) constructor {
 	///@desc Updates each linked sound's position and responds to track cue marker surpass events
 	static update = function() {
 		self.instance_number = ds_list_size(self.instances);
+		if self.instance_number == 0 then return;
 		
-		var _names = self.marker_names;
-		var _size = array_length(_names);
+		var _ordered_markers = self.ordered_markers;
+		var _size = ds_grid_width(_ordered_markers);
 		var _name, _marker;
 		var _snd, _j;
 		var _i = 0;
@@ -215,12 +217,12 @@ function MuxArranger(index, start_delay, start_params) constructor {
 			
 			_j = 0;
 			repeat _size {
-				_name = _names[_j++];
-				_marker = self.markers[$ _name];
+				_marker = ds_grid_get(self.ordered_markers, _j++, MUX_ORD_MK.STRUCT);
 				
-				if _snd.ppos >= _marker.cue_point or _snd.pos < _marker.cue_point then continue;
+				if _snd.ppos >= _marker.cue_point then continue;
+				if _snd.pos  <  _marker.cue_point then break; //Assume following markers won't be reached by this point in time, as they're ordered by cue_point
 				
-				MUX_LOG_INFO($"Triggering event for \"{_name}\" in second {_marker.cue_point} ({_snd.ppos}s <= {_marker.cue_point}s < {_snd.pos}s). The source is the arranger itself");
+				MUX_LOG_INFO($"Triggering event for \"{ds_grid_get(self.ordered_markers, _j - 1, MUX_ORD_MK.NAME)}\" in second {_marker.cue_point} ({_snd.ppos}s <= {_marker.cue_point}s < {_snd.pos}s). The source is the arranger itself");
 				_marker.trigger_event(_snd, _snd.pos - _marker.cue_point, self.params);
 			}
 			
@@ -229,10 +231,30 @@ function MuxArranger(index, start_delay, start_params) constructor {
 	}
 	
 	static finalize_markers = function() {
-		if array_length(self.marker_names) > 0 then return;
-		self.marker_names = array_filter(struct_get_names(self.markers), function(name) {
-			return not self.markers[$ name].basic;
-		});
+		if not is_undefined(self.ordered_markers) and ds_exists(self.ordered_markers, ds_type_grid)
+			ds_grid_destroy(self.ordered_markers);
+		
+		var _pq = ds_priority_create();
+		var _names = struct_get_names(self.markers);
+		var _size = array_length(_names);
+		var _i, _name, _marker;
+		
+		for(_i = 0; _i < _size; _i++) {
+			_name = _names[_i];
+			_marker = self.markers[$ _name];
+			if _marker.basic then continue;
+			ds_priority_add(_pq, _name, _marker.cue_point);
+		}
+		
+		_size = ds_priority_size(_pq);
+		self.ordered_markers = ds_grid_create(_size, 2);
+		for(_i = 0; _i < _size; _i++) {
+			_name = ds_priority_delete_min(_pq);
+			ds_grid_add(self.ordered_markers, _i, MUX_ORD_MK.NAME, _name);
+			ds_grid_add(self.ordered_markers, _i, MUX_ORD_MK.STRUCT, self.markers[$ _name]);
+		}
+		
+		ds_priority_destroy(_pq);
 	}
 	
 	///@desc Call this to free all sound instance memory from the MuxArranger when it's no longer used

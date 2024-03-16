@@ -17,17 +17,17 @@ for(_i = 0; _i < _group.capacity; _i++) {\
 	draw_text(96, _base + _sep * _i, $"[{_snd.inst}] {audio_get_name(_snd.index)} -- {_snd.playing ? "PLAYING" : "PAUSED"}, {_snd.pos}s/{_snd.length}s, Px{_snd.pitch}");\
 }
 
-_base = 64;
+_base = 96;
 _name = "BGM";
 _group = MUX_BGM;
 DRAW_THE_THINGY
 
-_base = 192;
+_base = 96 + 160;
 _name = "SFX";
 _group = MUX_SFX;
 DRAW_THE_THINGY
 
-_base = 320;
+_base = 96 + 160 + 160;
 _name = "all";
 _group = MUX_ALL;
 DRAW_THE_THINGY
