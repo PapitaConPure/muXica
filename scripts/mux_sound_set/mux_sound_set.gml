@@ -1,5 +1,5 @@
 ///@desc Sets the track position for the specified sound instance or group
-///@param {Asset.GMSound|Id.Sound|Constant.All} sound
+///@param {Asset.GMSound|Id.Sound|String|Constant.All} sound
 ///@param {Real} time
 function mux_sound_set_track_position(sound, time) {
 	static _time = 0;
@@ -10,7 +10,7 @@ function mux_sound_set_track_position(sound, time) {
 }
 
 ///@desc Sets the track position for the specified sound instance or group
-///@param {Asset.GMSound|Id.Sound|Constant.All} sound
+///@param {Asset.GMSound|Id.Sound|String|Constant.All} sound
 ///@param {Real} pitch
 function mux_sound_set_pitch(sound, pitch) {
 	static _pitch = 0;
@@ -21,13 +21,13 @@ function mux_sound_set_pitch(sound, pitch) {
 }
 
 ///@desc Sets the track position for the specified sound instance or group
-///@param {Asset.GMSound|Id.Sound|Constant.All} sound
+///@param {Asset.GMSound|Id.Sound|String|Constant.All} sound
 function mux_sound_pause(sound) {
 	array_foreach(mux_sound_get_array(sound), function(sound) { sound.pause(); });
 }
 
 ///@desc Sets the track position for the specified sound instance or group
-///@param {Asset.GMSound|Id.Sound|Constant.All} sound
+///@param {Asset.GMSound|Id.Sound|String|Constant.All} sound
 function mux_sound_resume(sound) {
 	array_foreach(mux_sound_get_array(sound), function(sound) { sound.resume(); });
 }

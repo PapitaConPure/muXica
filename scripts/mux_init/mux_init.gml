@@ -1,10 +1,10 @@
 #macro MUX_HANDLER mux_scope_global._struct.worker
 #macro MUX_HANDLER_DEPTH 16002
 
-#macro MUX_GROUPS mux_handler_get_group
-#macro MUX_BGM    mux_handler_get_group("BGM")
-#macro MUX_SFX    mux_handler_get_group("SFX")
-#macro MUX_ALL    mux_handler_get_group("all")
+#macro MUX_GROUPS mux_handler_get_bank
+#macro MUX_BGM    mux_handler_get_bank("BGM")
+#macro MUX_SFX    mux_handler_get_bank("SFX")
+#macro MUX_ALL    mux_handler_get_bank("all")
 #macro MUX_P_STOP MUX_HANDLER.pending_sounds_stop
 #macro MUX_P_FADE MUX_HANDLER.pending_sounds_crossfade
 
@@ -16,12 +16,12 @@
 #macro MUX_LOG_STEP if MUX_SHOW_LOG_STEP then show_debug_message
 
 /**
- * @param {String} group_name
- * @returns {Struct.MuxGroup}
+ * @param {String} bank_name
+ * @returns {Struct.MuxBank}
  */
-function mux_handler_get_group(group_name) {
+function mux_handler_get_bank(bank_name) {
 	static _handler = MUX_HANDLER;
-	return _handler.mux_sounds[$ group_name];
+	return _handler.mux_sounds[$ bank_name];
 }
 
 //Generate muXica global scope

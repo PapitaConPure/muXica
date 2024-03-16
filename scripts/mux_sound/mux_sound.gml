@@ -22,7 +22,7 @@ function MuxSound(index, inst, arranged = true) constructor {
 	self.group = audio_sound_get_audio_group(index);
 	self.length = audio_sound_length(index);
 	
-	self.group_index = {};
+	self.bank_index = {};
 	
 	self.__reset_ppos = -1;
 	self.__next_pos = -1;
@@ -31,9 +31,12 @@ function MuxSound(index, inst, arranged = true) constructor {
 	if self.arranged {
 		var _arrangers = MUX_ARRANGERS;
 		var _key = ds_grid_value_x(_arrangers, 0, MUX_ARR_F.NAME, ds_grid_width(_arrangers) - 1, MUX_ARR_F.NAME, self.name);
-		var _arranger = _arrangers[# _key, MUX_ARR_F.STRUCT];
-		if _key >= 0 then ds_list_add(_arranger.instances, self);
-		else self.arranged = false;
+		
+		if _key >= 0 {
+			ds_list_add(_arrangers[# _key, MUX_ARR_F.STRUCT].instances, self);
+		} else {
+			self.arranged = false;
+		}
 	}
 	
 	static update = function() {
@@ -97,20 +100,20 @@ function MuxSound(index, inst, arranged = true) constructor {
 		self.free();
 	}
 	
-	///@param {String} group_name The name of the group this sound will be linked to
-	///@param {Real} group_index The internal index this sound will occupy within the group
-	static link = function(group_name, group_index) {
-		self.group_index[$ group_name] = group_index;
+	///@param {String} bank_name The name of the bank this sound will be linked to
+	///@param {Real} bank_index The internal index this sound will occupy within the bank
+	static link = function(bank_name, bank_index) {
+		self.bank_index[$ bank_name] = bank_index;
 	}
 	
-	///@param {String} group_name The name of the group this sound will be unlinked from
-	static unlink = function(group_name) {
-		self.group_index[$ group_name] = undefined;
+	///@param {String} bank_name The name of the bank this sound will be unlinked from
+	static unlink = function(bank_name) {
+		self.bank_index[$ bank_name] = undefined;
 	}
 	
-	///@param {String} group_name  The name of the group to get the sound's index from
-	static get_index_in = function(group_name) {
-		return self.group_index[$ group_name];
+	///@param {String} bank_name The name of the bank to get the sound's index from
+	static get_index_in = function(bank_name) {
+		return self.bank_index[$ bank_name];
 	}
 	
 	static free = function() {

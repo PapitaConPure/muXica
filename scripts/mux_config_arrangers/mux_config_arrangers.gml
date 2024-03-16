@@ -16,7 +16,7 @@ function mux_config_arrangers() {
 	mux_arrangers_init();
 	
 	mux_arranger_add(
-		new MuxArranger(aud_bgm_test1, 142, { n: 1 })
+		new MuxArranger(aud_bgm_test1, 144, { n: 1 })
 		.set_bpm(143)
 		.set_time_signature(4, 4)
 		.jump_bars(1)

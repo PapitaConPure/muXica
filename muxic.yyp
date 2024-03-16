@@ -53,7 +53,7 @@
     {"id":{"name":"mux_exceptions","path":"scripts/mux_exceptions/mux_exceptions.yy",},},
     {"id":{"name":"mux_get_beat_pos","path":"scripts/mux_get_beat_pos/mux_get_beat_pos.yy",},},
     {"id":{"name":"mux_group_gain","path":"scripts/mux_group_gain/mux_group_gain.yy",},},
-    {"id":{"name":"mux_group","path":"scripts/mux_group/mux_group.yy",},},
+    {"id":{"name":"mux_bank","path":"scripts/mux_bank/mux_bank.yy",},},
     {"id":{"name":"mux_groups_update","path":"scripts/mux_groups_update/mux_groups_update.yy",},},
     {"id":{"name":"mux_init","path":"scripts/mux_init/mux_init.yy",},},
     {"id":{"name":"mux_is_ready","path":"scripts/mux_is_ready/mux_is_ready.yy",},},

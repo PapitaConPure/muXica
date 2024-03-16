@@ -27,7 +27,7 @@
     {"name":"mux_cue_set","order":3,"path":"scripts/mux_cue_set/mux_cue_set.yy",},
     {"name":"mux_get_beat_pos","order":2,"path":"scripts/mux_get_beat_pos/mux_get_beat_pos.yy",},
     {"name":"mux_group_gain","order":1,"path":"scripts/mux_group_gain/mux_group_gain.yy",},
-    {"name":"mux_group","order":3,"path":"scripts/mux_group/mux_group.yy",},
+    {"name":"mux_bank","order":3,"path":"scripts/mux_bank/mux_bank.yy",},
     {"name":"mux_init","order":1,"path":"scripts/mux_init/mux_init.yy",},
     {"name":"mux_is_ready","order":2,"path":"scripts/mux_is_ready/mux_is_ready.yy",},
     {"name":"mux_marker","order":2,"path":"scripts/mux_marker/mux_marker.yy",},

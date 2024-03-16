@@ -1,17 +1,17 @@
 /**
- * @desc Represents a group of MuxSounds that are all of similar nature and processed in the same way.
+ * @desc Represents a bank/group of MuxSounds that are all of similar nature and processed in the same way.
  *       Internally, it's an array-based dynamic list that can grow twice its capacity when needed, and is processed in a wrapped, fragmented fashion.
- *       It's capacity can be reduced to fit only the current sounds it contains with MuxGroup.shrink_capacity()
- * @param {String} name The name of the group
+ *       It's capacity can be reduced to fit only the current sounds it contains with MuxBank.shrink_capacity()
+ * @param {String} name The name of the bank
  */
-function MuxGroup(name) constructor {
+function MuxBank(name) constructor {
 	self.name = name;
 	self.size = 0;
-	self.capacity = 4;
+	self.capacity = 2;
 	self.sounds = array_create(self.capacity, undefined);
 	self.head = 0;
 	
-	///@desc Adds a sound to this group at the current head position
+	///@desc Adds a sound to this bank at the current head position
 	///@param {Struct.MuxSound} sound The sound to add
 	static add_sound = function(sound) {
 		var _new_idx = self.head;
@@ -29,7 +29,7 @@ function MuxGroup(name) constructor {
 			}
 		} until(_found_available or _new_idx == _starting_point);
 		
-		//Resize this group if there's no room for the new sound
+		//Resize this bank if there's no room for the new sound
 		if not _found_available {
 			_new_idx = self.capacity;
 			self.capacity *= 2;
@@ -46,7 +46,7 @@ function MuxGroup(name) constructor {
 		self.size++;
 	}
 	
-	///@desc Removes the specified sound from this group
+	///@desc Removes the specified sound from this bank
 	///@param {Struct.MuxSound} sound The sound to remove
 	static remove_sound = function(sound) {
 		var _idx = self.get_index_of(sound);
@@ -58,7 +58,7 @@ function MuxGroup(name) constructor {
 		self.size--;
 	}
 	
-	///@desc Removes a sound from this group at the specified position
+	///@desc Removes a sound from this bank at the specified position
 	///@param {Real} idx The position from which a sound will be removed
 	static remove_sound_at = function(idx) {
 		self.sounds[idx].unlink(self.name);
@@ -67,7 +67,7 @@ function MuxGroup(name) constructor {
 	}
 	
 	/**
-	 * @desc Replaces the specified sound in this group with the supplied new sound
+	 * @desc Replaces the specified sound in this bank with the supplied new sound
 	 * @param {Struct.MuxSound} old_sound The sound that will be replaced by the new one
 	 * @param {Struct.MuxSound} new_sound The sound that will replace the old one
 	 */
@@ -80,7 +80,7 @@ function MuxGroup(name) constructor {
 	}
 	
 	/**
-	 * @desc Replaces the sound at the group's specified position with the supplied new sound
+	 * @desc Replaces the sound at the bank's specified position with the supplied new sound
 	 * @param {Real} idx The position of the sound to replace
 	 * @param {Struct.MuxSound} new_sound The new sound that will occupy the specified position instead
 	 */
@@ -92,9 +92,9 @@ function MuxGroup(name) constructor {
 	}
 	
 	/**
-	 * @desc Checks whether this group contains a sound in the specified index (true) or not (false).
+	 * @desc Checks whether this bank contains a sound in the specified index (true) or not (false).
 	 *       This function will never throw an exception, and will return false if the supplied index is out of range
-	 * @param {Real} idx The sound index to check for within the group
+	 * @param {Real} idx The sound index to check for within the bank
 	 */
 	static has_sound = function(idx) {
 		if idx < 0 or idx > self.capacity then return false;
@@ -102,31 +102,31 @@ function MuxGroup(name) constructor {
 		return not is_undefined(self.sounds[idx]);
 	}
 	
-	///@desc Returns true if the group doesn't contain any sounds and false otherwise
+	///@desc Returns true if the bank doesn't contain any sounds and false otherwise
 	///@returns {Bool}
 	static is_empty = function() {
 		return self.size == 0;
 	}
 	
 	/**
-	 * @desc Gets a sound from this group
+	 * @desc Gets a sound from this bank
 	 * @param {Real} idx
 	 * @returns {Struct.MuxSound}
 	 */
 	static get_sound = function(idx) {
-		if idx < 0 or idx > self.capacity then __mux_ex(MUX_EX_GROUP_INDEX_OOR);
+		if idx < 0 or idx > self.capacity then __mux_ex(MUX_EX_BANK_INDEX_OOR);
 		
 		var _sound = self.sounds[idx];
 		
 		if is_undefined(_sound)
-			__mux_ex("Sound group index was invalid", $"Tried to access an invalid index {idx} for sound group \"{self.name}\"");
+			__mux_ex("Sound bank index was invalid", $"Tried to access an invalid index {idx} for sound bank \"{self.name}\"");
 		
 		//feather disable once GM1045
 		return _sound;
 	}
 	
 	/**
-	 * @desc Gets the index of the specified MuxSound instance within the group
+	 * @desc Gets the index of the specified MuxSound instance within the bank
 	 * @param {Struct.MuxSound} sound
 	 * @returns {Real}
 	 */
@@ -144,7 +144,7 @@ function MuxGroup(name) constructor {
 	}
 	
 	/**
-	 * @desc Finds the index of the described sound within the group and returns it
+	 * @desc Finds the index of the described sound within the bank and returns it
 	 * @param {Asset.GMSound|Id.Sound} sound
 	 * @returns {Struct.MuxSound}
 	 */
@@ -163,7 +163,7 @@ function MuxGroup(name) constructor {
 	}
 	
 	/**
-	 * @desc Finds the index of the described sound within the group and returns it
+	 * @desc Finds the index of the described sound within the bank and returns it
 	 * @param {Asset.GMSound|Id.Sound} sound
 	 * @returns {Real}
 	 */
@@ -181,7 +181,7 @@ function MuxGroup(name) constructor {
 		return _found ? _idx : -1;
 	}
 	
-	///@desc Defragments and updates all the sounds' positions within the group and reduces the capacity to the current amount of sounds (minimum capacity: 4)
+	///@desc Defragments and updates all the sounds' positions within the bank and reduces the capacity to the current amount of sounds (minimum capacity: 4)
 	static shrink_capacity = function() {
 		var _sounds = ds_list_create();
 		
@@ -208,7 +208,7 @@ function MuxGroup(name) constructor {
 		ds_list_destroy(_sounds);
 	}
 	
-	///@desc Removes and unlinks all associated sounds from this group
+	///@desc Removes and unlinks all associated sounds from this bank
 	static flush = function() {
 		var _i = 0;
 		var _snd;
