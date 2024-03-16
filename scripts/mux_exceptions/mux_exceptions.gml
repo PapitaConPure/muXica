@@ -6,6 +6,7 @@ function __mux_warn(message) {
 	show_debug_message($"[!] muXica WARN: {message}");
 }
 
+#macro MUX_LOG_WARN if MUX_WARN_ENABLE then show_debug_message
 #macro MUX_WARN_IF if MUX_WARN_ENABLE and 
 
 #macro MUX_WARN_MARKER_DUPLICATED $"Marker \"{marker_name}\" already exists for arranger <{audio_get_name(self.index)}> in position: ${self.markers[$ _key].cue_point}s"
@@ -22,7 +23,8 @@ function __mux_ex(message, long_message = "No additional information was provide
 	};
 }
 
-#macro MUX_EX_IF if MUX_EX_ENABLE and  
+#macro MUX_LOG_EX if MUX_EX_ENABLE then show_debug_message
+#macro MUX_EX_IF if MUX_EX_ENABLE and 
 
 #macro MUX_CHECK_WORKER_KILLED_EX MUX_EX_IF not instance_exists(muxica_worker) then __mux_ex("Unexpected worker kill", "Worker instance was destroyed before game end")
 
