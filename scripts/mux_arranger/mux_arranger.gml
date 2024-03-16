@@ -10,7 +10,15 @@ enum MUX_ORD_MK {
 }
 
 /**
- * @desc Represents a sound arranger
+ * @desc Represents a sound arranger. It keeps track of all instances of the associated sound asset and manages them through markers.
+         Each arranger has a set of arbitrary parameters to keep its sound instances in touch with the state of the game.
+		 When an arranger is created, an imaginary "cursor" will be set at position 0, bpm 130, and time signature 4/4.
+		 Use the set_bpm() and set_time_signature() methods to set the bpm and time_signature in the current position.
+		 Use the jump_bars() and jump_beats() methods to move the cursor forward (you really shouldn't move backward).
+		 Use set_marker() to set a marker in the current cursor position.
+		 You can also use set_marker_repeat() to set a repeating succession of the same marker from the current cursor position.
+		 You must use the finalize_markers() method or call the mux_arrangers_submit() function afterward to optimize and finalize the configuration of the arranger.
+		 All associated markers must be set with set_marker() and set_marker_repeat() before finalize_markers() is called
  * @param {Asset.GMSound} index Sound asset index
  * @param {Real} start_delay Delay between the track's start and the sound's first attack, in milliseconds
  * @param {Struct} start_params Starting parameters for the arranger to work with

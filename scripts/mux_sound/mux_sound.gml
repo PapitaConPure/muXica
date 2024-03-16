@@ -1,8 +1,9 @@
 /**
- * @desc Represents an audio block
+ * @desc Represents an audio instance block, containing both the sound asset index and the sound instance id, as well as additional information about the asset or instance.
+ *       It is part of the MuxArranger system, so it has little use if using the standalone cues system. It has the update() and post_update() methods for processing.
+ *       You should never call the free() method manually, as all instances related to an arranger will be freed when the arranger is freed, and all other instances don't need to be freed
  * @param {Asset.GMSound} index Sound asset index
  * @param {Id.Sound} inst Sound instance id
- * @param {Bool} keep_alive=false Whether to keep the sound alive after it reaches 0 gain (true) or not (false)
  * @constructor
  */
 function MuxSound(index, inst) constructor {
@@ -37,7 +38,7 @@ function MuxSound(index, inst) constructor {
 		if not self.playing then return;
 		
 		//Actually, fuck GameMaker's audio support. I'll sync it my-fucking-self
-		var _new_pos = self.pos + delta_time * 0.000001 * self.pitch; //audio_sound_get_track_position(self.inst);
+		var _new_pos = self.pos + delta_time * 0.000001 * self.pitch;
 		
 		if self.__reset_ppos < 0 {
 			self.ppos = self.pos;

@@ -1,5 +1,7 @@
 /**
- * @desc Represents a group of MuxSounds that are all of similar nature and processed in the same way
+ * @desc Represents a group of MuxSounds that are all of similar nature and processed in the same way.
+ *       Internally, it's an array-based dynamic list that can grow twice its capacity when needed, and is processed in a wrapped, fragmented fashion.
+ *       It's capacity can be reduced to fit only the current sounds it contains with MuxGroup.shrink_capacity()
  * @param {String} name The name of the group
  */
 function MuxGroup(name) constructor {
@@ -9,8 +11,8 @@ function MuxGroup(name) constructor {
 	self.sounds = array_create(self.capacity, undefined);
 	self.head = 0;
 	
-	///@desc Adds a sound to this group
-	///@param {Struct.MuxSound} sound
+	///@desc Adds a sound to this group at the current head position
+	///@param {Struct.MuxSound} sound The sound to add
 	static add_sound = function(sound) {
 		var _new_idx = self.head;
 		if _new_idx >= self.capacity then _new_idx = 0;
@@ -45,7 +47,7 @@ function MuxGroup(name) constructor {
 	}
 	
 	///@desc Removes the specified sound from this group
-	///@param {Struct.MuxSound} sound
+	///@param {Struct.MuxSound} sound The sound to remove
 	static remove_sound = function(sound) {
 		var _idx = self.get_index_of(sound);
 		
@@ -64,6 +66,11 @@ function MuxGroup(name) constructor {
 		self.size--;
 	}
 	
+	/**
+	 * @desc Replaces the specified sound in this group with the supplied new sound
+	 * @param {Struct.MuxSound} old_sound The sound that will be replaced by the new one
+	 * @param {Struct.MuxSound} new_sound The sound that will replace the old one
+	 */
 	static replace_sound = function(old_sound, new_sound) {
 		old_sound.unlink(self.name);
 		
@@ -72,6 +79,11 @@ function MuxGroup(name) constructor {
 		self.sounds[_idx] = new_sound;
 	}
 	
+	/**
+	 * @desc Replaces the sound at the group's specified position with the supplied new sound
+	 * @param {Real} idx The position of the sound to replace
+	 * @param {Struct.MuxSound} new_sound The new sound that will occupy the specified position instead
+	 */
 	static replace_sound_at = function(idx, new_sound) {
 		self.sounds[idx].unlink(self.name);
 		
@@ -79,12 +91,13 @@ function MuxGroup(name) constructor {
 		self.sounds[idx] = new_sound;
 	}
 	
-	///@desc Gets a sound from this group
-	///@param {Real} idx
-	///@returns {Struct.MuxSound}
+	/**
+	 * @desc Gets a sound from this group
+	 * @param {Real} idx
+	 * @returns {Struct.MuxSound}
+	 */
 	static get_sound = function(idx) {
-		if idx < 0 or idx > self.capacity
-			__mux_ex("Sound group index was out of range", $"Tried to access an index out of the bounds {idx} for sound group \"{self.name}\"");
+		if idx < 0 or idx > self.capacity then __mux_ex(MUX_EX_GROUP_INDEX_OOR);
 		
 		var _sound = self.sounds[idx];
 		
@@ -95,9 +108,11 @@ function MuxGroup(name) constructor {
 		return _sound;
 	}
 	
-	///@desc Gets the index of the specified MuxSound instance within the group
-	///@param {Struct.MuxSound} sound
-	///@returns {Real}
+	/**
+	 * @desc Gets the index of the specified MuxSound instance within the group
+	 * @param {Struct.MuxSound} sound
+	 * @returns {Real}
+	 */
 	static get_index_of = function(sound) {
 		var _idx = -1;
 		var _found = false;
@@ -111,9 +126,11 @@ function MuxGroup(name) constructor {
 		return _found ? _idx : -1;
 	}
 	
-	///@desc Finds the index of the described sound within the group and returns it
-	///@param {Asset.GMSound|Id.Sound} sound
-	///@returns {Struct.MuxSound}
+	/**
+	 * @desc Finds the index of the described sound within the group and returns it
+	 * @param {Asset.GMSound|Id.Sound} sound
+	 * @returns {Struct.MuxSound}
+	 */
 	static find_sound = function(sound) {
 		var _idx = -1;
 		var _found = undefined;
@@ -128,9 +145,11 @@ function MuxGroup(name) constructor {
 		return _found;
 	}
 	
-	///@desc Finds the index of the described sound within the group and returns it
-	///@param {Asset.GMSound|Id.Sound} sound
-	///@returns {Real}
+	/**
+	 * @desc Finds the index of the described sound within the group and returns it
+	 * @param {Asset.GMSound|Id.Sound} sound
+	 * @returns {Real}
+	 */
 	static find_index_of = function(sound) {
 		var _idx = -1;
 		var _found = false;
@@ -184,10 +203,19 @@ function MuxGroup(name) constructor {
 		}
 	}
 	
+	/**
+	 * @desc Checks whether this group contains a sound in the specified index (true) or not (false).
+	 *       This function will never throw an exception, and will return false if the supplied index is out of range
+	 * @param {Real} idx The sound index to check for within the group
+	 */
 	static has_sound = function(idx) {
+		if idx < 0 or idx > self.capacity then return false;
+		
 		return not is_undefined(self.sounds[idx]);
 	}
 	
+	///@desc Returns true if the group doesn't contain any sounds and false otherwise
+	///@returns {Bool}
 	static is_empty = function() {
 		return self.size == 0;
 	}

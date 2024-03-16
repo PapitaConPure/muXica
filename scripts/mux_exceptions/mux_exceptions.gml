@@ -28,6 +28,8 @@ function __mux_ex(message, long_message = "No additional information was provide
 
 #macro MUX_CHECK_WORKER_KILLED_EX MUX_EX_IF not instance_exists(muxica_worker) then __mux_ex("Unexpected worker kill", "Worker instance was destroyed before game end")
 
+#macro MUX_EX_GROUP_INDEX_OOR "Sound group index was out of range", $"Tried to access an index out of bounds {idx} for sound group \"{self.name}\""
+
 #macro MUX_EX_UNINITIALISED "Audio system wasn't initialised yet", "muXica worker didn't boot up on time to respond to the resquest"
 #macro MUX_CHECK_UNINITIALISED ((MUX_HANDLER < 0) or not instance_exists(MUX_HANDLER))
 #macro MUX_CHECK_UNINITIALISED_EX MUX_EX_IF MUX_CHECK_UNINITIALISED then __mux_ex(MUX_EX_UNINITIALISED)
