@@ -41,11 +41,13 @@ function MuxSound(index, inst, arranged = true) constructor {
 		}
 	}
 	
+	///@desc Updates the sound instance's track position over time. Also keeps track of the previous position
+	///      If the sound's position is different for this frame, the "updated" variable will be set to true, otherwise it will be set to false
 	static update = function() {
 		self.updated = false;
 		if not self.playing then return;
 		
-		//Actually, fuck GameMaker's audio support. I'll sync it my-fucking-self
+		//I'll sync it my-fucking-self
 		var _new_pos = self.pos + delta_time * 0.000001 * self.pitch;
 		
 		if _new_pos >= self.length {
@@ -69,6 +71,7 @@ function MuxSound(index, inst, arranged = true) constructor {
 		self.updated = true;
 	}
 	
+	///@desc Applies position changes after a manual track position change
 	static post_update = function() {
 		if self.__next_pos < 0 then return;
 		self.pos = self.__next_pos;
@@ -88,16 +91,19 @@ function MuxSound(index, inst, arranged = true) constructor {
 		self.pitch = pitch;
 	}
 	
+	///@desc Pauses the sound instance's playback
 	static pause = function() {
 		audio_pause_sound(self.inst);
 		self.playing = false;
 	}
 	
+	///@desc Resumes the sound instance's playback
 	static resume = function() {
 		audio_resume_sound(self.inst);
 		self.playing = true;
 	}
 	
+	///@desc Stops the sound instance's playback and frees the sound block from its associated arranger (if any)
 	///@param {Bool} keep_alive Whether the sound instance should remain alive (true) or be entirely destroyed (false, default)
 	static stop = function(keep_alive = false) {
 		if keep_alive {
@@ -112,22 +118,26 @@ function MuxSound(index, inst, arranged = true) constructor {
 		self.free();
 	}
 	
+	///@desc Indexes a bank for this sound, keeping track of this sound's position within the bank specified by name
 	///@param {String} bank_name The name of the bank this sound will be linked to
 	///@param {Real} bank_index The internal index this sound will occupy within the bank
-	static link = function(bank_name, bank_index) {
+	static add_index = function(bank_name, bank_index) {
 		self.bank_index[$ bank_name] = bank_index;
 	}
 	
+	///@desc Removes the specified bank index entry for this sound
 	///@param {String} bank_name The name of the bank this sound will be unlinked from
-	static unlink = function(bank_name) {
+	static remove_index = function(bank_name) {
 		self.bank_index[$ bank_name] = undefined;
 	}
 	
+	///@desc Gets the sound's position within the bank specified by name
 	///@param {String} bank_name The name of the bank to get the sound's index from
 	static get_index_in = function(bank_name) {
 		return self.bank_index[$ bank_name];
 	}
 	
+	///@desc Unlinks this sound from its associated arranger (if any) and frees up the sound block's resources
 	static free = function() {
 		if not self.arranged then return;
 		

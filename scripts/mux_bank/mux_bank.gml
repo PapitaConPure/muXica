@@ -41,7 +41,7 @@ function MuxBank(name) constructor {
 		}
 		
 		self.head = _new_idx;
-		sound.link(self.name, _new_idx);
+		sound.add_index(self.name, _new_idx);
 		self.sounds[_new_idx] = sound;
 		self.size++;
 	}
@@ -53,7 +53,7 @@ function MuxBank(name) constructor {
 		
 		if _idx < 0 then return;
 		
-		sound.unlink(self.name);
+		sound.remove_index(self.name);
 		self.sounds[_idx] = undefined;
 		self.size--;
 	}
@@ -61,7 +61,7 @@ function MuxBank(name) constructor {
 	///@desc Removes a sound from this bank at the specified position
 	///@param {Real} idx The position from which a sound will be removed
 	static remove_sound_at = function(idx) {
-		self.sounds[idx].unlink(self.name);
+		self.sounds[idx].remove_index(self.name);
 		self.sounds[idx] = undefined;
 		self.size--;
 	}
@@ -72,10 +72,10 @@ function MuxBank(name) constructor {
 	 * @param {Struct.MuxSound} new_sound The sound that will replace the old one
 	 */
 	static replace_sound = function(old_sound, new_sound) {
-		old_sound.unlink(self.name);
+		old_sound.remove_index(self.name);
 		
 		var _idx = self.get_index_of(old_sound);
-		new_sound.link(self.name, _idx);
+		new_sound.add_index(self.name, _idx);
 		self.sounds[_idx] = new_sound;
 	}
 	
@@ -85,9 +85,9 @@ function MuxBank(name) constructor {
 	 * @param {Struct.MuxSound} new_sound The new sound that will occupy the specified position instead
 	 */
 	static replace_sound_at = function(idx, new_sound) {
-		self.sounds[idx].unlink(self.name);
+		self.sounds[idx].remove_index(self.name);
 		
-		new_sound.link(self.name, idx);
+		new_sound.add_index(self.name, idx);
 		self.sounds[idx] = new_sound;
 	}
 	
@@ -201,7 +201,7 @@ function MuxBank(name) constructor {
 		_i = 0;
 		repeat _new_capacity {
 			_snd = _sounds[| _i];
-			_snd.link(self.name, _i);
+			_snd.add_index(self.name, _i);
 			self.sounds[_i++] = _snd;
 		}
 		
@@ -215,7 +215,7 @@ function MuxBank(name) constructor {
 		repeat self.capacity {
 			_snd = self.sounds[_i];
 			if is_undefined(_snd) then continue;
-			_snd.unlink(self.name);
+			_snd.remove_index(self.name);
 			self.sounds[_i++] = undefined;
 		}
 	}
