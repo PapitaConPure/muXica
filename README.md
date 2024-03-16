@@ -29,13 +29,12 @@ I'll eventually explain this better than in that one txt
 * Synced or unsynced crossfades
 
 ## To Do
-* Make the performance decent
 * More audio group flexibility other than obligatory BGM+SFX
 * Support for GM audio emitters and effects
 * Runtime effect knobs
 * Maybe a Composition abstraction for when a certain music or sound effect is imported as multiple sound assets
 * Audio cue generation, bpm getter, time sig. change tracker, and offset solver standalone tools
-* A different configuration interface for making MuxArrangers so that there isn't so much indentation and confusing function chaining going on
+* A different configuration interface for setting up MuxArrangers so that there isn't so much indentation and confusing function chaining going on
 
 <br><hr>
 
