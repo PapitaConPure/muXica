@@ -4,6 +4,7 @@
  *       You should never call the free() method manually, as all instances related to an arranger will be freed when the arranger is freed, and all other instances don't need to be freed
  * @param {Asset.GMSound} index Sound asset index
  * @param {Id.Sound} inst Sound instance id
+ * @param {Bool} arranged Whether this instance should be managed by an associated MuxArranger (if any) (true, default) or not (false)
  * @constructor
  */
 function MuxSound(index, inst, arranged = true) constructor {
@@ -16,6 +17,7 @@ function MuxSound(index, inst, arranged = true) constructor {
 	self.playing = true;
 	self.stopped = false;
 	self.updated = false;
+	self.looping = audio_sound_get_loop(inst);
 	self.pitch = audio_sound_get_pitch(inst);
 	
 	self.name = audio_get_name(index);
@@ -46,11 +48,21 @@ function MuxSound(index, inst, arranged = true) constructor {
 		//Actually, fuck GameMaker's audio support. I'll sync it my-fucking-self
 		var _new_pos = self.pos + delta_time * 0.000001 * self.pitch;
 		
-		if self.__reset_ppos < 0 {
-			self.ppos = self.pos;
+		if _new_pos >= self.length {
+			if self.looping {
+				self.ppos = 0;
+				_new_pos -= self.length;
+			} else {
+				self.stop();
+				return;
+			}
 		} else {
-			self.ppos = self.__reset_ppos;
-			self.__reset_ppos = -1;
+			if self.__reset_ppos < 0 {
+				self.ppos = self.pos;
+			} else {
+				self.ppos = self.__reset_ppos;
+				self.__reset_ppos = -1;
+			}
 		}
 		
 		self.pos = _new_pos;

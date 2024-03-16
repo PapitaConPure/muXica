@@ -204,7 +204,9 @@ function MuxArranger(index, start_delay, start_params) constructor {
 		return self;
 	}
 	
-	///@desc Updates each linked sound's position and responds to track cue marker surpass events
+	///@desc Updates each linked sound's position and responds to associated markers' surpass events for each associated sound instance
+	///      Please note this function should only be called inside the muxica_worker object's Step event.
+	///      Calling it elsewhere won't crash the game or anything, but it's a waste of resources
 	static update = function() {
 		self.instance_number = ds_list_size(self.instances);
 		if self.instance_number == 0 then return;
