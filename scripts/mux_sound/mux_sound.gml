@@ -86,8 +86,10 @@ function MuxSound(index, inst, arranged = true) constructor {
 		self.__next_pos = position;
 	}
 	
+	///@desc Sets the sound instance's pitch/speed
 	///@param {Real} pitch Pitch of the sound, where 1 is normal pitch
 	static set_pitch = function(pitch) {
+		audio_sound_pitch(self.inst, pitch);
 		self.pitch = pitch;
 	}
 	
