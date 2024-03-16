@@ -193,7 +193,7 @@ function MuxBank(name) constructor {
 		}
 		
 		var _new_capacity = ds_list_size(_sounds);
-		var _actual_capacity = max(4, _new_capacity);
+		var _actual_capacity = max(2, _new_capacity);
 		self.sounds = array_create(_actual_capacity, undefined);
 		self.size = _new_capacity;
 		self.capacity = _actual_capacity;
