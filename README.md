@@ -22,11 +22,12 @@ I'll eventually share a .yymps here, I think
 I'll eventually explain this better than in that one txt
 
 ## Features
-* Easier sound instance and audio group manipulation
+* Easier audio group and granular sound instance manipulation
+* Some degree of basic, deserved consistency for audio function names and parameter orders
 * Easy crossfading from instance to asset, group to asset, etc
-* Sound tags to categorize your sounds
-* Programmatical audio cues and music time functions
 * Synced or unsynced crossfades
+* Sound tags to further categorize your sounds
+* Programmatical audio cues and music time functions
 
 ## To Do
 * Support for GM audio emitters and effects
