@@ -27,7 +27,7 @@ function mux_sound_play(index, priority, loop = false, gain = 1, offset = 0, pit
 
 /**
  * @desc Crossfades from the playing audio to the new audio within the specified time frame
- * @param {Real} time Time for transition (in milliseconds)
+ * @param {Real} time Time for transition (in seconds)
  * @param {Id.Sound|Constant.All} from Origin existing sound id
  * @param {Asset.GMSound} to Destination sound index
  * @param {Real} priority New sound priority
@@ -41,6 +41,8 @@ function mux_sound_play(index, priority, loop = false, gain = 1, offset = 0, pit
  */
 function mux_sound_crossfade(time, from, to, priority, loop = false, synced = false, gain = 1, offset = 0, pitch = 1, listener_mask = undefined) {
 	MUX_CHECK_UNINITIALISED_EX;
+	
+	time *= 1000; //Convert to milliseconds because....... yeah
 	
 	var _audio_group = audio_sound_get_audio_group(to);
 	var _gain = mux_group_get_gain(_audio_group, gain);
@@ -78,10 +80,12 @@ function mux_sound_crossfade(time, from, to, priority, loop = false, synced = fa
 /**
  * @desc Crossfades from the playing audio to the new audio within the specified time frame
  * @param {Asset.GMSound|Id.Sound|Constant.All} sound Origin existing sound id
- * @param {Real} time Time for transition (in milliseconds)
+ * @param {Real} time Time for transition (in seconds)
  */
 function mux_sound_stop(sound, time = 0) {
 	MUX_CHECK_UNINITIALISED_EX;
+	
+	time *= 1000; //Again, convert to milliseconds :) :) :)))))
 	
 	var _all_bank = MUX_ALL;
 	
@@ -110,24 +114,25 @@ function mux_sound_stop(sound, time = 0) {
 }
 
 /**
- * @desc Crossfades in and out the respective sound instances. If you want to avoit throttling issues, try changing the frame delay to something higher (default=1)
- * @param {Id.Sound|Undefined} _out
- * @param {Id.Sound} _in
- * @param {Real} _gain
- * @param {Real} _time
+ * @desc Crossfades in and out the respective sound instances. Please keep in mind that the IN sound instance must already have a gain of 0 before this function is called.
+ *       If you want to avoit throttling issues, try changing the frame delay to something higher (default is 1, which tends to be fine)
+ * @param {Id.Sound|Undefined} out The sound instance that will fade out
+ * @param {Id.Sound} in The sound instance that will fade in
+ * @param {Real} gain The peak gain the IN sound will reach when the crossfade is concluded
+ * @param {Real} time Time in milliseconds to conclude the crossfade
  */
-function __mux_sound_crossfade_delayed(_out, _in, _gain, _time) {
-	MUX_LOG_INFO($"Crossfade [{is_undefined(_out) ? "ANY" : $"{audio_get_name(_in)}/{_in}"}]->[{audio_get_name(_in)}/{_in}] has been requested and will commence in {_time} frames");
+function __mux_sound_crossfade_delayed(out, in, gain, time) {
+	MUX_LOG_INFO($"Crossfade [{is_undefined(out) ? "ANY" : $"{audio_get_name(out)}/{out}"}]->[{audio_get_name(in)}/{in}] has been requested and will commence in {time} frames");
 	
 	//Set up next crossfade event
 	var _handler = MUX_HANDLER;
 	_handler.timer_crossfade[_handler.timer_crossfade_n++] = MUX_CROSSFADE_DELAY;
-	ds_queue_enqueue(MUX_P_FADE, { in: _in, out: _out, gain: _gain, time: _time });
+	ds_queue_enqueue(MUX_P_FADE, { in, out, gain, time });
 }
 
 /**
- * @param {Real} time
- * @param {Struct.MuxBank} all_bank
+ * @param {Real} time Time it takes to fade everything out, in milliseconds
+ * @param {Struct.MuxBank} all_bank Bank in which all muXica-managed sounds are stored in
  */
 function __mux_sound_fade_out_all(time, all_bank) {
 	var _start = all_bank.size - 1;
@@ -147,9 +152,9 @@ function __mux_sound_fade_out_all(time, all_bank) {
 
 /**
  * Crossfades out all registered sounds within the specified group bank
- * @param {Real} time
- * @param {Struct.MuxBank} group_bank
- * @param {Struct.MuxBank} all_bank
+ * @param {Real} time Time it takes to fade out the entire sound's bank, in milliseconds
+ * @param {Struct.MuxBank} group_bank The current muXica-managed sound's specific bank
+ * @param {Struct.MuxBank} all_bank Bank in which all muXica-managed sounds are stored in
  */
 function __mux_sound_fade_out_bank(time, group_bank, all_bank) {
 	var _start = all_bank.size - 1;
@@ -168,10 +173,10 @@ function __mux_sound_fade_out_bank(time, group_bank, all_bank) {
 
 /**
  * Crossfades out all registered sounds whose source is the specified index
- * @param {Real} time
- * @param {Asset.GMSound} index
- * @param {Struct.MuxBank} group_bank
- * @param {Struct.MuxBank} all_bank
+ * @param {Real} time Time it takes to fade out the entire umbrella of sounds, in milliseconds
+ * @param {Asset.GMSound} index The sound asset index for which all sounds will be faded out
+ * @param {Struct.MuxBank} group_bank The current muXica-managed sound's specific bank
+ * @param {Struct.MuxBank} all_bank Bank in which all muXica-managed sounds are stored in
  */
 function __mux_sound_fade_out_index(time, index, group_bank, all_bank) {
 	var _start = all_bank.size - 1;
