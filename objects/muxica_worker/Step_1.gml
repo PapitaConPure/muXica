@@ -23,7 +23,7 @@ repeat _count {
 		_inst = _snd.inst;
 		
 		if MUX_SOUND_IS_NO_LONGER_VALID {
-			MUX_LOG_INFO($"MuxSound instance [{audio_get_name(_snd.index)}/{_i}] was discarded from bank \"{_name}\" because the associated sound is no longer valid");
+			MUX_LOG_STEP($"MuxSound instance [{audio_get_name(_snd.index)}/{_i}] was discarded from bank \"{_name}\" because the associated sound is no longer valid");
 			_bank.remove_sound_at(_i);
 		}
 	}
