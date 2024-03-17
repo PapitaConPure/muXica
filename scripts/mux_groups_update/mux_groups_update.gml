@@ -1,6 +1,4 @@
-/// @description Ajusta el volumen a la configuración establecida
+/// @description Adjust the volume according to the established configuration
 function mux_groups_update() {
-	struct_foreach(MUX_BANKS, function(_, group) {
-		group.set_gain();
-	});
+	//Nothing here for now
 }

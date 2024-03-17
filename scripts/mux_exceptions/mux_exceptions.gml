@@ -39,5 +39,11 @@ function __mux_ex(message, long_message = "No additional information was provide
 #macro MUX_CHECK_INVALID (MUX_EX_ENABLE and (index < 0) or not audio_exists(index))
 #macro MUX_CHECK_INVALID_EX if MUX_CHECK_INVALID then __mux_ex(MUX_EX_INVALID)
 
+#macro MUX_EX_INVALID_EMITTER "Invalid emitter", "The specified emitter isn't linked to a bus associated with a muXica bank"
+#macro MUX_CHECK_INVALID_EMITTER_EX MUX_EX_IF is_undefined(_bank) then __mux_ex(MUX_EX_INVALID_EMITTER)
+
+#macro MUX_EX_EMITTER_IS_ALL "Repeated emitter", "The specified emitter is associated to the all emitter"
+#macro MUX_CHECK_EMITTER_IS_ALL_EX MUX_EX_IF _bank.name == "all" then __mux_ex(MUX_EX_EMITTER_IS_ALL)
+
 #macro MUX_CHECK_STRING_INVALID_EX MUX_EX_IF(not is_string(tag) or not string_length(tag))\
 	__mux_ex("Invalid tag name", "Tag name must be a valid string")

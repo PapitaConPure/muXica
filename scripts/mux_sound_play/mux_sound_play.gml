@@ -1,32 +1,57 @@
 #macro AUDIO_STARTUP_TIME 4
 
-/// @param {Asset.GMSound} sound_index New sound index
-/// @param {Real} priority New sound priority
-/// @param {Bool} [loop] New sound loop mode (false by default)
-/// @param {Real} [gain] New sound gain (1 by default)
-/// @param {Real} [offset] New sound offset (in seconds, defaults to 0)
-/// @param {Real} [pitch] New sound pitch (1 by default)
-/// @param {Real} [listener_mask] New sound listener bit-mask. Unused on the HTML5 target
-/// @returns {Id.Sound}
+/**
+ * @desc 
+ * @param {Asset.GMSound} sound_index New sound index
+ * @param {Real} priority New sound priority
+ * @param {Bool} [loop] New sound loop mode (false by default)
+ * @param {Real} [gain] New sound gain (1 by default)
+ * @param {Real} [offset] New sound offset (in seconds, defaults to 0)
+ * @param {Real} [pitch] New sound pitch (1 by default)
+ * @param {Real} [listener_mask] New sound listener bit-mask. Unused on the HTML5 target
+ * @returns {Id.Sound}
+ */
 function mux_sound_play(index, priority, loop = false, gain = 1, offset = 0, pitch = 1, listener_mask = undefined) {
 	MUX_CHECK_UNINITIALISED_EX;
 	
-	var _audio_group = audio_sound_get_audio_group(index);
-	if MUX_EX_ENABLE and _audio_group == audiogroup_default
-		__mux_ex("Tried to play a sound from an unregistered audio group", "The requested sound to play wasn't from an audio group that muXica registered beforehand");
-	var _group_key = audio_group_name(_audio_group);
-	var _group_bank = mux_bank_get(_group_key);
+	var _bank = mux_bank_get_from_sound(index);
+	MUX_CHECK_EMITTER_IS_ALL_EX;
 	
-	var _gain = mux_group_get_gain(_audio_group, gain);
-	var _id = audio_play_sound(index, priority, loop, _gain, offset, pitch, listener_mask);
+	var _id = audio_play_sound_on(_bank.default_emitter, index, loop, priority, gain, offset, pitch, listener_mask);
 	var _sound = new MuxSound(index, _id);
-	_group_bank.add_sound(_sound);
+	_bank.add_sound(_sound);
 	MUX_ALL.add_sound(_sound);
 	return _id;
 }
 
 /**
- * @desc Crossfades from the playing audio to the new audio within the specified time frame
+ * @desc 
+ * @param {Id.AudioEmitter} emitter The emitter on which the new sound will play
+ * @param {Asset.GMSound} sound_index New sound index
+ * @param {Real} priority New sound priority
+ * @param {Bool} [loop] New sound loop mode (false by default)
+ * @param {Real} [gain] New sound gain (1 by default)
+ * @param {Real} [offset] New sound offset (in seconds, defaults to 0)
+ * @param {Real} [pitch] New sound pitch (1 by default)
+ * @param {Real} [listener_mask] New sound listener bit-mask. Unused on the HTML5 target
+ * @returns {Id.Sound}
+ */
+function mux_sound_play_on(emitter, index, priority, loop = false, gain = 1, offset = 0, pitch = 1, listener_mask = undefined) {
+	MUX_CHECK_UNINITIALISED_EX;
+	
+	var _bank = mux_bank_get(emitter);
+	MUX_CHECK_EMITTER_IS_ALL_EX;
+	
+	var _id = audio_play_sound_on(emitter, index, loop, priority, gain, offset, pitch, listener_mask);
+	var _sound = new MuxSound(index, _id);
+	_bank.add_sound(_sound);
+	MUX_ALL.add_sound(_sound);
+	return _id;
+}
+
+/**
+ * @desc Crossfades from the playing audio to the new audio within the specified time frame.
+ *       This function assumes both the FROM sound instance and the TO sound asset are linked to the same muXica sound bank
  * @param {Real} time Time for transition (in seconds)
  * @param {Id.Sound|Constant.All} from Origin existing sound id
  * @param {Asset.GMSound} to Destination sound index
@@ -44,26 +69,22 @@ function mux_sound_crossfade(time, from, to, priority, loop = false, synced = fa
 	
 	time *= 1000; //Convert to milliseconds because....... yeah
 	
-	var _audio_group = audio_sound_get_audio_group(to);
-	var _gain = mux_group_get_gain(_audio_group, gain);
-	var _group_key = audio_group_name(_audio_group);
-	var _group_bank = mux_bank_get(_group_key);
-	var _all_bank   = MUX_ALL;
+	var _all_bank = MUX_ALL;
+	var _bank = mux_bank_get_from_sound(to);
+	MUX_CHECK_EMITTER_IS_ALL_EX;
 	
 	if from == all {
-		__mux_sound_fade_out_bank(time, _group_bank, _all_bank);
-		var _id = audio_play_sound(to, priority, loop, 0, offset, pitch, listener_mask);
-		__mux_sound_crossfade_delayed(undefined, _id, _gain, time);
+		__mux_sound_fade_out_all(time, _all_bank);
+		var _id = audio_play_sound_on(_bank.default_emitter, to, loop, priority, 0, offset, pitch, listener_mask);
+		__mux_sound_crossfade_delayed(undefined, _id, gain, time);
 		var _sound = new MuxSound(to, _id);
-		_group_bank.add_sound(_sound);
 		_all_bank.add_sound(_sound);
 		return _id;
 	}
 	
-	var _old_group_bank_idx = mux_sound_get_inst_bank_index(_group_bank, from);
 	var _old_all_bank_idx = mux_sound_get_inst_bank_index(_all_bank, from);
-	var _id = audio_play_sound(to, priority, loop, 0, offset, pitch, listener_mask);
-	__mux_sound_crossfade_delayed(from, _id, _gain, time);
+	var _id = audio_play_sound_on(MUX_DEFAULT_EMITTER, to, loop, priority, 0, offset, pitch, listener_mask);
+	__mux_sound_crossfade_delayed(from, _id, gain, time);
 	
 	var _source_position = audio_sound_get_track_position(from);
 	var _relative_position = __mux_wrap(_source_position, 0, audio_sound_length(to), true);
@@ -71,16 +92,67 @@ function mux_sound_crossfade(time, from, to, priority, loop = false, synced = fa
 	
 	var _old_sound = _all_bank.get_sound(_old_all_bank_idx);
 	var _sound = new MuxSound(to, _id);
-	_group_bank.replace_sound_at(_old_group_bank_idx, _sound);
 	_all_bank.replace_sound_at(_old_all_bank_idx, _sound);
 	MUX_P_STOP.add_sound(_old_sound);
 	return _id;
 }
 
 /**
- * @desc Crossfades from the playing audio to the new audio within the specified time frame
- * @param {Asset.GMSound|Id.Sound|Constant.All} sound Origin existing sound id
+ * @desc Crossfades from the playing audio to the new audio within the specified time frame.
+ *       To avoid any weirdness, the emitters of both sounds should be linked to the same bus
+ * @param {Id.AudioEmitter} emitter The emitter on which the new sound will play
  * @param {Real} time Time for transition (in seconds)
+ * @param {Id.Sound|Constant.All} from Origin existing sound id
+ * @param {Asset.GMSound} to Destination sound index
+ * @param {Real} priority New sound priority
+ * @param {Bool} [loop] New sound loop mode (false by default)
+ * @param {Bool} [synced] New sound sync mode (false by default)
+ * @param {Real} [gain] New sound gain (1 by default)
+ * @param {Real} [offset] New sound offset (in seconds, defaults to 0)
+ * @param {Real} [pitch] New sound pitch (1 by default)
+ * @param {Real} [listener_mask] New sound listener bit-mask. Unused on the HTML5 target
+ * @returns {Id.Sound}
+ */
+function mux_sound_crossfade_on(emitter, time, from, to, priority, loop = false, synced = false, gain = 1, offset = 0, pitch = 1, listener_mask = undefined) {
+	MUX_CHECK_UNINITIALISED_EX;
+	
+	time *= 1000; //Convert to milliseconds because....... yeah
+	
+	var _all_bank = MUX_ALL;
+	var _bank = mux_bank_get(emitter);
+	MUX_CHECK_EMITTER_IS_ALL_EX;
+	
+	if from == all {
+		__mux_sound_fade_out_bank(time, _bank, _all_bank);
+		var _id = audio_play_sound_on(emitter, to, loop, priority, 0, offset, pitch, listener_mask);
+		__mux_sound_crossfade_delayed(undefined, _id, gain, time);
+		var _sound = new MuxSound(to, _id);
+		_bank.add_sound(_sound);
+		_all_bank.add_sound(_sound);
+		return _id;
+	}
+	
+	var _old_bank_idx = mux_sound_get_inst_bank_index(_bank, from);
+	var _old_all_bank_idx = mux_sound_get_inst_bank_index(_all_bank, from);
+	var _id = audio_play_sound_on(emitter, to, loop, priority, 0, offset, pitch, listener_mask);
+	__mux_sound_crossfade_delayed(from, _id, gain, time);
+	
+	var _source_position = audio_sound_get_track_position(from);
+	var _relative_position = __mux_wrap(_source_position, 0, audio_sound_length(to), true);
+	if synced then audio_sound_set_track_position(_id, _relative_position);
+	
+	var _old_sound = _all_bank.get_sound(_old_all_bank_idx);
+	var _sound = new MuxSound(to, _id);
+	_bank.replace_sound_at(_old_bank_idx, _sound);
+	_all_bank.replace_sound_at(_old_all_bank_idx, _sound);
+	MUX_P_STOP.add_sound(_old_sound);
+	return _id;
+}
+
+/**
+ * @desc Fades out the supplied sound within the specified time frame
+ * @param {Asset.GMSound|Id.Sound|Constant.All} sound Sound instance to stop
+ * @param {Real} time Fade out time (in seconds)
  */
 function mux_sound_stop(sound, time = 0) {
 	MUX_CHECK_UNINITIALISED_EX;
@@ -96,18 +168,55 @@ function mux_sound_stop(sound, time = 0) {
 	
 	if not audio_exists(sound) then return;
 	
-	var _group_key = audio_group_name(audio_sound_get_audio_group(sound));
-	var _group_bank = mux_bank_get(_group_key);
+	var _bank = mux_bank_get_from_sound(sound);
+	MUX_CHECK_EMITTER_IS_ALL_EX;
 	
 	if typeof(sound) == "ref" {
-		__mux_sound_fade_out_index(time, sound, _group_bank, _all_bank);
+		__mux_sound_fade_out_index(time, sound, _bank, _all_bank);
 	} else {
-		var _bank_idx = _group_bank.find_index_of(sound);
-		var _stopped_sound = _group_bank.get_sound(_bank_idx);
+		var _bank_idx = _bank.find_index_of(sound);
+		var _stopped_sound = _bank.get_sound(_bank_idx);
 		var _all_idx = _stopped_sound.get_index_in("all");
 		
 		audio_sound_gain(sound, 0, time);
-		_group_bank.remove_sound_at(_bank_idx);
+		_bank.remove_sound_at(_bank_idx);
+		_all_bank.remove_sound_at(_all_idx);
+		MUX_P_STOP.add_sound(_stopped_sound);
+	}
+}
+
+/**
+ * @desc Fades out the supplied sound within the specified time frame
+ * @param {Id.AudioEmitter} emitter The emitter on which the sound is being played
+ * @param {Asset.GMSound|Id.Sound|Constant.All} sound Sound instance to stop
+ * @param {Real} time Fade out time (in seconds)
+ */
+function mux_sound_stop_on(emitter, sound, time = 0) {
+	MUX_CHECK_UNINITIALISED_EX;
+	
+	time *= 1000; //Again, convert to milliseconds :) :) :)))))
+	
+	var _all_bank = MUX_ALL;
+	
+	if sound == all {
+		__mux_sound_fade_out_all(time, _all_bank)
+		return;
+	}
+	
+	if not audio_exists(sound) then return;
+	
+	var _bank = mux_bank_get(emitter);
+	MUX_CHECK_EMITTER_IS_ALL_EX;
+	
+	if typeof(sound) == "ref" {
+		__mux_sound_fade_out_index(time, sound, _bank, _all_bank);
+	} else {
+		var _bank_idx = _bank.find_index_of(sound);
+		var _stopped_sound = _bank.get_sound(_bank_idx);
+		var _all_idx = _stopped_sound.get_index_in("all");
+		
+		audio_sound_gain(sound, 0, time);
+		_bank.remove_sound_at(_bank_idx);
 		_all_bank.remove_sound_at(_all_idx);
 		MUX_P_STOP.add_sound(_stopped_sound);
 	}
@@ -147,7 +256,16 @@ function __mux_sound_fade_out_all(time, all_bank) {
 		MUX_P_STOP.add_sound(_found);
 	}
 	
-	struct_foreach(MUX_HANDLER.mux_sounds, function(_, group) { group.flush(); });
+	var _banks = MUX_BANKS;
+	var _names = struct_get_names(_banks);
+	var _count = array_length(_names);
+	var _name, _group;
+	_i = 0;
+	repeat _count {
+		_name = _names[_i++];
+		_group = _banks[$ _name];
+		_group.flush();
+	}
 }
 
 /**

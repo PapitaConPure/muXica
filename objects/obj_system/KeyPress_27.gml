@@ -1,2 +1,2 @@
 /// @description Insert description here
-mux_sound_stop(all, 2000);
+mux_sound_stop(all, 2);

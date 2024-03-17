@@ -18,11 +18,11 @@ for(_i = 0; _i < _bank.capacity; _i++) {\
 }
 
 _base = 96;
-_bank = mux_bank_get(BGM);
+_bank = mux_bank_get("BGM");
 DRAW_THE_THINGY
 
 _base += 160;
-_bank = mux_bank_get(SFX);
+_bank = mux_bank_get("SFX");
 DRAW_THE_THINGY
 
 _base += 160;

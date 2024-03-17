@@ -43,6 +43,7 @@
     {"name":"mux_sound_set","order":2,"path":"scripts/mux_sound_set/mux_sound_set.yy",},
     {"name":"mux_touch","order":5,"path":"scripts/mux_touch/mux_touch.yy",},
     {"name":"mux_utils","order":3,"path":"scripts/mux_utils/mux_utils.yy",},
+    {"name":"mux_emitter_bank","order":7,"path":"scripts/mux_emitter_bank/mux_emitter_bank.yy",},
     {"name":"aud_bgm_test2","order":1,"path":"sounds/aud_bgm_test2/aud_bgm_test2.yy",},
     {"name":"aud_bgm_test3","order":3,"path":"sounds/aud_bgm_test3/aud_bgm_test3.yy",},
     {"name":"aud_bgm_test4","order":4,"path":"sounds/aud_bgm_test4/aud_bgm_test4.yy",},

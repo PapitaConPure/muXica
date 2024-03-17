@@ -73,6 +73,7 @@
     {"id":{"name":"mux_tag_set","path":"scripts/mux_tag_set/mux_tag_set.yy",},},
     {"id":{"name":"mux_touch","path":"scripts/mux_touch/mux_touch.yy",},},
     {"id":{"name":"mux_utils","path":"scripts/mux_utils/mux_utils.yy",},},
+    {"id":{"name":"mux_emitter_bank","path":"scripts/mux_emitter_bank/mux_emitter_bank.yy",},},
     {"id":{"name":"aud_bgm_test1","path":"sounds/aud_bgm_test1/aud_bgm_test1.yy",},},
     {"id":{"name":"aud_bgm_test2","path":"sounds/aud_bgm_test2/aud_bgm_test2.yy",},},
     {"id":{"name":"aud_bgm_test3","path":"sounds/aud_bgm_test3/aud_bgm_test3.yy",},},

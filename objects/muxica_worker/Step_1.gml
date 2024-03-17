@@ -1,4 +1,5 @@
-/// @description Process sound banks
+/// @description muXica sound system processing
+#region Process sound banks
 #macro MUX_SOUND_IS_NO_LONGER_VALID ((not audio_exists(_inst)) or (not audio_is_playing(_inst)))
 
 var _names = struct_get_names(mux_sounds);
@@ -29,6 +30,7 @@ repeat _count {
 	}
 	if _size > 2 and _empty_count > _size div 2 then _bank.shrink_capacity()
 }
+#endregion
 
 #region Process arrangers
 MUX_LOG_STEP("Next Arranger Step");
