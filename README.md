@@ -29,7 +29,6 @@ I'll eventually explain this better than in that one txt
 * Synced or unsynced crossfades
 
 ## To Do
-* More audio group flexibility other than obligatory BGM+SFX
 * Support for GM audio emitters and effects
 * Runtime effect knobs
 * Maybe a Composition abstraction for when a certain music or sound effect is imported as multiple sound assets
