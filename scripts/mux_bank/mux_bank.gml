@@ -1,15 +1,20 @@
 /**
- * @desc Represents a bank/group of MuxSounds that are all of similar nature and processed in the same way.
+ * @desc Represents a bank of MuxSounds that are all of similar nature and processed in the same way. Can be linked to a GameMaker audio group
  *       Internally, it's an array-based dynamic list that can grow twice its capacity when needed, and is processed in a wrapped, fragmented fashion.
  *       It's capacity can be reduced to fit only the current sounds it contains with MuxBank.shrink_capacity()
  * @param {String} name The name of the bank
+ * @param {Asset.GMAudioGroup} [group]
  */
-function MuxBank(name) constructor {
+function MuxBank(name, group = undefined) constructor {
 	self.name = name;
 	self.size = 0;
 	self.capacity = 2;
 	self.sounds = array_create(self.capacity, undefined);
 	self.head = 0;
+	
+	self.group = group;
+	if is_undefined(group) then self.gain = 0;
+	else self.gain = audio_group_get_gain(group);
 	
 	///@desc Adds a sound to this bank at the current head position
 	///@param {Struct.MuxSound} sound The sound to add
@@ -179,6 +184,16 @@ function MuxBank(name) constructor {
 		}
 		
 		return _found ? _idx : -1;
+	}
+	
+	///@desc Sets the gain of the bank and the associated audio group. Can also be used just to apply the bank's gain to the audio group
+	///@param {Real} [gain] New gain of the audio group. If less than zero, the gain will be left untouched (this is the default)
+	///@param {Real} [time] How long will it take for the old gain to reach the new gain, in milliseconds (0 by default)
+	static set_gain = function(gain = -1, time = 0) {
+		if gain >= 0 then self.gain = min(gain, 1);
+		
+		if is_undefined(self.group) then return;
+		audio_group_set_gain(self.group, self.gain, time);
 	}
 	
 	///@desc Defragments and updates all the sounds' positions within the bank and reduces the capacity to the current amount of sounds (minimum capacity: 4)

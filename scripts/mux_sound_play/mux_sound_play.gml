@@ -15,9 +15,9 @@ function mux_sound_play(index, priority, loop = false, gain = 1, offset = 0, pit
 	if MUX_EX_ENABLE and _audio_group == audiogroup_default
 		__mux_ex("Tried to play a sound from an unregistered audio group", "The requested sound to play wasn't from an audio group that muXica registered beforehand");
 	var _group_key = audio_group_name(_audio_group);
-	var _group_bank = mux_handler_get_bank(_group_key);
+	var _group_bank = mux_bank_get(_group_key);
 	
-	var _gain = mux_group_gain(_audio_group, gain);
+	var _gain = mux_group_get_gain(_audio_group, gain);
 	var _id = audio_play_sound(index, priority, loop, _gain, offset, pitch, listener_mask);
 	var _sound = new MuxSound(index, _id);
 	_group_bank.add_sound(_sound);
@@ -43,9 +43,9 @@ function mux_sound_crossfade(time, from, to, priority, loop = false, synced = fa
 	MUX_CHECK_UNINITIALISED_EX;
 	
 	var _audio_group = audio_sound_get_audio_group(to);
-	var _gain = mux_group_gain(_audio_group, gain);
+	var _gain = mux_group_get_gain(_audio_group, gain);
 	var _group_key = audio_group_name(_audio_group);
-	var _group_bank = mux_handler_get_bank(_group_key);
+	var _group_bank = mux_bank_get(_group_key);
 	var _all_bank   = MUX_ALL;
 	
 	if from == all {
@@ -93,7 +93,7 @@ function mux_sound_stop(sound, time = 0) {
 	if not audio_exists(sound) then return;
 	
 	var _group_key = audio_group_name(audio_sound_get_audio_group(sound));
-	var _group_bank = mux_handler_get_bank(_group_key);
+	var _group_bank = mux_bank_get(_group_key);
 	
 	if typeof(sound) == "ref" {
 		__mux_sound_fade_out_index(time, sound, _group_bank, _all_bank);
@@ -142,8 +142,7 @@ function __mux_sound_fade_out_all(time, all_bank) {
 		MUX_P_STOP.add_sound(_found);
 	}
 	
-	MUX_BGM.flush();
-	MUX_SFX.flush();
+	struct_foreach(MUX_HANDLER.mux_sounds, function(_, group) { group.flush(); });
 }
 
 /**

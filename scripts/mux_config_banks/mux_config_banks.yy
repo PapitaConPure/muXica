@@ -1,9 +1,9 @@
 {
   "$GMScript":"",
-  "%Name":"mux_config_groups",
+  "%Name":"mux_config_banks",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"mux_config_groups",
+  "name":"mux_config_banks",
   "parent":{
     "name":"0. Config",
     "path":"folders/muXica/0. Config.yy",

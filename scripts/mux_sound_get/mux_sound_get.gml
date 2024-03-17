@@ -5,7 +5,7 @@ function mux_sound_get_oldest(bank_id = all) {
 	var _bank_idx;
 	if bank_id == all then _bank_idx = "all";
 	else _bank_idx = audio_group_name(bank_id);
-	var _group_bank = mux_handler_get_bank(_bank_idx);
+	var _group_bank = mux_bank_get(_bank_idx);
 	return _group_bank.get_sound(0);
 }
 
@@ -16,7 +16,7 @@ function mux_sound_get_latest(bank_id = all) {
 	var _bank_idx;
 	if bank_id == all then _bank_idx = "all";
 	else _bank_idx = parse_bank_idx(bank_id);
-	var _group_bank = mux_handler_get_bank(_bank_idx);
+	var _group_bank = mux_bank_get(_bank_idx);
 	var _idx = _group_bank.size - 1;
 	return _group_bank.get_sound(_idx);
 }
@@ -68,7 +68,7 @@ function mux_sound_get_array_from_all() {
 ///@returns {Array<Struct.MuxSound>}
 function mux_sound_get_array_from_index(index) {
 	var _bank_idx = audio_group_name(audio_sound_get_audio_group(index));
-	var _group_bank = mux_handler_get_bank(_bank_idx)
+	var _group_bank = mux_bank_get(_bank_idx)
 	var _list_size = _group_bank.capacity;
 	
 	//feather disable once GM1045
@@ -150,7 +150,7 @@ function mux_sound_get_from_inst(inst) {
 /// @returns {Struct}
 function mux_sound_find(index) {
 	var _bank_idx = audio_group_name(audio_sound_get_audio_group(index));
-	var _group_bank = mux_handler_get_bank(_bank_idx)
+	var _group_bank = mux_bank_get(_bank_idx)
 	var _list_size = _group_bank.size;
 	var _i = 0; 
 	var _found = false;
@@ -217,7 +217,7 @@ function mux_sound_any_is_playing(index = all) {
 	MUX_CHECK_INVALID_EX
 	
 	var _bank_idx = audio_group_name(audio_sound_get_audio_group(index));
-	_group_bank = mux_handler_get_bank(_bank_idx);
+	_group_bank = mux_bank_get(_bank_idx);
 	_list_size = _group_bank.size;
 	
 	while(_i < _list_size and not _found) {
@@ -235,7 +235,7 @@ function mux_sound_is_playing(inst) {
 	MUX_CHECK_INVALID_EX
 	
 	var _bank_idx =  audio_group_name(audio_sound_get_audio_group(inst));
-	var _group_bank = mux_handler_get_bank(_bank_idx);
+	var _group_bank = mux_bank_get(_bank_idx);
 	var _list_size = _group_bank.size;
 	var _i = 0; 
 	var _found = false;
@@ -257,10 +257,8 @@ function mux_sound_any_is_paused(sound = all) {
 ///@param {Asset.GMAudioGroup|Constant.All} bank_index
 ///@returns {String}
 function parse_bank_idx(bank_index) {
-	switch bank_index {
-	case all: return "all";
-	case BGM: return "BGM";
-	case SFX: return "SFX";
-	default:  __mux_ex("Invalid bank index", $"Bank index \"{bank_index}\" is unknown or not a valid index");
-	}
+	if bank_index == all then return "all";
+	if typeof(bank_index) == "ref" then return audio_group_name(bank_index);
+	
+	__mux_ex("Invalid bank index", $"Bank index \"{bank_index}\" is unknown or not a valid index");
 }

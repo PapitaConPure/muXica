@@ -1,8 +1,6 @@
 MUX_LOG_INFO("- -  - -");
 
 mux_sounds = {
-	BGM: new MuxBank("BGM"),
-	SFX: new MuxBank("SFX"),
 	"all": new MuxBank("all")
 };
 
@@ -15,7 +13,10 @@ pending_instances_notify = ds_queue_create();
 timer_crossfade = array_create(MUX_CROSSFADE_PARALLEL_LIMIT, -1);
 timer_crossfade_n = 0;
 
+MUX_HANDLER = id;
+persistent = true;    
+depth = MUX_HANDLER_DEPTH;
 MUX_LOG_INFO("- - muXica worker UP. Loading muXica audio groups... - -");
 audio_loaded = false;
-audio_group_load(BGM);
-audio_group_load(SFX);
+mux_config_banks();
+mux_group_load_all();

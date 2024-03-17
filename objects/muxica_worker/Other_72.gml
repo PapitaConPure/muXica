@@ -1,8 +1,5 @@
 /// @description Finish boot up
-var _bgm_ready = (not MUX_GROUP_ACTIVE_BGM) || audio_group_is_loaded(BGM);
-var _sfx_ready = (not MUX_GROUP_ACTIVE_SFX) || audio_group_is_loaded(SFX);
-
-if _bgm_ready and _sfx_ready and !audio_loaded {
+if mux_groups_are_loaded() and !audio_loaded {
 	mux_groups_update();
 	
 	audio_loaded = true;

@@ -1,9 +1,9 @@
 {
   "$GMScript":"",
-  "%Name":"mux_group_gain",
+  "%Name":"mux_group_unload_all",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"mux_group_gain",
+  "name":"mux_group_unload_all",
   "parent":{
     "name":"3.a. Groups management",
     "path":"folders/muXica/3.a. Groups management.yy",

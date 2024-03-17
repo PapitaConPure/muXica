@@ -10,6 +10,7 @@ function mux_scope_global() {
 		arrangers: undefined,
 		tags: {},
 		cues: {},
+		loaded_groups: []
 	};
 	return _struct;
 }
