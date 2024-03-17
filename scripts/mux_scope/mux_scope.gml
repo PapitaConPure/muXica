@@ -7,10 +7,11 @@ function mux_scope_global() {
 	static _struct = {
 		worker: noone,
 		ts_boot: time_source_create(time_source_global, 1, time_source_units_frames, mux_persist, [], -1),
+		default_emitter: audio_emitter_create(),
+		loaded_groups: [],
 		arrangers: undefined,
-		tags: {},
 		cues: {},
-		loaded_groups: []
+		tags: {}
 	};
 	return _struct;
 }

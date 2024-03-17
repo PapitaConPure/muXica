@@ -2,6 +2,8 @@
 #macro MUX_HANDLER MUX_GLOBAL.worker
 #macro MUX_HANDLER_DEPTH 16002
 
+#macro MUX_EMITTER MUX_GLOBAL.default_emitter
+
 #macro MUX_BANKS MUX_HANDLER.mux_sounds
 #macro MUX_ALL    mux_bank_get("all")
 #macro MUX_P_STOP MUX_HANDLER.pending_sounds_stop
