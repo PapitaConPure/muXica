@@ -1,5 +1,8 @@
 <p align="center"><img src="https://github.com/PapitaConPure/muXica/blob/master/why.png"></p>
+<h1 align="center">muXica v0.9.0</h1>
 <p align="center"> Crossfades and dynamic audio for GMS2, by <a href="https://github.com/PapitaConPure">Papita con Puré</a></p>
+
+<br>
 
 > [!NOTE]
 > This is a work in progress and will not always be in active development. I'm basically making this just for my game and making this repo public because that sounds fun
@@ -29,7 +32,6 @@ I'll eventually explain this better than in that one txt
 * Programmatical audio cues and music time functions
 
 ## To Do
-* Support for GM audio emitters and effects
 * Runtime effect knobs
 * Maybe a Composition abstraction for when a certain music or sound effect is imported as multiple sound assets
 * Audio cue generation, bpm getter, time sig. change tracker, and offset solver standalone tools
