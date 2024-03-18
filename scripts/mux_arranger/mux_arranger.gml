@@ -1,14 +1,3 @@
-enum MUX_MARKER_UNIT {
-	BEATS,
-	BARS,
-	SECONDS,
-}
-
-enum MUX_ORD_MK {
-	NAME,
-	STRUCT,
-}
-
 /**
  * @desc Represents a sound arranger. It keeps track of all instances of the associated sound asset and manages them through markers.
          Each arranger has a set of arbitrary parameters to keep its sound instances in touch with the state of the game.
@@ -39,7 +28,7 @@ function MuxArranger(index, start_delay, start_params) constructor {
 	self.time_signature = [ 4, 4 ];
 	
 	/**
-	 * @desc Description
+	 * @desc Returns the MuxSound struct instance under the specified index
 	 * @param {Real} index
 	 * @returns {Struct.MuxSound}
 	 */
@@ -59,7 +48,7 @@ function MuxArranger(index, start_delay, start_params) constructor {
 	static jump_bars = function(bars) {
 		var _beats_per_measure = self.time_signature[0];
 		var _beat_note_value   = self.time_signature[1];
-		self.cue_time += bars * __mux_time_bar_to_seconds(self.bpm, _beats_per_measure, _beat_note_value);
+		self.cue_time += bars * mux_time_bar_to_seconds(self.bpm, _beats_per_measure, _beat_note_value);
 		return self;
 	}
 	
@@ -110,7 +99,7 @@ function MuxArranger(index, start_delay, start_params) constructor {
 	 *       (from 1 to the repetition count, e.g. "my marker 1", "my marker 2", etc...)
 	 * @param {String} marker_name The marker's base name
 	 * @param {Real} frequency How frequently will the marker be repeated
-	 * @param {Enum.MUX_MARKER_UNIT} frequency_unit The time unit of the specified frequency
+	 * @param {Enum.MUX_MRK_UNIT} frequency_unit The time unit of the specified frequency
 	 * @param {Real} repeat_count How many times will the marker be repeated in this MuxArranger's marker registry
 	 * @param {Struct.MuxMarker} marker The marker to set
 	 */
@@ -129,18 +118,18 @@ function MuxArranger(index, start_delay, start_params) constructor {
 		//Determine frequency in seconds
 		var _time_seconds = frequency;
 		switch frequency_unit {
-		case MUX_MARKER_UNIT.BARS:
+		case MUX_MRK_UNIT.BARS:
 			var _beats_per_measure = self.time_signature[0];
 			var _beat_note_value   = self.time_signature[1];
-			_time_seconds *= __mux_time_bar_to_seconds(self.bpm, _beats_per_measure, _beat_note_value);
+			_time_seconds *= mux_time_bar_to_seconds(self.bpm, _beats_per_measure, _beat_note_value);
 			break;
-		case MUX_MARKER_UNIT.BEATS:
+		case MUX_MRK_UNIT.BEATS:
 			_time_seconds *= time_bpm_to_seconds(self.bpm);
 			break;
-		case MUX_MARKER_UNIT.SECONDS:
+		case MUX_MRK_UNIT.SECONDS:
 			break;
 		default:
-			if MUX_EX_ENABLE then __mux_ex("Invalid time unit", "The frequency unit must be a valid constant of MUX_MARKER_UNIT");
+			if MUX_EX_ENABLE then __mux_ex("Invalid time unit", "The frequency unit must be a valid constant of MUX_MRK_UNIT");
 		}
 		
 		var _cue_point = self.cue_time;
@@ -180,8 +169,8 @@ function MuxArranger(index, start_delay, start_params) constructor {
 		var _i = 0;
 		var _size = ds_grid_width(_ordered_markers);
 		repeat _size {
-			var _name = ds_grid_get(_ordered_markers, _i, MUX_ORD_MK.NAME);
-			var _marker = ds_grid_get(_ordered_markers, _i++, MUX_ORD_MK.STRUCT);
+			var _name = ds_grid_get(_ordered_markers, _i, MUX_ODMK_F.NAME);
+			var _marker = ds_grid_get(_ordered_markers, _i++, MUX_ODMK_F.STRUCT);
 			
 			if _marker.cue_point == source_marker.cue_point or _name == target_name then continue;
 			
@@ -227,12 +216,12 @@ function MuxArranger(index, start_delay, start_params) constructor {
 			
 			_j = 0;
 			repeat _size {
-				_marker = ds_grid_get(self.ordered_markers, _j++, MUX_ORD_MK.STRUCT);
+				_marker = ds_grid_get(self.ordered_markers, _j++, MUX_ODMK_F.STRUCT);
 				
 				if _snd.ppos >= _marker.cue_point then continue;
 				if _snd.pos  <  _marker.cue_point then break; //Assume following markers won't be reached by this point in time, as they're ordered by cue_point
 				
-				MUX_LOG_INFO($"Triggering event for \"{ds_grid_get(self.ordered_markers, _j - 1, MUX_ORD_MK.NAME)}\" in second {_marker.cue_point} ({_snd.ppos}s <= {_marker.cue_point}s < {_snd.pos}s). The source is the arranger itself");
+				MUX_LOG_INFO($"Triggering event for \"{ds_grid_get(self.ordered_markers, _j - 1, MUX_ODMK_F.NAME)}\" in second {_marker.cue_point} ({_snd.ppos}s <= {_marker.cue_point}s < {_snd.pos}s). The source is the arranger itself");
 				_marker.trigger_event(_snd, _snd.pos - _marker.cue_point, self.params);
 			}
 			
@@ -240,6 +229,8 @@ function MuxArranger(index, start_delay, start_params) constructor {
 		}
 	}
 	
+	///@desc Chronologically orders and optimizes the arranger's associated markers for later processing.
+	///      This must always be done after configuring markers for an arranger
 	static finalize_markers = function() {
 		if not is_undefined(self.ordered_markers) and ds_exists(self.ordered_markers, ds_type_grid)
 			ds_grid_destroy(self.ordered_markers);
@@ -260,8 +251,8 @@ function MuxArranger(index, start_delay, start_params) constructor {
 		self.ordered_markers = ds_grid_create(_size, 2);
 		for(_i = 0; _i < _size; _i++) {
 			_name = ds_priority_delete_min(_pq);
-			ds_grid_add(self.ordered_markers, _i, MUX_ORD_MK.NAME, _name);
-			ds_grid_add(self.ordered_markers, _i, MUX_ORD_MK.STRUCT, self.markers[$ _name]);
+			ds_grid_add(self.ordered_markers, _i, MUX_ODMK_F.NAME, _name);
+			ds_grid_add(self.ordered_markers, _i, MUX_ODMK_F.STRUCT, self.markers[$ _name]);
 		}
 		
 		ds_priority_destroy(_pq);
@@ -271,18 +262,4 @@ function MuxArranger(index, start_delay, start_params) constructor {
 	static free = function() {
 		ds_list_destroy(self.instances);
 	}
-}
-
-/**
- * @desc Returns a sound arranger based on the provided sound asset index
- * @param {Asset.GMSound|Id.GMSound} index
- * @returns {Struct.MuxArranger}
- */
-function mux_arranger(index) {
-	var _name = audio_get_name(index);
-	
-	var _arrangers = MUX_ARRANGERS;
-	var _index = ds_grid_value_x(_arrangers, 0, MUX_ARR_F.NAME, ds_grid_width(_arrangers) - 1, MUX_ARR_F.NAME, _name);
-	
-	return ds_grid_get(_arrangers, _index, MUX_ARR_F.STRUCT);
 }

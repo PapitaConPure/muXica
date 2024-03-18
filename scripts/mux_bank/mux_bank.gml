@@ -1,20 +1,36 @@
 /**
- * @desc Represents a bank of MuxSounds that are all of similar nature and processed in the same way. Can be linked to a GameMaker audio group
+ * @desc Represents a bank of MuxSounds that are all of similar nature and processed in the same way.
+ *       Can be linked to a GameMaker audio bus (which creates a "default" audio emitter).
  *       Internally, it's an array-based dynamic list that can grow twice its capacity when needed, and is processed in a wrapped, fragmented fashion.
  *       It's capacity can be reduced to fit only the current sounds it contains with MuxBank.shrink_capacity()
  * @param {String} name The name of the bank
- * @param {Asset.GMAudioGroup} [group]
+ * @param {Struct.AudioBus} [bus] An associated audio bus for the bank to manage. If not left undefined, will also create a default audio emitter for sounds linked to the bank
  */
-function MuxBank(name, group = undefined) constructor {
+function MuxBank(name, bus = undefined) constructor {
 	self.name = name;
+	self.bus = bus;
+	self.default_emitter = undefined;
 	self.size = 0;
 	self.capacity = 2;
 	self.sounds = array_create(self.capacity, undefined);
 	self.head = 0;
 	
-	self.group = group;
-	if is_undefined(group) then self.gain = 0;
-	else self.gain = audio_group_get_gain(group);
+	if not is_undefined(self.bus) {
+		self.default_emitter = audio_emitter_create();
+		
+		var _default = MUX_DEFAULT_EMITTER;
+		audio_emitter_bus(self.default_emitter, self.bus);
+		audio_emitter_falloff(
+			self.default_emitter,
+			_default.falloff.distance_reference,
+			_default.falloff.distance_maximum,
+			_default.falloff.factor);
+		audio_emitter_gain(self.default_emitter, _default.gain);
+		audio_emitter_pitch(self.default_emitter, _default.pitch);
+		audio_emitter_position(self.default_emitter, _default.position[0], _default.position[1], _default.position[2]);
+		audio_emitter_velocity(self.default_emitter, _default.velocity[0], _default.velocity[1], _default.velocity[2]);
+		audio_emitter_set_listener_mask(self.default_emitter, _default.listener_mask);
+	}
 	
 	///@desc Adds a sound to this bank at the current head position
 	///@param {Struct.MuxSound} sound The sound to add
@@ -102,7 +118,7 @@ function MuxBank(name, group = undefined) constructor {
 	 * @param {Real} idx The sound index to check for within the bank
 	 */
 	static has_sound = function(idx) {
-		if idx < 0 or idx > self.capacity then return false;
+		if idx < 0 or idx >= self.capacity then return false;
 		
 		return not is_undefined(self.sounds[idx]);
 	}
@@ -187,13 +203,11 @@ function MuxBank(name, group = undefined) constructor {
 	}
 	
 	///@desc Sets the gain of the bank and the associated audio group. Can also be used just to apply the bank's gain to the audio group
-	///@param {Real} [gain] New gain of the audio group. If less than zero, the gain will be left untouched (this is the default)
-	///@param {Real} [time] How long will it take for the old gain to reach the new gain, in milliseconds (0 by default)
-	static set_gain = function(gain = -1, time = 0) {
-		if gain >= 0 then self.gain = min(gain, 1);
-		
-		if is_undefined(self.group) then return;
-		audio_group_set_gain(self.group, self.gain, time);
+	///@param {Real} [gain] New gain of the audio bus
+	///@param {Real} [time] How long will it take for the old gain to reach the new gain, in seconds (0 by default)
+	static set_gain = function(gain, time = 0) {
+		if is_undefined(self.bus) then return;
+		self.bus.gain = clamp(gain, 0, 1);
 	}
 	
 	///@desc Defragments and updates all the sounds' positions within the bank and reduces the capacity to the current amount of sounds (minimum capacity: 4)
@@ -228,10 +242,18 @@ function MuxBank(name, group = undefined) constructor {
 		var _i = 0;
 		var _snd;
 		repeat self.capacity {
-			_snd = self.sounds[_i];
-			if is_undefined(_snd) then continue;
+			_snd = self.sounds[_i++];
+			if is_undefined(_snd) continue;
 			_snd.remove_index(self.name);
-			self.sounds[_i++] = undefined;
+			self.sounds[_i - 1] = undefined;
 		}
+		self.size = 0;
+		self.capacity = 2;
+	}
+	
+	///@desc Frees the bank's resources from memory
+	static free = function() {
+		self.flush();
+		audio_emitter_free(self.default_emitter);
 	}
 }

@@ -1,2 +1,1 @@
-/// @description Get ready
-mux_groups_update();
+/// @desc Get ready

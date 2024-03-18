@@ -19,9 +19,15 @@ function mux_cue_set(index, cue_name, cue_position) {
  * @param {Struct.MuxCueCollection} cues The audio cue collection data to bind
  */
 function mux_cue_set_many(index, collection) {
-	struct_foreach(collection.cues, function(_name, _cue) {
-		MUX_CUES[$ index][$ _name] = _cue;
-	});
+	var _cues = collection.cues;
+	var _names = struct_get_names(_cues);
+	var _count = array_length(_names);
+	var _name;
+	var _i = 0;
+	repeat _count {
+		_name = _names[_i++];
+		MUX_CUES[$ index][$ _name] = _cues[$ _name];
+	}
 }
 
 /**

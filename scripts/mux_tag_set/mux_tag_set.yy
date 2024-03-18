@@ -5,8 +5,8 @@
   "isDnD":false,
   "name":"mux_tag_set",
   "parent":{
-    "name":"Config Setters",
-    "path":"folders/muXica/1. System/Config Setters.yy",
+    "name":"3.b. Sound management",
+    "path":"folders/muXica/3.b. Sound management.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

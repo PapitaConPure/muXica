@@ -5,8 +5,8 @@
   "isDnD":false,
   "name":"mux_arranger_set",
   "parent":{
-    "name":"Config Setters",
-    "path":"folders/muXica/1. System/Config Setters.yy",
+    "name":"4.a Arrangers and Markers",
+    "path":"folders/muXica/4.a Arrangers and Markers.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",
