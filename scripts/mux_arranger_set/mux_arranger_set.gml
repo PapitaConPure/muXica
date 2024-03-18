@@ -1,3 +1,5 @@
+//feather ignore all
+
 ///@desc Initializes a MuxArranger batch for later submission
 function mux_arrangers_init() {
 	static config_arrangers = [];
@@ -15,6 +17,7 @@ function mux_arranger_add(arranger) {
 ///@desc Submits the indicated MuxArranger batch to the muXica handler
 function mux_arrangers_submit() {
 	var _array = mux_arrangers_init.config_arrangers;
+	//feather disable once GM1041
 	var _length = array_length(_array);
 	var _name, _arranger;
 	

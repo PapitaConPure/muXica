@@ -1,3 +1,5 @@
+//feather ignore all
+
 /**
  * @desc Registers a new audio tag space with the specified name in the muXica system
  * @param {String} tag The new tag's name

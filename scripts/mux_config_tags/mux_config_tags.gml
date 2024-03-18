@@ -3,18 +3,24 @@
 //Keep in mind you should only tag sounds with a purpose in mind
 
 function mux_config_tags() {
-	mux_tag_create("normal music");
-	mux_tag_create("boss music");
-	mux_tag_create("steps sounds");
-	mux_tag_create("punch sounds");
-	mux_tag_create("funny sounds");
-
-	mux_tag_add("normal music", aud_bgm_test1);
-	mux_tag_add("normal music", aud_bgm_test2);
-	mux_tag_add("normal music", aud_bgm_test3);
-	mux_tag_add("normal music", aud_bgm_test4);
+	//First, create some useful tags for your game:
 	
-	mux_tag_add("boss music", aud_bgm_test5);
+	//mux_tag_create("chapter music");
+	//mux_tag_create("boss music");
+	//mux_tag_create("punch sounds");
+	
+	
+	//////////////////////////////////////////////////////////////////////////
+	
+	
+	//Then, link sound assets to their corresponding tags:
 
-	mux_tag_add("punch sounds", aud_sfx_test1);
+	//mux_tag_add("chapter music", aud_bgm_test1);
+	//mux_tag_add("chapter music", aud_bgm_test2);
+	//mux_tag_add("chapter music", aud_bgm_test3);
+	
+	//mux_tag_add("boss music", aud_bgm_test4);
+	//mux_tag_add("boss music", aud_bgm_test5);
+
+	//mux_tag_add("punch sounds", aud_sfx_test1);
 }

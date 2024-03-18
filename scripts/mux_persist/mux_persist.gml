@@ -1,4 +1,4 @@
-//feather ignore GM2017
+//feather ignore all
 
 ///@desc Checks muXica's worker object availability every frame
 function mux_persist() {

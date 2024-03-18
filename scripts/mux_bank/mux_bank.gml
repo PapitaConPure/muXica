@@ -1,3 +1,5 @@
+//feather ignore all
+
 /**
  * @desc Represents a bank of MuxSounds that are all of similar nature and processed in the same way.
  *       Can be linked to a GameMaker audio bus (which creates a "default" audio emitter).

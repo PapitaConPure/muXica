@@ -1,4 +1,4 @@
-#macro AUDIO_STARTUP_TIME 4
+//feather ignore all
 
 /**
  * @desc Plays a new sound with the specified playback parameters. Behaves similar to audio_play_sound().

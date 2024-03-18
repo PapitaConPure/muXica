@@ -1,3 +1,5 @@
+//feather ignore all
+
 /**
  * @desc Checks if the audio system is ready to be processed and used (true) or not (false)
  * @returns {Bool}

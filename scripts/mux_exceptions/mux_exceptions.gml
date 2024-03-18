@@ -1,3 +1,5 @@
+//feather ignore all
+
 /**
  * @param {String} message
  * @param {String} long_message

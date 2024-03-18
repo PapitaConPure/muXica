@@ -1,3 +1,5 @@
+//feather ignore all
+
 /**
  * @desc Gets the track position of the specified audio cue
  * @param {Asset.GMSound} audio Audio asset index

@@ -1,3 +1,5 @@
+//feather ignore all
+
 /**
  * @desc Represents an audio instance block, containing both the sound asset index and the sound instance id, as well as additional information about the asset or instance.
  *       It is part of the MuxArranger system, so it has little use if using the standalone cues system. It has the update() and post_update() methods for processing.

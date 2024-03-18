@@ -1,3 +1,5 @@
+//feather ignore all
+
 /// @desc muXica sound system processing
 #region Process sound banks
 #macro MUX_SOUND_IS_NO_LONGER_VALID ((not audio_exists(_inst)) or (not audio_is_playing(_inst)))

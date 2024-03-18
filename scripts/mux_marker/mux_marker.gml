@@ -1,3 +1,5 @@
+//feather ignore all
+
 /**
  * @desc Represents a position marker for a MuxArranger to use. It has no other uses besides that
  *       None of the functions should be used outside a MuxArranger

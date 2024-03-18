@@ -1,3 +1,5 @@
+//feather ignore all
+
 #region Checks
 ///@desc Checks if any sound of a certain sound asset or tag space is currently playing and not stopping.
 ///      If the index is the constant "all", every muXica sound will be checked against. This is the default
