@@ -82,7 +82,7 @@ function mux_config_arrangers() {
 		.set_marker("heavy start", new MuxEventMarker(
 			function(marker, sound, offset, params) {
 				if params.last_pos >= 0 {
-					sound.set_track_position(marker.cue_point + params.last_pos - offset);
+					sound.set_track_position(marker.cue_point + params.last_pos - offset - 80 * 0.001);
 					params.last_pos = -1;
 				}
 			}))

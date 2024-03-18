@@ -16,9 +16,9 @@
   "ResourceOrderSettings":[
     {"name":"muxica_readme","order":6,"path":"notes/muxica_readme/muxica_readme.yy",},
     {"name":"obj_system","order":1,"path":"objects/obj_system/obj_system.yy",},
-    {"name":"mux_arranger_set","order":1,"path":"scripts/mux_arranger_set/mux_arranger_set.yy",},
+    {"name":"mux_arranger_setters","order":1,"path":"scripts/mux_arranger_setters/mux_arranger_setters.yy",},
     {"name":"mux_arranger","order":1,"path":"scripts/mux_arranger/mux_arranger.yy",},
-    {"name":"mux_bank_add","order":2,"path":"scripts/mux_bank_add/mux_bank_add.yy",},
+    {"name":"mux_bank_setters","order":2,"path":"scripts/mux_bank_setters/mux_bank_setters.yy",},
     {"name":"mux_bank_get","order":4,"path":"scripts/mux_bank_get/mux_bank_get.yy",},
     {"name":"mux_bank_set","order":5,"path":"scripts/mux_bank_set/mux_bank_set.yy",},
     {"name":"mux_bank","order":3,"path":"scripts/mux_bank/mux_bank.yy",},

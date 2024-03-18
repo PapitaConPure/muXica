@@ -16,7 +16,19 @@ function MuxBank(name, bus = undefined) constructor {
 	
 	if not is_undefined(self.bus) {
 		self.default_emitter = audio_emitter_create();
+		
+		var _default = MUX_DEFAULT_EMITTER;
 		audio_emitter_bus(self.default_emitter, self.bus);
+		audio_emitter_falloff(
+			self.default_emitter,
+			_default.falloff.distance_reference,
+			_default.falloff.distance_maximum,
+			_default.falloff.factor);
+		audio_emitter_gain(self.default_emitter, _default.gain);
+		audio_emitter_pitch(self.default_emitter, _default.pitch);
+		audio_emitter_position(self.default_emitter, _default.position[0], _default.position[1], _default.position[2]);
+		audio_emitter_velocity(self.default_emitter, _default.velocity[0], _default.velocity[1], _default.velocity[2]);
+		audio_emitter_set_listener_mask(self.default_emitter, _default.listener_mask);
 	}
 	
 	///@desc Adds a sound to this bank at the current head position

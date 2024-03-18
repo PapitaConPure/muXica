@@ -83,7 +83,7 @@ function mux_sound_crossfade(time, from, to, priority, loop = false, synced = fa
 	}
 	
 	var _old_all_bank_idx = mux_sound_get_inst_bank_index(_all_bank, from);
-	var _id = audio_play_sound_on(MUX_DEFAULT_EMITTER, to, loop, priority, 0, offset, pitch, listener_mask);
+	var _id = audio_play_sound_on(_bank.default_emitter, to, loop, priority, 0, offset, pitch, listener_mask);
 	__mux_sound_crossfade_delayed(from, _id, gain, time);
 	
 	var _source_position = audio_sound_get_track_position(from);

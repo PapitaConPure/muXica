@@ -67,19 +67,18 @@ function mux_sound_get_array_from_all() {
 ///@param {Asset.GMSound} index
 ///@returns {Array<Struct.MuxSound>}
 function mux_sound_get_array_from_index(index) {
-	var _bank_idx = audio_group_name(audio_sound_get_audio_group(index));
-	var _group_bank = mux_bank_get(_bank_idx)
-	var _list_size = _group_bank.capacity;
+	var _bank = mux_bank_get_from_sound(index);
+	var _list_size = _bank.capacity;
 	
 	//feather disable once GM1045
 	if _list_size == 0 then return [];
 	
-	var _arr = array_create(_group_bank.size);
+	var _arr = array_create(_bank.size);
 	var _i = 0, _j = 0;
 	
 	repeat _list_size {
-		if _group_bank.has_sound(_i)
-			_arr[_j++] = _group_bank.get_sound(_i);
+		if _bank.has_sound(_i)
+			_arr[_j++] = _bank.get_sound(_i);
 		
 		_i++;
 	}
