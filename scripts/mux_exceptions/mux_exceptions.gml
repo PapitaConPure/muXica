@@ -36,7 +36,7 @@ function __mux_ex(message, long_message = "No additional information was provide
 #macro MUX_CHECK_UNINITIALISED_EX_OR_FALSE if MUX_CHECK_UNINITIALISED { if MUX_EX_ENABLE then __mux_ex(MUX_EX_UNINITIALISED) else return false; }
 
 #macro MUX_EX_INVALID "Submitted audio was invalid", "Identifier is less than zero or isn't a valid audio asset or instance"
-#macro MUX_CHECK_INVALID (MUX_EX_ENABLE and (index < 0) or not audio_exists(index))
+#macro MUX_CHECK_INVALID (MUX_EX_ENABLE and (sound < 0) or not audio_exists(sound))
 #macro MUX_CHECK_INVALID_EX if MUX_CHECK_INVALID then __mux_ex(MUX_EX_INVALID)
 
 #macro MUX_EX_INVALID_EMITTER "Invalid emitter", "The specified emitter isn't linked to a bus associated with a muXica bank"

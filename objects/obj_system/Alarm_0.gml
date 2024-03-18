@@ -9,13 +9,13 @@ else
 
 alarm[0] = game_get_speed(gamespeed_fps) * 6;
 
-if mux_sound_any_is_playing(aud_bgm_test1) {
+if mux_sound_is_playing(aud_bgm_test1) {
 	sound = mux_sound_crossfade(1, aud_bgm_test1, aud_bgm_test5, 50);
-} else if mux_sound_any_is_playing("boss music") {
+} else if mux_sound_is_playing("boss music") {
 	mux_sound_crossfade(1.5, "boss music", aud_bgm_test4, 60);
-} else if mux_sound_any_is_playing() and not mux_sound_is_playing(sound) {
+} else if mux_sound_is_playing() and not mux_sound_is_playing(sound) {
 	sound = mux_sound_crossfade(0.5, all, aud_bgm_test3, 60);
 } else {
+	sound = mux_sound_crossfade(0.5, sound, aud_bgm_test2, 60, false, true, 0.75, 0, 1.5);
 	alarm[0] = -1;
 }
-	

@@ -1,22 +1,22 @@
 #region Checks
 ///@desc Checks if any sound of a certain sound asset or tag space is currently playing and not stopping.
 ///      If the index is the constant "all", every muXica sound will be checked against. This is the default
-///@param {Asset.GMSound|String|Constant.All} index The umbrella of sounds to check for
-function mux_sound_any_is_playing(index = all) {
+///@param {Asset.GMSound|Id.Sound|String|Constant.All} sound The umbrella of sounds to check for
+function mux_sound_is_playing(sound = all) {
 	MUX_CHECK_UNINITIALISED_EX_OR_FALSE
 	
-	if index == all then return MUX_ALL.size > 0;
+	if sound == all then return MUX_ALL.size > 0;
 	
 	var _i = 0; 
 	var _found = false;
 	var _bank;
 	var _bank_size;
 	
-	if is_string(index) {
-		index = __mux_string_to_struct_key(index);
-		MUX_EX_IF not variable_struct_exists(MUX_TAGS, index) then __mux_ex($"Audio tag \"{index}\" doesn't exist");
+	if is_string(sound) {
+		sound = __mux_string_to_struct_key(sound);
+		MUX_EX_IF not variable_struct_exists(MUX_TAGS, sound) then __mux_ex($"Audio tag \"{sound}\" doesn't exist");
 		
-		var _tags_array = MUX_TAGS[$ index];
+		var _tags_array = MUX_TAGS[$ sound];
 		_bank = MUX_ALL;
 		_bank_size = _bank.size;
 		
@@ -29,27 +29,33 @@ function mux_sound_any_is_playing(index = all) {
 		return _found;
 	}
 	
-	MUX_CHECK_INVALID_EX
+	if typeof(sound) == "ref" {
+		MUX_CHECK_INVALID_EX;
+		
+		_bank = mux_bank_get_from_sound(sound);
+		_bank_size = _bank.size;
 	
-	_bank = mux_bank_get_from_sound(index);
-	_bank_size = _bank.size;
+		while(_i < _bank_size and not _found) {
+			if _bank.has_sound(_i) and _bank.get_sound(_i).index == sound then _found = true;
+			_i++;
+		}
 	
-	while(_i < _bank_size and not _found) {
-		if _bank.has_sound(_i) and _bank.get_sound(_i).index == index then _found = true;
-		_i++;
+		return _found;
 	}
 	
-	return _found;
+	return __mux_sound_inst_is_playing(sound);
 }
 
 ///@desc Checks if the specified sound instance is currently playing and not stopping
 ///      To check for all sound instances, an entire sound index or a tag, use mux_sound_any_is_playing
 ///@param {Id.Sound} inst The sound instance to check for
-function mux_sound_is_playing(inst) {
+function __mux_sound_inst_is_playing(inst) {
 	if not audio_exists(inst) then return false;
 	if inst < 0 then __mux_ex(MUX_EX_INVALID);
 	
 	var _sound = mux_sound_get_from_inst(inst);
+	if is_undefined(_sound) then return false;
+	
 	var _bank = mux_bank_get(_sound.emitter);
 	var _bank_size = _bank.size;
 	var _i = 0; 
