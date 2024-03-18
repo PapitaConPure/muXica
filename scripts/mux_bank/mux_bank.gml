@@ -241,10 +241,10 @@ function MuxBank(name, bus = undefined) constructor {
 		var _i = 0;
 		var _snd;
 		repeat self.capacity {
-			_snd = self.sounds[_i];
-			if is_undefined(_snd) then continue;
+			_snd = self.sounds[_i++];
+			if is_undefined(_snd) continue;
 			_snd.remove_index(self.name);
-			self.sounds[_i++] = undefined;
+			self.sounds[_i - 1] = undefined;
 		}
 		self.size = 0;
 		self.capacity = 2;

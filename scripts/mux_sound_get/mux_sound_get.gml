@@ -75,13 +75,18 @@ function mux_sound_get_array_from_index(index) {
 	
 	var _arr = array_create(_bank.size);
 	var _i = 0, _j = 0;
+	var _sound;
 	
 	repeat _list_size {
-		if _bank.has_sound(_i)
-			_arr[_j++] = _bank.get_sound(_i);
+		if _bank.has_sound(_i) {
+			_sound = _bank.get_sound(_i);
+			if _sound.index == index then _arr[_j++] = _sound;
+		}
 		
 		_i++;
 	}
+	
+	array_resize(_arr, _j);
 	
 	return _arr;
 }

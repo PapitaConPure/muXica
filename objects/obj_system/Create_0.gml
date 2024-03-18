@@ -5,3 +5,5 @@ show_debug_overlay(true);
 
 audio_group_load(BGM);
 audio_group_load(SFX);
+
+sys_emit = undefined;

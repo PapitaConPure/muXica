@@ -14,7 +14,7 @@ for(_i = 0; _i < _bank.capacity; _i++) {\
 	draw_text(80, _base + _sep * _i, string(_i));\
 	if not _bank.has_sound(_i) then continue;\
 	_snd = _bank.get_sound(_i);\
-	draw_text(96, _base + _sep * _i, $"[{_snd.inst}] {audio_get_name(_snd.index)} -- {_snd.playing ? "PLAYING" : "PAUSED"}, {_snd.pos}s/{_snd.length}s, Px{_snd.pitch}");\
+	draw_text(96, _base + _sep * _i, $"[{_snd.inst}] {audio_get_name(_snd.index)} -- {_snd.playing ? "PLAYING" : "PAUSED"}, {_snd.pos}s/{_snd.length}s, Px{_snd.get_pitch_factor()}");\
 }
 
 _base = 96;

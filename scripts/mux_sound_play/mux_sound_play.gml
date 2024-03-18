@@ -18,7 +18,7 @@ function mux_sound_play(index, priority, loop = false, gain = 1, offset = 0, pit
 	MUX_CHECK_EMITTER_IS_ALL_EX;
 	
 	var _id = audio_play_sound_on(_bank.default_emitter, index, loop, priority, gain, offset, pitch, listener_mask);
-	var _sound = new MuxSound(index, _id);
+	var _sound = new MuxSound(index, _id, _bank.default_emitter);
 	_bank.add_sound(_sound);
 	MUX_ALL.add_sound(_sound);
 	return _id;
@@ -43,7 +43,7 @@ function mux_sound_play_on(emitter, index, priority, loop = false, gain = 1, off
 	MUX_CHECK_EMITTER_IS_ALL_EX;
 	
 	var _id = audio_play_sound_on(emitter, index, loop, priority, gain, offset, pitch, listener_mask);
-	var _sound = new MuxSound(index, _id);
+	var _sound = new MuxSound(index, _id, emitter);
 	_bank.add_sound(_sound);
 	MUX_ALL.add_sound(_sound);
 	return _id;
@@ -70,17 +70,18 @@ function mux_sound_crossfade(time, from, to, priority, loop = false, synced = fa
 	time *= 1000; //Convert to milliseconds because....... yeah
 	
 	var _all_bank = MUX_ALL;
-	var _bank = mux_bank_get_from_sound(to);
-	MUX_CHECK_EMITTER_IS_ALL_EX;
 	
 	if from == all {
 		__mux_sound_fade_out_all(time, _all_bank);
-		var _id = audio_play_sound_on(_bank.default_emitter, to, loop, priority, 0, offset, pitch, listener_mask);
+		var _id = audio_play_sound_on(_all_bank.default_emitter, to, loop, priority, 0, offset, pitch, listener_mask);
 		__mux_sound_crossfade_delayed(undefined, _id, gain, time);
-		var _sound = new MuxSound(to, _id);
+		var _sound = new MuxSound(to, _id, _all_bank.default_emitter);
 		_all_bank.add_sound(_sound);
 		return _id;
 	}
+	
+	var _bank = mux_bank_get_from_sound(to);
+	MUX_CHECK_EMITTER_IS_ALL_EX;
 	
 	var _old_all_bank_idx = mux_sound_get_inst_bank_index(_all_bank, from);
 	var _id = audio_play_sound_on(_bank.default_emitter, to, loop, priority, 0, offset, pitch, listener_mask);
@@ -91,7 +92,7 @@ function mux_sound_crossfade(time, from, to, priority, loop = false, synced = fa
 	if synced then audio_sound_set_track_position(_id, _relative_position);
 	
 	var _old_sound = _all_bank.get_sound(_old_all_bank_idx);
-	var _sound = new MuxSound(to, _id);
+	var _sound = new MuxSound(to, _id, _bank.default_emitter);
 	_all_bank.replace_sound_at(_old_all_bank_idx, _sound);
 	MUX_P_STOP.add_sound(_old_sound);
 	return _id;
@@ -116,7 +117,7 @@ function mux_sound_crossfade(time, from, to, priority, loop = false, synced = fa
 function mux_sound_crossfade_on(emitter, time, from, to, priority, loop = false, synced = false, gain = 1, offset = 0, pitch = 1, listener_mask = undefined) {
 	MUX_CHECK_UNINITIALISED_EX;
 	
-	time *= 1000; //Convert to milliseconds because....... yeah
+	time *= 1000; //Convert to milliseconds againnn
 	
 	var _all_bank = MUX_ALL;
 	var _bank = mux_bank_get(emitter);
@@ -126,7 +127,7 @@ function mux_sound_crossfade_on(emitter, time, from, to, priority, loop = false,
 		__mux_sound_fade_out_bank(time, _bank, _all_bank);
 		var _id = audio_play_sound_on(emitter, to, loop, priority, 0, offset, pitch, listener_mask);
 		__mux_sound_crossfade_delayed(undefined, _id, gain, time);
-		var _sound = new MuxSound(to, _id);
+		var _sound = new MuxSound(to, _id, emitter);
 		_bank.add_sound(_sound);
 		_all_bank.add_sound(_sound);
 		return _id;
@@ -142,7 +143,7 @@ function mux_sound_crossfade_on(emitter, time, from, to, priority, loop = false,
 	if synced then audio_sound_set_track_position(_id, _relative_position);
 	
 	var _old_sound = _all_bank.get_sound(_old_all_bank_idx);
-	var _sound = new MuxSound(to, _id);
+	var _sound = new MuxSound(to, _id, emitter);
 	_bank.replace_sound_at(_old_bank_idx, _sound);
 	_all_bank.replace_sound_at(_old_all_bank_idx, _sound);
 	MUX_P_STOP.add_sound(_old_sound);
@@ -150,14 +151,14 @@ function mux_sound_crossfade_on(emitter, time, from, to, priority, loop = false,
 }
 
 /**
- * @desc Fades out the supplied sound within the specified time frame
- * @param {Asset.GMSound|Id.Sound|Constant.All} sound Sound instance to stop
+ * @desc Fades out the specified selection of sound within the supplied time frame
+ * @param {Asset.GMSound|Id.Sound|String|Constant.All} sound Sound selection to stop
  * @param {Real} time Fade out time (in seconds)
  */
 function mux_sound_stop(sound, time = 0) {
 	MUX_CHECK_UNINITIALISED_EX;
 	
-	time *= 1000; //Again, convert to milliseconds :) :) :)))))
+	time *= 1000; //Yet again, convert to milliseconds :) :) :)))))
 	
 	var _all_bank = MUX_ALL;
 	
@@ -166,51 +167,27 @@ function mux_sound_stop(sound, time = 0) {
 		return;
 	}
 	
+	if is_string(sound) {
+		__mux_sound_fade_out_tag(time, sound, _all_bank);
+		return;
+	}
+	
 	if not audio_exists(sound) then return;
 	
-	var _bank = mux_bank_get_from_sound(sound);
-	MUX_CHECK_EMITTER_IS_ALL_EX;
+	var _bank;
 	
 	if typeof(sound) == "ref" {
-		__mux_sound_fade_out_index(time, sound, _bank, _all_bank);
-	} else {
-		var _bank_idx = _bank.find_index_of(sound);
-		var _stopped_sound = _bank.get_sound(_bank_idx);
-		var _all_idx = _stopped_sound.get_index_in("all");
+		_bank = mux_bank_get_from_sound(sound);
+		MUX_CHECK_EMITTER_IS_ALL_EX;
 		
-		audio_sound_gain(sound, 0, time);
-		_bank.remove_sound_at(_bank_idx);
-		_all_bank.remove_sound_at(_all_idx);
-		MUX_P_STOP.add_sound(_stopped_sound);
-	}
-}
-
-/**
- * @desc Fades out the supplied sound within the specified time frame
- * @param {Id.AudioEmitter} emitter The emitter on which the sound is being played
- * @param {Asset.GMSound|Id.Sound|Constant.All} sound Sound instance to stop
- * @param {Real} time Fade out time (in seconds)
- */
-function mux_sound_stop_on(emitter, sound, time = 0) {
-	MUX_CHECK_UNINITIALISED_EX;
-	
-	time *= 1000; //Again, convert to milliseconds :) :) :)))))
-	
-	var _all_bank = MUX_ALL;
-	
-	if sound == all {
-		__mux_sound_fade_out_all(time, _all_bank)
-		return;
-	}
-	
-	if not audio_exists(sound) then return;
-	
-	var _bank = mux_bank_get(emitter);
-	MUX_CHECK_EMITTER_IS_ALL_EX;
-	
-	if typeof(sound) == "ref" {
 		__mux_sound_fade_out_index(time, sound, _bank, _all_bank);
 	} else {
+		var _sound = mux_sound_get_from_inst(sound);
+		MUX_EX_IF is_undefined(sound) then __mux_ex("Invalid sound", "Tried to stop a sound that isn't linked to a muXica audio bank");
+	
+		_bank = mux_bank_get(_sound.emitter);
+		MUX_CHECK_EMITTER_IS_ALL_EX;
+		
 		var _bank_idx = _bank.find_index_of(sound);
 		var _stopped_sound = _bank.get_sound(_bank_idx);
 		var _all_idx = _stopped_sound.get_index_in("all");
@@ -244,7 +221,7 @@ function __mux_sound_crossfade_delayed(out, in, gain, time) {
  * @param {Struct.MuxBank} all_bank Bank in which all muXica-managed sounds are stored in
  */
 function __mux_sound_fade_out_all(time, all_bank) {
-	var _start = all_bank.size - 1;
+	var _start = all_bank.capacity - 1;
 	var _found, _found_idx, _i;
 	
 	for(_i = _start; _i >= 0; _i--) {
@@ -269,13 +246,46 @@ function __mux_sound_fade_out_all(time, all_bank) {
 }
 
 /**
+ * Crossfades out all registered sounds within the specified tag space
+ * @param {Real} time Time it takes to fade out the entire tag space, in milliseconds
+ * @param {String} tag The muXica tag name to fade out all current sound instances of
+ * @param {Struct.MuxBank} all_bank Bank in which all muXica-managed sounds are stored in
+ */
+function __mux_sound_fade_out_tag(time, tag, all_bank) {
+	var _tag_space = MUX_TAGS[$ tag];
+	var _start = all_bank.capacity - 1;
+	var _found, _found_idx, _i, _j, _bank_names, _bank_count, _bank_name, _bank;
+	
+	for(_i = _start; _i >= 0; _i--) {
+		if not all_bank.has_sound(_i) then continue;
+		
+		_found = all_bank.get_sound(_i);
+		
+		if not array_contains(_tag_space, audio_get_name(_found.index)) then continue;
+		
+		audio_sound_gain(_found.inst, 0, time);
+		_bank_names = struct_get_names(_found.bank_index);
+		_bank_count = array_length(_bank_names);
+		repeat _bank_count {
+			_bank_name = _bank_names[_j++];
+			if _bank_name == "all" then continue;
+			_bank = _found.bank_index[$ _bank_name];
+			_bank.remove_sound(_found);
+		}
+		
+		all_bank.remove_sound_at(_i);
+		MUX_P_STOP.add_sound(_found);
+	}
+}
+
+/**
  * Crossfades out all registered sounds within the specified group bank
- * @param {Real} time Time it takes to fade out the entire sound's bank, in milliseconds
+ * @param {Real} time Time it takes to fade out all sound instances in the bank, in milliseconds
  * @param {Struct.MuxBank} group_bank The current muXica-managed sound's specific bank
  * @param {Struct.MuxBank} all_bank Bank in which all muXica-managed sounds are stored in
  */
 function __mux_sound_fade_out_bank(time, group_bank, all_bank) {
-	var _start = all_bank.size - 1;
+	var _start = all_bank.capacity - 1;
 	var _found, _found_idx, _i;
 	
 	for(_i = _start; _i >= 0; _i--) {
@@ -297,7 +307,7 @@ function __mux_sound_fade_out_bank(time, group_bank, all_bank) {
  * @param {Struct.MuxBank} all_bank Bank in which all muXica-managed sounds are stored in
  */
 function __mux_sound_fade_out_index(time, index, group_bank, all_bank) {
-	var _start = all_bank.size - 1;
+	var _start = all_bank.capacity - 1;
 	var _found, _found_idx, _i;
 	
 	for(_i = _start; _i >= 0; _i--) {
