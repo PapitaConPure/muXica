@@ -1,6 +1,5 @@
-/// @description Finish boot up
+/// @desc Finish boot up
 if not audio_loaded {
-	mux_groups_update();
 	audio_loaded = true;
 	MUX_LOG_INFO("- - muXica audio system UP and READY - -");
 	

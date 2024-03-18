@@ -19,6 +19,5 @@ depth = MUX_HANDLER_DEPTH;
 MUX_LOG_INFO("- - muXica worker UP. Loading muXica audio groups... - -");
 audio_loaded = false;
 mux_config_banks();
-mux_group_load_all();
 
 alarm[0] = 2;

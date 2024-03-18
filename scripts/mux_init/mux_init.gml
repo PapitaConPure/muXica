@@ -1,3 +1,4 @@
+#region Macros
 #macro MUX_GLOBAL mux_scope_global._struct
 #macro MUX_HANDLER MUX_GLOBAL.worker
 #macro MUX_HANDLER_DEPTH 16002
@@ -15,7 +16,27 @@
 
 #macro MUX_LOG_INFO if MUX_SHOW_LOG_INFO then show_debug_message
 #macro MUX_LOG_STEP if MUX_SHOW_LOG_STEP then show_debug_message
+#endregion
 
+#region Enums
+enum MUX_ARR_F {
+	NAME,
+	STRUCT,
+}
+
+enum MUX_MRK_UNIT {
+	BEATS,
+	BARS,
+	SECONDS,
+}
+
+enum MUX_ODMK_F {
+	NAME,
+	STRUCT,
+}
+#endregion
+
+#region System initialization
 //Generate muXica global scope
 mux_scope_global();
 time_source_start(MUX_GLOBAL.ts_boot);
@@ -24,3 +45,4 @@ time_source_start(MUX_GLOBAL.ts_boot);
 mux_config_arrangers();
 mux_config_cues();
 mux_config_tags();
+#endregion

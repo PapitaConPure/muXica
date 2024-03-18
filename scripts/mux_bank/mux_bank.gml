@@ -1,5 +1,6 @@
 /**
- * @desc Represents a bank of MuxSounds that are all of similar nature and processed in the same way. Can be linked to a GameMaker audio group
+ * @desc Represents a bank of MuxSounds that are all of similar nature and processed in the same way.
+ *       Can be linked to a GameMaker audio bus (which creates a "default" audio emitter).
  *       Internally, it's an array-based dynamic list that can grow twice its capacity when needed, and is processed in a wrapped, fragmented fashion.
  *       It's capacity can be reduced to fit only the current sounds it contains with MuxBank.shrink_capacity()
  * @param {String} name The name of the bank
@@ -250,6 +251,7 @@ function MuxBank(name, bus = undefined) constructor {
 		self.capacity = 2;
 	}
 	
+	///@desc Frees the bank's resources from memory
 	static free = function() {
 		self.flush();
 		audio_emitter_free(self.default_emitter);

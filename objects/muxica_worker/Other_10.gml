@@ -1,4 +1,4 @@
-/// @description Fade In Sounds
+/// @desc Fade In Sounds
 var _request;
 while not ds_queue_empty(MUX_P_FADE) {
 	_request = ds_queue_dequeue(MUX_P_FADE);

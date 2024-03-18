@@ -1,4 +1,4 @@
-/// @description Insert description here
+/// @desc Stop sound index
 switch(keyboard_key) {
 	//Repetitive? Yeah idc
 	case vk_numpad0: if mux_bank_get("BGM").has_sound(0) then mux_sound_stop(mux_bank_get("BGM").get_sound(0).inst, 0.4); break;

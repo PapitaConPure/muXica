@@ -1,8 +1,3 @@
-enum MUX_ARR_F {
-	NAME,
-	STRUCT,
-}
-
 ///@desc Must be called once to generate the global scope for the muXica system. This should already be achieved inside the mux_init script
 function mux_scope_global() {
 	static _struct = {
@@ -28,18 +23,4 @@ function mux_scope_global() {
 	};
 	
 	return _struct;
-}
-
-///@param {String} key
-function mux_scope_get(key) {
-	return mux_scope_global._struct;
-}
-
-/**
- * @param {String} key
- * @param {Any} value
- */
-function mux_scope_set(key, value) {
-	var _global = mux_scope_global._struct;
-	_global[$ key] = value;
 }
