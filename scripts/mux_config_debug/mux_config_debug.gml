@@ -1,8 +1,16 @@
+//Basic logs
+
 //Log general muXica audio system information
 #macro MUX_SHOW_LOG_INFO true
 
-//Log basic sound lifetime processing information
+//Log sound lifetime processing information
 #macro MUX_SHOW_LOG_STEP false
+
+
+//////////////////////////////////////////////////////////////////////////
+
+
+//Warnings and exception
 
 //Warn about potential problems, problematic yet not fatal misuses of functions, etc
 //You might want to disable this when exporting an EXE if you're somewhat sure nothing audio-related may break
