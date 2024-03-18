@@ -6,7 +6,7 @@
     "path":"audiogroups/SFX",
   },
   "bitDepth":1,
-  "bitRate":128,
+  "bitRate":192,
   "compression":0,
   "conversionMode":0,
   "duration":0.294649,

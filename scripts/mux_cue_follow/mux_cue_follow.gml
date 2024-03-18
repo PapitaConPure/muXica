@@ -1,5 +1,5 @@
 /**
- * @description Sets the position of the audio track to its cue position denoted by the specified name
+ * @desc Sets the position of the audio track to its cue position denoted by the specified name
  * @param {Asset.GMSound|Id.Sound} audio Audio index
  * @param {String} name Cue name
  */

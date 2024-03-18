@@ -5,8 +5,8 @@
   "isDnD":false,
   "name":"mux_cue_follow",
   "parent":{
-    "name":"3.b. Cues and position",
-    "path":"folders/muXica/3.b. Cues and position.yy",
+    "name":"4.b. Standalone Cues",
+    "path":"folders/muXica/4.b. Standalone Cues.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

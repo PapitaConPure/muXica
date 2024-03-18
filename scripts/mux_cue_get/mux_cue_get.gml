@@ -1,6 +1,6 @@
 /**
- * @desc Description Gets the track position of the specified audio cue
- * @param {Asset.GMSound} audio Audio index
+ * @desc Gets the track position of the specified audio cue
+ * @param {Asset.GMSound} audio Audio asset index
  * @param {String} name Cue name
  */
 function mux_cue_get(audio, name = "intro") {

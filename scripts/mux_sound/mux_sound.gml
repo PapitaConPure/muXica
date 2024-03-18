@@ -4,12 +4,14 @@
  *       You should never call the free() method manually, as all instances related to an arranger will be freed when the arranger is freed, and all other instances don't need to be freed
  * @param {Asset.GMSound} index Sound asset index
  * @param {Id.Sound} inst Sound instance id
+ * @param {Id.AudioEmitter} inst Audio emitter id
  * @param {Bool} arranged Whether this instance should be managed by an associated MuxArranger (if any) (true, default) or not (false)
  * @constructor
  */
-function MuxSound(index, inst, arranged = true) constructor {
+function MuxSound(index, inst, emitter, arranged = true) constructor {
 	self.index = index;
 	self.inst = inst;
+	self.emitter = emitter;
 	self.arranged = arranged;
 	
 	self.pos = audio_sound_get_track_position(inst);
@@ -48,7 +50,7 @@ function MuxSound(index, inst, arranged = true) constructor {
 		if not self.playing then return;
 		
 		//I'll sync it my-fucking-self
-		var _new_pos = self.pos + delta_time * 0.000001 * self.pitch;
+		var _new_pos = self.pos + self.get_pitch_delta_factor();
 		
 		if _new_pos >= self.length {
 			if self.looping {
@@ -137,6 +139,20 @@ function MuxSound(index, inst, arranged = true) constructor {
 	///@param {String} bank_name The name of the bank to get the sound's index from
 	static get_index_in = function(bank_name) {
 		return self.bank_index[$ bank_name];
+	}
+	
+	///@desc Gets the delta-adjusted pitch factor for this sound instance, based on the sound instance and audio emitter's pitches
+	///@returns {Real}
+	static get_pitch_delta_factor = function() {
+		var _delta_fac = delta_time * 0.000001;
+		return _delta_fac * self.get_pitch_factor();
+	}
+	
+	///@desc Gets the pitch factor for this sound instance, based on the sound instance and audio emitter's pitches
+	///@returns {Real}
+	static get_pitch_factor = function() {
+		var _emitter_pitch = audio_emitter_exists(self.emitter) ? audio_emitter_get_pitch(self.emitter) : 1;
+		return self.pitch * _emitter_pitch;
 	}
 	
 	///@desc Unlinks this sound from its associated arranger (if any) and frees up the sound block's resources
