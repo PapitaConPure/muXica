@@ -4,7 +4,7 @@
  * @returns {Struct.MuxBank}
  */
 function mux_bank_get(search) {
-	if is_string(search) then return MUX_BANKS[$ search];
+	if is_string(search) then return MUX_BANKS[$ (__mux_string_to_struct_key(search))];
 	return __mux_bank_get_from_bus(audio_emitter_get_bus(search));
 }
 
