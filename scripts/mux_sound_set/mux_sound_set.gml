@@ -1,3 +1,5 @@
+//feather ignore all
+
 ///@desc Sets the track position for the specified sound instance or group
 ///@param {Asset.GMSound|Id.Sound|String|Constant.All} sound The sound selection to affect
 ///@param {Real} time The new track position of the selected sounds

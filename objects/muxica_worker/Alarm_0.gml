@@ -1,3 +1,5 @@
+//feather ignore all
+
 /// @desc Finish boot up
 if not audio_loaded {
 	audio_loaded = true;

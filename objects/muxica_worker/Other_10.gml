@@ -1,3 +1,5 @@
+//feather ignore all
+
 /// @desc Fade In Sounds
 var _request;
 while not ds_queue_empty(MUX_P_FADE) {

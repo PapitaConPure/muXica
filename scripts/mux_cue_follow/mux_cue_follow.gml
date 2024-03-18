@@ -1,3 +1,5 @@
+//feather ignore all
+
 /**
  * @desc Sets the position of the audio track to its cue position denoted by the specified name
  * @param {Asset.GMSound|Id.Sound} audio Audio index

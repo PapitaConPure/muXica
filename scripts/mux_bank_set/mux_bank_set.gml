@@ -1,3 +1,5 @@
+//feather ignore all
+
 /**
  * @desc Adds a new sound bank to the muXica audio system for later usage.
  *       You can also pass an array of sound asset indexes to link to the new bank.

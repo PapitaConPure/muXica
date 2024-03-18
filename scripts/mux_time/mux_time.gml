@@ -1,3 +1,5 @@
+//feather ignore all
+
 ///@desc Returns the audio position in seconds, based on the specified beat number, BPM, and initial offset
 ///@param {Real} [n] Beat number (0 by default)
 ///@param {Real} [bpm] Beats per minute (140 by default)

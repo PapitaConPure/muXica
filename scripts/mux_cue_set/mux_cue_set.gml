@@ -1,3 +1,5 @@
+//feather ignore all
+
 /**
  * @desc Set's an track position cue for the specified sound asset under the specified name
  * @param {Asset.GMSound} index Sound asset index

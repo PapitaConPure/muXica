@@ -1,3 +1,5 @@
+//feather ignore all
+
 /**
  * @desc Links the supplied emitter to the bus from the bank specified by name.
          This is effectively a shorthand for audio_emitter_bus(emitter, mux_bank_get(bank_name).bus).

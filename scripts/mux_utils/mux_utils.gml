@@ -1,3 +1,5 @@
+//feather ignore all
+
 /**
  * @pure
  * @param {String} str

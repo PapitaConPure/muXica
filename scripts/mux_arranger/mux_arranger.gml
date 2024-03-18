@@ -1,3 +1,5 @@
+//feather ignore all
+
 /**
  * @desc Represents a sound arranger. It keeps track of all instances of the associated sound asset and manages them through markers.
          Each arranger has a set of arbitrary parameters to keep its sound instances in touch with the state of the game.

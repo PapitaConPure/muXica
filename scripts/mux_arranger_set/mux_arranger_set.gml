@@ -1,4 +1,4 @@
-//feather disable all
+//feather ignore all
 
 ///@desc Initializes a MuxArranger batch for later submission
 function mux_arrangers_init() {

@@ -1,3 +1,5 @@
+//feather ignore all
+
 /**
  * @desc Returns the MuxBank with the specified name
  * @param {Id.AudioEmitter|String} search The search term to get a bank

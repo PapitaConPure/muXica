@@ -1,3 +1,5 @@
+//feather ignore all
+
 ///@desc Must be called once to generate the global scope for the muXica system. This should already be achieved inside the mux_init script
 function mux_scope_global() {
 	static _struct = {

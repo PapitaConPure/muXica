@@ -1,3 +1,5 @@
+//feather ignore all
+
 /**
  * @desc Returns a sound arranger based on the provided sound asset index
  * @param {Asset.GMSound|Id.GMSound} index

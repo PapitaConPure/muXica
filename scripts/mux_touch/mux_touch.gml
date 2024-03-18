@@ -1,3 +1,5 @@
+//feather ignore all
+
 /**
  * @desc Makes this instance wait until audio groups are loaded to then trigger the specified user event
  * @param {Real} user_event_n The event to execute when the audio groups finish loading

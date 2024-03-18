@@ -1,3 +1,5 @@
+//feather ignore all
+
 #region Macros
 #macro MUX_GLOBAL mux_scope_global._struct
 #macro MUX_HANDLER MUX_GLOBAL.worker
