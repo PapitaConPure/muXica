@@ -10,8 +10,8 @@
     {"name":"2. Classes","order":5,"path":"folders/muXica/2. Classes.yy",},
     {"name":"3.a. Bank management","order":6,"path":"folders/muXica/3.a. Bank management.yy",},
     {"name":"3.b. Sound management","order":8,"path":"folders/muXica/3.b. Sound management.yy",},
-    {"name":"4.b. Standalone Cues","order":7,"path":"folders/muXica/4.b. Standalone Cues.yy",},
     {"name":"4.a Arrangers and Markers","order":9,"path":"folders/muXica/4.a Arrangers and Markers.yy",},
+    {"name":"4.b. Standalone Cues","order":7,"path":"folders/muXica/4.b. Standalone Cues.yy",},
   ],
   "ResourceOrderSettings":[
     {"name":"muxica_readme","order":6,"path":"notes/muxica_readme/muxica_readme.yy",},

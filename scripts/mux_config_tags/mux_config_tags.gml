@@ -1,5 +1,6 @@
 //Use this section to organize your sounds into easy-to-remember categories
 //Currently, this affects things like mux_sound_any_is_playing(...) and some other mux_sound_... functions when passing a tag name
+//Keep in mind you should only tag sounds with a purpose in mind
 
 function mux_config_tags() {
 	mux_tag_create("normal music");
