@@ -58,7 +58,7 @@ function mux_sound_play_on(emitter, index, priority, loop = false, gain = 1, off
  *       The new audio will be played on the default emitter for the bank of the specified sound.
  *       If not fading from all, this function assumes both the FROM sound instance and the TO sound asset are linked to the same muXica sound bank
  * @param {Real} time Time for transition (in seconds)
- * @param {Id.Sound|Constant.All} from Origin existing sound id
+ * @param {Asset.GMSound|Id.Sound|String|Constant.All} from Origin existing sound id
  * @param {Asset.GMSound} to Destination sound index
  * @param {Real} priority New sound priority
  * @param {Bool} [loop] New sound loop mode (false by default)
@@ -81,7 +81,13 @@ function mux_sound_crossfade(time, from, to, priority, loop = false, synced = fa
 	if from == all
 		return __mux_sound_crossfade_from_all(_bank.default_emitter, time, to, priority, loop, gain, offset, pitch, listener_mask, _bank);
 	
-	return __mux_sound_crossfade_from_sound(_bank.default_emitter, time, from, to, priority, loop, synced, gain, offset, pitch, listener_mask, _bank);
+	if is_string(from)
+		return __mux_sound_crossfade_from_tag(_bank.default_emitter, time, from, to, priority, loop, gain, offset, pitch, listener_mask);
+		
+	if typeof(from) == "ref"
+		return __mux_sound_crossfade_from_sound(_bank.default_emitter, time, from, to, priority, loop, gain, offset, pitch, listener_mask, _bank);
+	
+	return __mux_sound_crossfade_from_inst(_bank.default_emitter, time, from, to, priority, loop, synced, gain, offset, pitch, listener_mask, _bank);
 }
 
 /**
@@ -90,7 +96,7 @@ function mux_sound_crossfade(time, from, to, priority, loop = false, synced = fa
  *       To avoid any weirdness, the emitters of both sounds should be linked to the same bus
  * @param {Id.AudioEmitter} emitter The emitter on which the new sound will play
  * @param {Real} time Time for transition (in seconds)
- * @param {Id.Sound|Constant.All} from Origin existing sound id
+ * @param {Asset.GMSound|Id.Sound|String|Constant.All} from Origin existing sound id
  * @param {Asset.GMSound} to Destination sound index
  * @param {Real} priority New sound priority
  * @param {Bool} [loop] New sound loop mode (false by default)
@@ -113,7 +119,13 @@ function mux_sound_crossfade_on(emitter, time, from, to, priority, loop = false,
 	if from == all
 		return __mux_sound_crossfade_from_all(emitter, time, to, priority, loop, gain, offset, pitch, listener_mask, _bank);
 	
-	return __mux_sound_crossfade_from_sound(emitter, time, from, to, priority, loop, synced, gain, offset, pitch, listener_mask, _bank);
+	if is_string(from)
+		return __mux_sound_crossfade_from_tag(emitter, time, from, to, priority, loop, gain, offset, pitch, listener_mask);
+		
+	if typeof(from) == "ref"
+		return __mux_sound_crossfade_from_sound(emitter, time, from, to, priority, loop, gain, offset, pitch, listener_mask, _bank);
+	
+	return __mux_sound_crossfade_from_inst(emitter, time, from, to, priority, loop, synced, gain, offset, pitch, listener_mask, _bank);
 }
 
 /**
@@ -182,7 +194,7 @@ function __mux_sound_crossfade_from_all(emitter, time, to, priority, loop, gain,
 	return _id;
 }
 
-function __mux_sound_crossfade_from_sound(emitter, time, from, to, priority, loop, synced, gain, offset, pitch, listener_mask, _bank) {
+function __mux_sound_crossfade_from_inst(emitter, time, from, to, priority, loop, synced, gain, offset, pitch, listener_mask, _bank) {
 	var _all_bank = MUX_ALL;
 	
 	//Crossfade from sound: first play the new sound and set up a crossfade request
@@ -197,7 +209,7 @@ function __mux_sound_crossfade_from_sound(emitter, time, from, to, priority, loo
 	}
 	
 	//Finally, replace the old sound with the new one
-	var _old_bank_idx = _bank.get_index_of(from);
+	var _old_bank_idx = mux_sound_get_inst_bank_index(_bank, from);
 	var _old_sound = _bank.get_sound(_old_bank_idx);
 	var _old_all_bank_idx = _old_sound.get_index_in("all");
 	var _sound = new MuxSound(to, _id, emitter);
@@ -206,6 +218,18 @@ function __mux_sound_crossfade_from_sound(emitter, time, from, to, priority, loo
 	MUX_P_STOP.add_sound(_old_sound);
 	
 	return _id;
+}
+
+function __mux_sound_crossfade_from_tag(emitter, time, from, to, priority, loop, gain, offset, pitch, listener_mask) {
+	MUX_LOG_INFO($"Workaround tag crossfade <\"{from}\")->[{audio_get_name(to)}/{to}] will finish in {time * 0.001}s");
+	__mux_sound_fade_out_tag(time, from,  MUX_ALL);
+	return mux_sound_play_on(emitter, to, priority, loop, gain, offset, pitch, listener_mask);
+}
+
+function __mux_sound_crossfade_from_sound(emitter, time, from, to, priority, loop, gain, offset, pitch, listener_mask, _bank) {
+	MUX_LOG_INFO($"Workaround sound asset index crossfade [{audio_get_name(from)}]->[{audio_get_name(to)}/{to}] will finish in {time * 0.001}s");
+	__mux_sound_fade_out_index(time, from, _bank, MUX_ALL);
+	return mux_sound_play_on(emitter, to, priority, loop, gain, offset, pitch, listener_mask);	
 }
 #endregion
 
@@ -248,25 +272,28 @@ function __mux_sound_fade_out_all(time, all_bank) {
  * @param {Struct.MuxBank} all_bank Bank in which all muXica-managed sounds are stored in
  */
 function __mux_sound_fade_out_tag(time, tag, all_bank) {
+	tag = __mux_string_to_struct_key(tag);
 	var _tag_space = MUX_TAGS[$ tag];
 	var _start = all_bank.capacity - 1;
-	var _found, _found_idx, _i, _j, _bank_names, _bank_count, _bank_name, _bank;
+	var _found, _found_idx, _i, _j, _bank_names, _bank_count, _bank_name, _bank, _bank_idx;
 	
 	for(_i = _start; _i >= 0; _i--) {
 		if not all_bank.has_sound(_i) then continue;
 		
 		_found = all_bank.get_sound(_i);
 		
-		if not array_contains(_tag_space, audio_get_name(_found.index)) then continue;
+		if not array_contains(_tag_space, _found.index) then continue;
 		
 		audio_sound_gain(_found.inst, 0, time);
 		_bank_names = struct_get_names(_found.bank_index);
 		_bank_count = array_length(_bank_names);
+		_j = 0;
 		repeat _bank_count {
 			_bank_name = _bank_names[_j++];
 			if _bank_name == "all" then continue;
-			_bank = _found.bank_index[$ _bank_name];
-			_bank.remove_sound(_found);
+			_bank = mux_bank_get(_bank_name);
+			_bank_idx = _found.get_index_in(_bank_name);
+			_bank.remove_sound_at(_bank_idx);
 		}
 		
 		all_bank.remove_sound_at(_i);
@@ -329,7 +356,7 @@ function __mux_sound_fade_out_index(time, index, group_bank, all_bank) {
  * @param {Real} time Time in milliseconds to conclude the crossfade
  */
 function __mux_sound_crossfade_delayed(out, in, gain, time) {
-	MUX_LOG_INFO($"Crossfade [{is_undefined(out) ? "ANY" : ""}{audio_get_name(out)}/{out}]->[{audio_get_name(in)}/{in}] has been requested and will commence in {time} frames");
+	MUX_LOG_INFO($"Crossfade [{is_undefined(out) ? "ANY" : $"{audio_get_name(out)}/{out}"}]->[{audio_get_name(in)}/{in}] has been requested and will commence in {MUX_CROSSFADE_DELAY} frames");
 	
 	//Set up next crossfade event
 	var _handler = MUX_HANDLER;

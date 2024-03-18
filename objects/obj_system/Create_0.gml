@@ -7,3 +7,4 @@ audio_group_load(BGM);
 audio_group_load(SFX);
 
 sys_emit = undefined;
+sound = -1;

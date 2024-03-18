@@ -156,7 +156,7 @@ function MuxBank(name, bus = undefined) constructor {
 		var _found = false;
 		var _snd;
 		
-		while not _found and _idx < self.capacity {
+		while not _found and _idx < self.capacity - 1 {
 			_snd = self.sounds[++_idx];
 			if not is_undefined(_snd) and _snd == sound then _found = true;
 		}
