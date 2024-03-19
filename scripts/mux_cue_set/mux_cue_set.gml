@@ -7,12 +7,13 @@
  * @param {Real} cue_position The position of the cue
  */
 function mux_cue_set(index, cue_name, cue_position) {
-	var _key = __mux_string_to_struct_key(cue_name);
+	var _sound_key = __mux_string_to_struct_key(audio_get_name(index));
+	var _name_key = __mux_string_to_struct_key(cue_name);
 	
-	if not struct_exists(MUX_CUES, index)
-		struct_set(MUX_CUES, index, {});
+	if not struct_exists(MUX_CUES, _sound_key)
+		MUX_CUES[$ _sound_key] = {};
 	
-	MUX_CUES[$ index][$ _key] = cue_position;
+	MUX_CUES[$ _sound_key][$ _name_key] = cue_position;
 }
 
 /**
@@ -21,14 +22,16 @@ function mux_cue_set(index, cue_name, cue_position) {
  * @param {Struct.MuxCueCollection} cues The audio cue collection data to bind
  */
 function mux_cue_set_many(index, collection) {
+	var _sound_key = __mux_string_to_struct_key(audio_get_name(index));
 	var _cues = collection.cues;
 	var _names = struct_get_names(_cues);
 	var _count = array_length(_names);
-	var _name;
+	var _name, _name_key;
 	var _i = 0;
 	repeat _count {
 		_name = _names[_i++];
-		MUX_CUES[$ index][$ _name] = _cues[$ _name];
+		_name_key = __mux_string_to_struct_key(_name);
+		MUX_CUES[$ _sound_key][$ _name_key] = _cues[$ _name_key];
 	}
 }
 

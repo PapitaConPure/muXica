@@ -6,10 +6,12 @@
  * @param {String} name Cue name
  */
 function mux_cue_follow(sound, name) {
-	var __cues = struct_get(MUX_CUES, audio);
-	var __cue = __cues[$ name];
-		
-	MUX_EX_IF ((sound < 0) or not audio_exists(sound)) then __mux_ex(MUX_EX_INVALID);
+	MUX_CHECK_INVALID_EX;
 	
-	audio_sound_set_track_position(sound, __cue);
+	var _sound_key = __mux_string_to_struct_key(audio_get_name(sound));
+	var _name_key = __mux_string_to_struct_key(name);
+	var _cues = MUX_CUES[$ _sound_key];
+	var _cue = _cues[$ _name_key];
+		
+	audio_sound_set_track_position(sound, _cue);
 }
