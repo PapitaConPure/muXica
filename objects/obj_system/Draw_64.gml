@@ -1,3 +1,5 @@
+//feather ignore all
+
 /// @desc Show params
 if not mux_is_ready() then exit;
 draw_text(16, 16, $"param: {mux_arranger_get(aud_bgm_test1).params.n}");
