@@ -12,8 +12,8 @@
   "name":"obj_knob",
   "overriddenProperties":[],
   "parent":{
-    "name":"TOOLS",
-    "path":"folders/TOOLS.yy",
+    "name":"Objects",
+    "path":"folders/TOOLS/Basic Tooling/Objects.yy",
   },
   "parentObjectId":null,
   "persistent":false,
@@ -39,8 +39,8 @@
   "resourceVersion":"2.0",
   "solid":false,
   "spriteId":{
-    "name":"spr_knob_body",
-    "path":"sprites/spr_knob_body/spr_knob_body.yy",
+    "name":"spr_knob512_body",
+    "path":"sprites/spr_knob512_body/spr_knob512_body.yy",
   },
   "spriteMaskId":null,
   "visible":true,
