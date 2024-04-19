@@ -1,5 +1,5 @@
 <p align="center"><img src="https://github.com/PapitaConPure/muXica/blob/master/why.png"></p>
-<h1 align="center">muXica v1.0.2</h1>
+<h1 align="center">muXica v1.1.0</h1>
 <p align="center"> Crossfades and dynamic audio for GMS2, by <a href="https://github.com/PapitaConPure">Papita con Puré</a></p>
 
 <br>
