@@ -214,6 +214,8 @@ function MuxArranger(index, start_delay, start_params) constructor {
 				
 			if not _snd.updated then continue;
 			
+			if not _snd.arranged then continue;
+			
 			if _snd.ppos > _snd.pos then continue;
 			
 			_j = 0;

@@ -22,6 +22,15 @@ function mux_sound_set_pitch(sound, pitch) {
 	});
 }
 
+///@desc Sets whether the specified sound will perform its associated MuxArranger events
+///      (the sound will still be linked to the arranger to some capacity)
+///@param {Id.Sound} inst The sound instance to set the arranged state of
+///@param {Boolean} is_arranged Whether the sound will perform MuxArranger events (true) or not (false)
+function mux_sound_set_arranged(inst, is_arranged) {
+	var _sound = mux_sound_get_from_inst(inst);
+	_sound.arranged = is_arranged;
+}
+
 ///@desc Pauses the playback of the specified sound instance or group
 ///@param {Asset.GMSound|Id.Sound|String|Constant.All} sound The sound selection to pause
 function mux_sound_pause(sound) {

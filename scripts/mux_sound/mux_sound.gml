@@ -14,7 +14,7 @@ function MuxSound(index, inst, emitter, arranged = true) constructor {
 	self.index = index;
 	self.inst = inst;
 	self.emitter = emitter;
-	self.arranged = arranged;
+	self.arranged = false;
 	
 	self.pos = audio_sound_get_track_position(inst);
 	self.ppos = self.pos;
@@ -34,16 +34,7 @@ function MuxSound(index, inst, emitter, arranged = true) constructor {
 	self.__next_pos = -1;
 	
 	//Automatically attach to handler's corresponding MuxArranger if it exists (for cue event handling magic)
-	if self.arranged {
-		var _arrangers = MUX_ARRANGERS;
-		var _key = ds_grid_value_x(_arrangers, 0, MUX_ARR_F.NAME, ds_grid_width(_arrangers) - 1, MUX_ARR_F.NAME, self.name);
-		
-		if _key >= 0 {
-			ds_list_add(_arrangers[# _key, MUX_ARR_F.STRUCT].instances, self);
-		} else {
-			self.arranged = false;
-		}
-	}
+	if arranged then self.link();
 	
 	///@desc Updates the sound instance's track position over time. Also keeps track of the previous position
 	///      If the sound's position is different for this frame, the "updated" variable will be set to true, otherwise it will be set to false
@@ -157,15 +148,32 @@ function MuxSound(index, inst, emitter, arranged = true) constructor {
 		return self.pitch * _emitter_pitch;
 	}
 	
-	///@desc Unlinks this sound from its associated arranger (if any) and frees up the sound block's resources
-	static free = function() {
-		if not self.arranged then return;
+	///@desc Links this sound to its associated arranger (if any)
+	static link = function() {
+		if self.arranged then return;
 		
-		var _arrangers = MUX_ARRANGERS;
-		var _key = ds_grid_value_x(_arrangers, 0, MUX_ARR_F.NAME, ds_grid_width(_arrangers) - 1, MUX_ARR_F.NAME, self.name);
+		var _key = self.__get_arranger_index();
 		if _key < 0 then return;
 		
-		var _list = _arrangers[# _key, MUX_ARR_F.STRUCT].instances;
-		ds_list_delete(_list, ds_list_find_index(_list, self));
+		self.arranged = true;
+		
+		var _list = MUX_ARRANGERS[# _key, MUX_ARR_F.STRUCT].instances;
+		ds_list_add(_list, self);
+	}
+	
+	///@desc Unlinks this sound from its associated arranger (if any) and frees up the sound block's resources
+	static free = function() {
+		self.arranged = false;
+		
+		var _key = self.__get_arranger_index();
+		if _key < 0 then return;
+		
+		var _list = MUX_ARRANGERS[# _key, MUX_ARR_F.STRUCT].instances;
+		ds_list_delete(_list, self);
+	}
+	
+	static __get_arranger_index = function() {
+		var _arrangers = MUX_ARRANGERS;
+		return ds_grid_value_x(_arrangers, 0, MUX_ARR_F.NAME, ds_grid_width(_arrangers) - 1, MUX_ARR_F.NAME, self.name);
 	}
 }
