@@ -29,7 +29,7 @@ function mux_config_arrangers() {
 		.jump_bars(1)
 		.set_marker("to middle", new MuxJumpMarker(
 			function(params) { return true; },
-			"loop mid 1"))
+			"loop middle 1"))
 		.jump_bars(16)
 		.set_marker_repeat("loop middle", 1, MUX_MRK_UNIT.BARS, 1, new MuxEventMarker(
 			function(marker, sound, offset, params) {
